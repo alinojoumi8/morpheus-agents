@@ -56,6 +56,7 @@ mcp = ["mcp>=1.2.0,<2"]
 homeassistant = ["aiohttp>=3.9.0,<4"]
 sms = ["aiohttp>=3.9.0,<4"]
 acp = ["agent-client-protocol>=0.8.1,<0.9"]
+intelligence = ["sqlite-vec>=0.1.6,<1", "numpy>=1.24.0,<3"]
 dingtalk = ["dingtalk-stream>=0.1.0,<1"]
 rl = [
   "atroposlib @ git+https://github.com/NousResearch/atropos.git",
@@ -82,6 +83,7 @@ all = [
   "hermes-agent[acp]",
   "hermes-agent[voice]",
   "hermes-agent[dingtalk]",
+  "hermes-agent[intelligence]",
 ]
 
 [project.scripts]
@@ -93,7 +95,7 @@ hermes-acp = "acp_adapter.entry:main"
 py-modules = ["run_agent", "model_tools", "toolsets", "batch_runner", "trajectory_compressor", "toolset_distributions", "cli", "hermes_constants", "hermes_state", "hermes_time", "rl_cli", "utils"]
 
 [tool.setuptools.packages.find]
-include = ["agent", "tools", "tools.*", "hermes_cli", "gateway", "gateway.*", "cron", "honcho_integration", "acp_adapter"]
+include = ["agent", "tools", "tools.*", "hermes_cli", "gateway", "gateway.*", "cron", "honcho_integration", "acp_adapter", "intelligence"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

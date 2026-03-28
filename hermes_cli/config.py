@@ -408,6 +408,55 @@ DEFAULT_CONFIG = {
         },
     },
 
+    # Intelligence module — advanced memory, self-evolution, personalization
+    "intelligence": {
+        "enabled": False,                  # Master toggle for all intelligence features
+        "embedding_provider": "auto",      # "auto", "openai", "ollama", "local", "hash"
+        "embedding_model": "",             # Model name (provider-specific, empty = default)
+        "vector_dimensions": 384,          # Embedding vector size
+        "db_path": None,                   # Custom path (default: ~/.hermes/intelligence.db)
+
+        # Episodic memory — auto-extract key events at session end
+        "episodic_extraction": True,
+
+        # Post-session reflection — self-evaluation after each session
+        "post_session_reflection": True,
+
+        # Memory consolidation — periodic cleanup and tier migration
+        "consolidation": {
+            "enabled": True,
+            "decay_factor": 0.95,          # 5% decay per run for inactive entries
+            "inactive_days": 7,            # Only decay entries not accessed in N days
+            "hot_tier_max": 10,            # Max entries in hot tier (injected into prompt)
+        },
+
+        # Personalization — adapt communication style to user
+        "personalization": {
+            "enabled": True,
+            "style_adaptation": True,      # Adapt verbosity/formality
+            "workflow_learning": True,      # Detect repeated tool patterns
+            "priority_inference": True,     # Infer speed/accuracy/cost priorities
+        },
+
+        # Time-of-day awareness
+        "time_awareness": True,
+
+        # Multi-persona support
+        "personas": {},                    # {"work": {"style": "...", "active_hours": "9-17"}}
+
+        # Knowledge graph — auto-extract entities and relationships
+        "knowledge_graph": True,
+
+        # Proactive monitors
+        "monitors": {
+            "enabled": False,
+            "cost_alert_threshold": 10.0,  # USD per day
+        },
+
+        # Skill evaluation
+        "skill_scoring": True,
+    },
+
     # Config schema version - bump this when adding new required fields
     "_config_version": 10,
 }

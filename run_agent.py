@@ -2524,6 +2524,30 @@ class AIAgent:
                 if user_block:
                     prompt_parts.append(user_block)
 
+        # Intelligence module: inject hot-tier memories, strategies,
+        # personalization directives, and follow-up suggestions.
+        try:
+            from intelligence.integration import (
+                is_enabled as _intel_enabled,
+                get_hot_memories_block,
+                get_personalization_directive,
+                get_followup_suggestions,
+            )
+            if _intel_enabled():
+                _hot_block = get_hot_memories_block()
+                if _hot_block:
+                    prompt_parts.append(_hot_block)
+                _pers_block = get_personalization_directive()
+                if _pers_block:
+                    prompt_parts.append(_pers_block)
+                _followup_block = get_followup_suggestions()
+                if _followup_block:
+                    prompt_parts.append(_followup_block)
+        except ImportError:
+            pass  # Intelligence module not installed
+        except Exception:
+            pass  # Best-effort
+
         has_skills_tools = any(name in self.valid_tool_names for name in ['skills_list', 'skill_view', 'skill_manage'])
         if has_skills_tools:
             avail_toolsets = {
@@ -7666,6 +7690,23 @@ class AIAgent:
                 )
             except Exception:
                 pass  # Background review is best-effort
+
+        # Intelligence module: session-end processing (episodic extraction,
+        # reflection, personalization, knowledge graph). Runs in a background
+        # thread — never blocks the response.
+        if final_response and not interrupted:
+            try:
+                from intelligence.integration import on_session_end
+                on_session_end(
+                    session_id=self.session_id,
+                    messages=list(messages),
+                    sync_llm_call=getattr(self, '_aux_llm_call_sync', None),
+                    completed=completed,
+                )
+            except ImportError:
+                pass  # Intelligence module not installed
+            except Exception:
+                pass  # Best-effort
 
         return result
 
