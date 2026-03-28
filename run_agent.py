@@ -946,6 +946,38 @@ class AIAgent:
             except Exception:
                 pass  # Memory is optional -- don't break agent init
         
+        # Intelligence module: auxiliary LLM bridge for episodic extraction,
+        # reflection, and knowledge graph extraction at session end.
+        self._aux_llm_call_sync = None
+        try:
+            intel_cfg = _agent_cfg.get("intelligence", {})
+            if intel_cfg.get("enabled", False):
+                def _make_aux_llm_call():
+                    """Create a closure that calls the auxiliary LLM."""
+                    def _call(system_prompt: str, user_prompt: str) -> str:
+                        from agent.auxiliary_client import call_llm as _aux_call
+                        response = _aux_call(
+                            task="flush_memories",  # Reuse cheap auxiliary config
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": user_prompt},
+                            ],
+                            temperature=0.3,
+                            max_tokens=4096,
+                            timeout=45.0,
+                        )
+                        if response and response.choices and response.choices[0].message.content:
+                            return response.choices[0].message.content
+                        return ""
+                    return _call
+                self._aux_llm_call_sync = _make_aux_llm_call()
+
+                # Initialize intelligence module eagerly so tools are ready
+                from intelligence.integration import _ensure_initialized
+                _ensure_initialized(_agent_cfg)
+        except Exception:
+            pass  # Intelligence is optional
+
         # Honcho AI-native memory (cross-session user modeling)
         # Reads $HERMES_HOME/honcho.json (instance) or ~/.honcho/config.json (global).
         self._honcho = None  # HonchoSessionManager | None
@@ -5181,14 +5213,36 @@ class AIAgent:
 
         def _run_tool(index, tool_call, function_name, function_args):
             """Worker function executed in a thread."""
+            # Intelligence: track tool call for workflow pattern detection
+            try:
+                from intelligence.integration import on_tool_call
+                on_tool_call(function_name)
+            except (ImportError, Exception):
+                pass
+
             start = time.time()
             try:
                 result = self._invoke_tool(function_name, function_args, effective_task_id)
             except Exception as tool_error:
                 result = f"Error executing tool '{function_name}': {tool_error}"
                 logger.error("_invoke_tool raised for %s: %s", function_name, tool_error, exc_info=True)
+                # Intelligence: log tool error for failure journaling
+                try:
+                    from intelligence.integration import on_tool_error
+                    on_tool_error(function_name, str(tool_error), self.session_id,
+                                  {"args": {k: str(v)[:200] for k, v in function_args.items()}})
+                except (ImportError, Exception):
+                    pass
             duration = time.time() - start
             is_error, _ = _detect_tool_failure(function_name, result)
+            # Intelligence: log detected failures (not just exceptions)
+            if is_error:
+                try:
+                    from intelligence.integration import on_tool_error
+                    on_tool_error(function_name, result[:500] if result else "unknown error",
+                                  self.session_id)
+                except (ImportError, Exception):
+                    pass
             results[index] = (function_name, function_args, result, duration, is_error)
 
         # Start spinner for CLI mode (skip when TUI handles tool progress)
@@ -5359,6 +5413,13 @@ class AIAgent:
 
             tool_start_time = time.time()
 
+            # Intelligence: track tool call for workflow pattern detection
+            try:
+                from intelligence.integration import on_tool_call
+                on_tool_call(function_name)
+            except (ImportError, Exception):
+                pass
+
             if function_name == "todo":
                 from tools.todo_tool import todo_tool as _todo_tool
                 function_result = _todo_tool(
@@ -5494,6 +5555,12 @@ class AIAgent:
             _is_error_result, _ = _detect_tool_failure(function_name, function_result)
             if _is_error_result:
                 logger.warning("Tool %s returned error (%.2fs): %s", function_name, tool_duration, result_preview)
+                # Intelligence: log tool failure for failure journaling
+                try:
+                    from intelligence.integration import on_tool_error
+                    on_tool_error(function_name, function_result[:500], self.session_id)
+                except (ImportError, Exception):
+                    pass
 
             if self.verbose_logging:
                 logging.debug(f"Tool {function_name} completed in {tool_duration:.2f}s")
@@ -5866,6 +5933,19 @@ class AIAgent:
                 _should_review_memory = True
                 self._turns_since_memory = 0
 
+        # Intelligence: inject per-query strategy context into ephemeral turn context.
+        # This finds relevant strategies and failure warnings for the current query,
+        # similar to how Honcho injects prefetched context per turn.
+        self._intelligence_turn_context = ""
+        try:
+            from intelligence.integration import get_strategy_for_query, is_enabled as _intel_on
+            if _intel_on() and original_user_message:
+                _strat = get_strategy_for_query(original_user_message)
+                if _strat:
+                    self._intelligence_turn_context = _strat
+        except (ImportError, Exception):
+            pass
+
         # Honcho prefetch consumption:
         # - First turn: bake into cached system prompt (stable for the session).
         # - Later turns: attach recall to the current-turn user message at
@@ -6055,6 +6135,15 @@ class AIAgent:
                     api_msg["content"] = _inject_honcho_turn_context(
                         api_msg.get("content", ""), self._honcho_turn_context
                     )
+
+                # Intelligence: inject per-query strategy context alongside Honcho
+                if idx == current_turn_user_idx and msg.get("role") == "user" and getattr(self, '_intelligence_turn_context', ''):
+                    _intel_ctx = self._intelligence_turn_context
+                    _existing = api_msg.get("content", "")
+                    if isinstance(_existing, str):
+                        api_msg["content"] = f"{_existing}\n\n{_intel_ctx}"
+                    elif isinstance(_existing, list):
+                        api_msg["content"] = _existing + [{"type": "text", "text": _intel_ctx}]
 
                 # For ALL assistant messages, pass reasoning back to the API
                 # This ensures multi-turn reasoning context is preserved
