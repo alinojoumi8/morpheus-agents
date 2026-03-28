@@ -63,6 +63,15 @@ def _ensure_initialized(config: Optional[Dict] = None):
         if _config.get("personalization", {}).get("workflow_learning", True):
             _workflow_tracker = WorkflowTracker()
 
+        # Register system cron jobs (idempotent — won't duplicate)
+        try:
+            from intelligence.cron_registration import register_intelligence_cron_jobs
+            registered = register_intelligence_cron_jobs(_config)
+            if registered:
+                logger.info("Registered %d intelligence cron jobs", len(registered))
+        except Exception as cron_exc:
+            logger.debug("Cron job registration skipped: %s", cron_exc)
+
         logger.info("Intelligence module initialized (vec=%s, provider=%s)",
                      _db.vec_available, _embedding_provider.name)
         return True
