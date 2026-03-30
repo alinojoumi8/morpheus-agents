@@ -47,8 +47,8 @@ PROVIDER_TO_MODELS_DEV: Dict[str, str] = {
 def _get_cache_path() -> Path:
     """Return path to disk cache file."""
     env_val = os.environ.get("MORPHEUS_HOME", "")
-    hermes_home = Path(env_val) if env_val else Path.home() / ".morpheus"
-    return hermes_home / "models_dev_cache.json"
+    morpheus_home = Path(env_val) if env_val else Path.home() / ".morpheus"
+    return morpheus_home / "models_dev_cache.json"
 
 
 def _load_disk_cache() -> Dict[str, Any]:

@@ -28,7 +28,7 @@ def _read_env(home):
 
 def _clear_provider_env(monkeypatch):
     for key in (
-        "HERMES_INFERENCE_PROVIDER",
+        "MORPHEUS_INFERENCE_PROVIDER",
         "OPENAI_BASE_URL",
         "OPENAI_API_KEY",
         "OPENROUTER_API_KEY",
@@ -454,7 +454,7 @@ def test_setup_summary_marks_codex_auth_as_vision_available(tmp_path, monkeypatc
     output = capsys.readouterr().out
 
     assert "Vision (image analysis)" in output
-    assert "missing run 'hermes setup' to configure" not in output
+    assert "missing run 'morpheus setup' to configure" not in output
     assert "Mixture of Agents" in output
     assert "missing OPENROUTER_API_KEY" in output
 
@@ -470,4 +470,4 @@ def test_setup_summary_marks_anthropic_auth_as_vision_available(tmp_path, monkey
     output = capsys.readouterr().out
 
     assert "Vision (image analysis)" in output
-    assert "missing run 'hermes setup' to configure" not in output
+    assert "missing run 'morpheus setup' to configure" not in output

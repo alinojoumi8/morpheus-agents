@@ -6,7 +6,7 @@ author: Morpheus Agent
 license: MIT
 platforms: [macos]
 metadata:
-  hermes:
+  morpheus:
     tags: [Reminders, tasks, todo, macOS, Apple]
 prerequisites:
   commands: [remindctl]

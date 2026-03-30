@@ -58,7 +58,7 @@ from atroposlib.envs.base import EvalHandlingEnum
 from atroposlib.envs.server_handling.server_manager import APIServerConfig
 
 from environments.agent_loop import AgentResult, MorpheusAgentLoop
-from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 from environments.tool_context import ToolContext
 from tools.terminal_tool import (
     register_task_env_overrides,

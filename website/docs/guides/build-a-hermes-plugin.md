@@ -242,7 +242,7 @@ def register(ctx):
 Start Morpheus:
 
 ```bash
-hermes
+morpheus
 ```
 
 You should see `calculator: calculate, unit_convert` in the banner's tool list.
@@ -310,10 +310,10 @@ from pathlib import Path
 def _install_skill():
     """Copy our skill to ~/.morpheus/skills/ on first load."""
     try:
-        from morpheus_cli.config import get_hermes_home
-        dest = get_hermes_home() / "skills" / "my-plugin" / "SKILL.md"
+        from morpheus_cli.config import get_morpheus_home
+        dest = get_morpheus_home() / "skills" / "my-plugin" / "SKILL.md"
     except Exception:
-        dest = Path.home() / ".hermes" / "skills" / "my-plugin" / "SKILL.md"
+        dest = Path.home() / ".morpheus" / "skills" / "my-plugin" / "SKILL.md"
 
     if dest.exists():
         return  # don't overwrite user edits
@@ -382,13 +382,13 @@ For sharing plugins publicly, add an entry point to your Python package:
 
 ```toml
 # pyproject.toml
-[project.entry-points."hermes_agent.plugins"]
+[project.entry-points."morpheus_agent.plugins"]
 my-plugin = "my_plugin_package"
 ```
 
 ```bash
-pip install hermes-plugin-calculator
-# Plugin auto-discovered on next hermes startup
+pip install morpheus-plugin-calculator
+# Plugin auto-discovered on next morpheus startup
 ```
 
 ## Common mistakes

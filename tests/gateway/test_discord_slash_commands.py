@@ -481,15 +481,15 @@ def test_discord_auto_thread_config_bridge(monkeypatch, tmp_path):
     from pathlib import Path
 
     # Write a config.yaml the loader will find
-    hermes_dir = tmp_path / ".morpheus"
-    hermes_dir.mkdir()
-    config_path = hermes_dir / "config.yaml"
+    morpheus_dir = tmp_path / ".morpheus"
+    morpheus_dir.mkdir()
+    config_path = morpheus_dir / "config.yaml"
     config_path.write_text(yaml.dump({
         "discord": {"auto_thread": True},
     }))
 
     monkeypatch.delenv("DISCORD_AUTO_THREAD", raising=False)
-    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_dir))
+    monkeypatch.setenv("MORPHEUS_HOME", str(morpheus_dir))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     from gateway.config import load_gateway_config

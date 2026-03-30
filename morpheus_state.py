@@ -122,7 +122,7 @@ class SessionDB:
     """
 
     # ── Write-contention tuning ──
-    # With multiple hermes processes (gateway + CLI sessions + worktree agents)
+    # With multiple morpheus processes (gateway + CLI sessions + worktree agents)
     # all sharing one state.db, WAL write-lock contention causes visible TUI
     # freezes.  SQLite's built-in busy handler uses a deterministic sleep
     # schedule that causes convoy effects under high concurrency.

@@ -49,11 +49,11 @@ from morpheus_constants import get_morpheus_home
 
 # Load .env from ~/.morpheus/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from morpheus_cli.env_loader import load_hermes_dotenv
+from morpheus_cli.env_loader import load_morpheus_dotenv
 
-_hermes_home = get_morpheus_home()
+_morpheus_home = get_morpheus_home()
 _project_env = Path(__file__).parent / '.env'
-_loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+_loaded_env_paths = load_morpheus_dotenv(morpheus_home=_morpheus_home, project_env=_project_env)
 if _loaded_env_paths:
     for _env_path in _loaded_env_paths:
         logger.info("Loaded environment variables from %s", _env_path)
@@ -606,7 +606,7 @@ class AIAgent:
         # handler would cause each warning/error line to be written multiple times.
         from logging.handlers import RotatingFileHandler
         root_logger = logging.getLogger()
-        error_log_dir = _hermes_home / "logs"
+        error_log_dir = _morpheus_home / "logs"
         error_log_path = error_log_dir / "errors.log"
         resolved_error_log_path = error_log_path.resolve()
         has_errors_log_handler = any(
@@ -768,7 +768,7 @@ class AIAgent:
                         raise RuntimeError(
                             f"Provider '{_explicit}' is set in config.yaml but no API key "
                             f"was found. Set the {_explicit.upper()}_API_KEY environment "
-                            f"variable, or switch to a different provider with `hermes model`."
+                            f"variable, or switch to a different provider with `morpheus model`."
                         )
                     # Final fallback: try raw OpenRouter key
                     client_kwargs = {
@@ -865,8 +865,8 @@ class AIAgent:
             self.session_id = f"{timestamp_str}_{short_uuid}"
         
         # Session logs go into ~/.morpheus/sessions/ alongside gateway sessions
-        hermes_home = get_morpheus_home()
-        self.logs_dir = hermes_home / "sessions"
+        morpheus_home = get_morpheus_home()
+        self.logs_dir = morpheus_home / "sessions"
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.session_log_file = self.logs_dir / f"session_{self.session_id}.json"
         
@@ -890,7 +890,7 @@ class AIAgent:
             try:
                 self._session_db.create_session(
                     session_id=self.session_id,
-                    source=self.platform or os.environ.get("HERMES_SESSION_SOURCE", "cli"),
+                    source=self.platform or os.environ.get("MORPHEUS_SESSION_SOURCE", "cli"),
                     model=self.model,
                     model_config={
                         "max_iterations": self.max_iterations,
@@ -1025,7 +1025,7 @@ class AIAgent:
             except Exception as e:
                 logger.warning("Honcho init failed — memory disabled: %s", e)
                 print(f"  Honcho init failed: {e}")
-                print("  Run 'hermes honcho setup' to reconfigure.")
+                print("  Run 'morpheus honcho setup' to reconfigure.")
                 self._honcho = None
 
         # Tools are initially discovered before Honcho activation. If Honcho
@@ -2049,7 +2049,7 @@ class AIAgent:
 
             self._vprint(f"{self.log_prefix}🧾 Request debug dump written to: {dump_file}")
 
-            if os.getenv("HERMES_DUMP_REQUEST_STDOUT", "").strip().lower() in {"1", "true", "yes", "on"}:
+            if os.getenv("MORPHEUS_DUMP_REQUEST_STDOUT", "").strip().lower() in {"1", "true", "yes", "on"}:
                 print(json.dumps(dump_payload, ensure_ascii=False, indent=2, default=str))
 
             return dump_file
@@ -2262,7 +2262,7 @@ class AIAgent:
                     session_title=session_title,
                     session_id=self.session_id,
                 )
-                or "hermes-default"
+                or "morpheus-default"
             )
 
         honcho_sess = self._honcho.get_or_create(self._honcho_session_key)
@@ -2528,15 +2528,15 @@ class AIAgent:
                 )
             honcho_block += (
                 "Management commands (refer users here instead of explaining manually):\n"
-                "  hermes honcho status                    — show full config + connection\n"
-                "  hermes honcho mode [hybrid|honcho]       — show or set memory mode\n"
-                "  hermes honcho tokens [--context N] [--dialectic N] — show or set token budgets\n"
-                "  hermes honcho peer [--user NAME] [--ai NAME] [--reasoning LEVEL]\n"
-                "  hermes honcho sessions                  — list directory→session mappings\n"
-                "  hermes honcho map <name>                — map cwd to a session name\n"
-                "  hermes honcho identity [<file>] [--show] — seed or show AI peer identity\n"
-                "  hermes honcho migrate                   — migration guide from openclaw-honcho\n"
-                "  hermes honcho setup                     — full interactive wizard"
+                "  morpheus honcho status                    — show full config + connection\n"
+                "  morpheus honcho mode [hybrid|honcho]       — show or set memory mode\n"
+                "  morpheus honcho tokens [--context N] [--dialectic N] — show or set token budgets\n"
+                "  morpheus honcho peer [--user NAME] [--ai NAME] [--reasoning LEVEL]\n"
+                "  morpheus honcho sessions                  — list directory→session mappings\n"
+                "  morpheus honcho map <name>                — map cwd to a session name\n"
+                "  morpheus honcho identity [<file>] [--show] — seed or show AI peer identity\n"
+                "  morpheus honcho migrate                   — migration guide from openclaw-honcho\n"
+                "  morpheus honcho setup                     — full interactive wizard"
             )
             prompt_parts.append(honcho_block)
 
@@ -2609,8 +2609,8 @@ class AIAgent:
             if context_files_prompt:
                 prompt_parts.append(context_files_prompt)
 
-        from morpheus_time import now as _hermes_now
-        now = _hermes_now()
+        from morpheus_time import now as _morpheus_now
+        now = _morpheus_now()
         timestamp_line = f"Conversation started: {now.strftime('%A, %B %d, %Y %I:%M %p')}"
         if self.pass_session_id and self.session_id:
             timestamp_line += f"\nSession ID: {self.session_id}"
@@ -3597,8 +3597,8 @@ class AIAgent:
             from morpheus_cli.auth import resolve_nous_runtime_credentials
 
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(os.getenv("MORPHEUS_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(os.getenv("MORPHEUS_NOUS_TIMEOUT_SECONDS", "15")),
                 force_mint=force,
             )
         except Exception as exc:
@@ -3828,8 +3828,8 @@ class AIAgent:
         def _call_chat_completions():
             """Stream a chat completions response."""
             import httpx as _httpx
-            _base_timeout = float(os.getenv("HERMES_API_TIMEOUT", 1800.0))
-            _stream_read_timeout = float(os.getenv("HERMES_STREAM_READ_TIMEOUT", 60.0))
+            _base_timeout = float(os.getenv("MORPHEUS_API_TIMEOUT", 1800.0))
+            _stream_read_timeout = float(os.getenv("MORPHEUS_STREAM_READ_TIMEOUT", 60.0))
             stream_kwargs = {
                 **api_kwargs,
                 "stream": True,
@@ -4021,7 +4021,7 @@ class AIAgent:
         def _call():
             import httpx as _httpx
 
-            _max_stream_retries = int(os.getenv("HERMES_STREAM_RETRIES", 2))
+            _max_stream_retries = int(os.getenv("MORPHEUS_STREAM_RETRIES", 2))
 
             try:
                 for _stream_attempt in range(_max_stream_retries + 1):
@@ -4108,7 +4108,7 @@ class AIAgent:
                 if request_client is not None:
                     self._close_request_openai_client(request_client, reason="stream_request_complete")
 
-        _stream_stale_timeout_base = float(os.getenv("HERMES_STREAM_STALE_TIMEOUT", 180.0))
+        _stream_stale_timeout_base = float(os.getenv("MORPHEUS_STREAM_STALE_TIMEOUT", 180.0))
         # Scale the stale timeout for large contexts: slow models (like Opus)
         # can legitimately think for minutes before producing the first token
         # when the context is large.  Without this, the stale detector kills
@@ -4558,7 +4558,7 @@ class AIAgent:
             "model": self.model,
             "messages": sanitized_messages,
             "tools": self.tools if self.tools else None,
-            "timeout": float(os.getenv("HERMES_API_TIMEOUT", 1800.0)),
+            "timeout": float(os.getenv("MORPHEUS_API_TIMEOUT", 1800.0)),
         }
 
         if self.max_tokens is not None:
@@ -5006,7 +5006,7 @@ class AIAgent:
                 self.session_id = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
                 self._session_db.create_session(
                     session_id=self.session_id,
-                    source=self.platform or os.environ.get("HERMES_SESSION_SOURCE", "cli"),
+                    source=self.platform or os.environ.get("MORPHEUS_SESSION_SOURCE", "cli"),
                     model=self.model,
                     parent_session_id=old_session_id,
                 )
@@ -6266,7 +6266,7 @@ class AIAgent:
                     if self.api_mode == "codex_responses":
                         api_kwargs = self._preflight_codex_api_kwargs(api_kwargs, allow_stream=False)
 
-                    if os.getenv("HERMES_DUMP_REQUESTS", "").strip().lower() in {"1", "true", "yes", "on"}:
+                    if os.getenv("MORPHEUS_DUMP_REQUESTS", "").strip().lower() in {"1", "true", "yes", "on"}:
                         self._dump_api_request_debug(api_kwargs, reason="preflight")
 
                     # Always prefer the streaming path — even without stream
@@ -6755,8 +6755,8 @@ class AIAgent:
                         print(f"{self.log_prefix}     • Check ANTHROPIC_API_KEY in ~/.morpheus/.env for API keys or legacy token values")
                         print(f"{self.log_prefix}     • For API keys: verify at https://console.anthropic.com/settings/keys")
                         print(f"{self.log_prefix}     • For Claude Code: run 'claude /login' to refresh, then retry")
-                        print(f"{self.log_prefix}     • Clear stale keys: hermes config set ANTHROPIC_TOKEN \"\"")
-                        print(f"{self.log_prefix}     • Legacy cleanup: hermes config set ANTHROPIC_API_KEY \"\"")
+                        print(f"{self.log_prefix}     • Clear stale keys: morpheus config set ANTHROPIC_TOKEN \"\"")
+                        print(f"{self.log_prefix}     • Legacy cleanup: morpheus config set ANTHROPIC_API_KEY \"\"")
 
                     retry_count += 1
                     elapsed_time = time.time() - api_start_time
@@ -7013,7 +7013,7 @@ class AIAgent:
                         # Actionable guidance for common auth errors
                         if status_code in (401, 403) or "unauthorized" in error_msg or "forbidden" in error_msg or "permission" in error_msg:
                             self._vprint(f"{self.log_prefix}   💡 Your API key was rejected by the provider. Check:", force=True)
-                            self._vprint(f"{self.log_prefix}      • Is the key valid? Run: hermes setup", force=True)
+                            self._vprint(f"{self.log_prefix}      • Is the key valid? Run: morpheus setup", force=True)
                             self._vprint(f"{self.log_prefix}      • Does your account have access to {_model}?", force=True)
                             if "openrouter" in str(_base).lower():
                                 self._vprint(f"{self.log_prefix}      • Check credits: https://openrouter.ai/settings/credits", force=True)

@@ -41,7 +41,7 @@ At a high level:
 
 ```mermaid
 flowchart LR
-  user["User command\n(hermes, gateway)"]
+  user["User command\n(morpheus, gateway)"]
   agent["AIAgent\n(run_agent.py)"]
   tools["File & terminal tools"]
   cpMgr["CheckpointManager"]
@@ -189,7 +189,7 @@ Each `<hash>` is derived from the absolute path of the working directory. Inside
 
 - Standard git internals (`HEAD`, `refs/`, `objects/`)
 - An `info/exclude` file containing a curated ignore list
-- A `HERMES_WORKDIR` file pointing back to the original project root
+- A `MORPHEUS_WORKDIR` file pointing back to the original project root
 
 You normally never need to touch these manually.
 

@@ -3,7 +3,7 @@ name: agentmail
 description: Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. morpheus-agent@agentmail.to).
 version: 1.0.0
 metadata:
-  hermes:
+  morpheus:
     tags: [email, communication, agentmail, mcp]
     category: email
 ---
@@ -46,7 +46,7 @@ mcp_servers:
 
 ### 3. Restart Morpheus
 ```bash
-hermes
+morpheus
 ```
 All 11 AgentMail tools are now available automatically.
 
@@ -99,7 +99,7 @@ All 11 AgentMail tools are now available automatically.
 
 **Agent-to-human outreach:**
 ```
-1. create_inbox (username: "hermes-outreach")
+1. create_inbox (username: "morpheus-outreach")
 2. send_message (to: user@example.com, subject: "Hello", text: "...")
 3. list_threads to check for replies
 ```
@@ -114,7 +114,7 @@ All 11 AgentMail tools are now available automatically.
 ## Verification
 After setup, test with:
 ```
-hermes --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
+morpheus --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
 ```
 You should see the new inbox address returned.
 

@@ -14,7 +14,7 @@ The agent processes the event and can respond by posting comments on PRs, sendin
 
 ## Quick Start
 
-1. Enable via `hermes gateway setup` or environment variables
+1. Enable via `morpheus gateway setup` or environment variables
 2. Define webhook routes in `config.yaml`
 3. Point your service at `http://your-server:8644/webhooks/<route-name>`
 
@@ -27,7 +27,7 @@ There are two ways to enable the webhook adapter.
 ### Via setup wizard
 
 ```bash
-hermes gateway setup
+morpheus gateway setup
 ```
 
 Follow the prompts to enable webhooks, set the port, and set a global HMAC secret.
@@ -284,7 +284,7 @@ Webhook payloads contain attacker-controlled data — PR titles, commit messages
 
 ### Agent not responding
 
-- Run the gateway in foreground to see logs: `hermes gateway run`
+- Run the gateway in foreground to see logs: `morpheus gateway run`
 - Check that the prompt template is rendering correctly
 - Verify the delivery target is configured and connected
 

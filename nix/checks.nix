@@ -7,17 +7,17 @@
   perSystem = { pkgs, system, lib, ... }:
     let
       morpheus-agent = inputs.self.packages.${system}.default;
-      hermesVenv = pkgs.callPackage ./python.nix {
+      morpheusVenv = pkgs.callPackage ./python.nix {
         inherit (inputs) uv2nix pyproject-nix pyproject-build-systems;
       };
 
       configMergeScript = pkgs.callPackage ./configMergeScript.nix { };
 
       # Auto-generated config key reference — always in sync with Python
-      configKeys = pkgs.runCommand "hermes-config-keys" {} ''
+      configKeys = pkgs.runCommand "morpheus-config-keys" {} ''
         set -euo pipefail
         export HOME=$TMPDIR
-        ${hermesVenv}/bin/python3 -c '
+        ${morpheusVenv}/bin/python3 -c '
 import json, sys
 from morpheus_cli.config import DEFAULT_CONFIG
 
@@ -39,15 +39,15 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
       checks = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
         # Verify binaries exist and are executable
-        package-contents = pkgs.runCommand "hermes-package-contents" { } ''
+        package-contents = pkgs.runCommand "morpheus-package-contents" { } ''
           set -e
           echo "=== Checking binaries ==="
-          test -x ${morpheus-agent}/bin/hermes || (echo "FAIL: hermes binary missing"; exit 1)
+          test -x ${morpheus-agent}/bin/morpheus || (echo "FAIL: morpheus binary missing"; exit 1)
           test -x ${morpheus-agent}/bin/morpheus-agent || (echo "FAIL: morpheus-agent binary missing"; exit 1)
           echo "PASS: All binaries present"
 
           echo "=== Checking version ==="
-          ${morpheus-agent}/bin/hermes version 2>&1 | grep -qi "hermes" || (echo "FAIL: version check"; exit 1)
+          ${morpheus-agent}/bin/morpheus version 2>&1 | grep -qi "morpheus" || (echo "FAIL: version check"; exit 1)
           echo "PASS: Version check"
 
           echo "=== All checks passed ==="
@@ -56,10 +56,10 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify every pyproject.toml [project.scripts] entry has a wrapped binary
-        entry-points-sync = pkgs.runCommand "hermes-entry-points-sync" { } ''
+        entry-points-sync = pkgs.runCommand "morpheus-entry-points-sync" { } ''
           set -e
           echo "=== Checking entry points match pyproject.toml [project.scripts] ==="
-          for bin in hermes morpheus-agent hermes-acp; do
+          for bin in morpheus morpheus-agent morpheus-acp; do
             test -x ${morpheus-agent}/bin/$bin || (echo "FAIL: $bin binary missing from Nix package"; exit 1)
             echo "PASS: $bin present"
           done
@@ -69,13 +69,13 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify CLI subcommands are accessible
-        cli-commands = pkgs.runCommand "hermes-cli-commands" { } ''
+        cli-commands = pkgs.runCommand "morpheus-cli-commands" { } ''
           set -e
           export HOME=$(mktemp -d)
 
-          echo "=== Checking hermes --help ==="
-          ${morpheus-agent}/bin/hermes --help 2>&1 | grep -q "gateway" || (echo "FAIL: gateway subcommand missing"; exit 1)
-          ${morpheus-agent}/bin/hermes --help 2>&1 | grep -q "config" || (echo "FAIL: config subcommand missing"; exit 1)
+          echo "=== Checking morpheus --help ==="
+          ${morpheus-agent}/bin/morpheus --help 2>&1 | grep -q "gateway" || (echo "FAIL: gateway subcommand missing"; exit 1)
+          ${morpheus-agent}/bin/morpheus --help 2>&1 | grep -q "config" || (echo "FAIL: config subcommand missing"; exit 1)
           echo "PASS: All subcommands accessible"
 
           echo "=== All CLI checks passed ==="
@@ -84,7 +84,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         '';
 
         # Verify bundled skills are present in the package
-        bundled-skills = pkgs.runCommand "hermes-bundled-skills" { } ''
+        bundled-skills = pkgs.runCommand "morpheus-bundled-skills" { } ''
           set -e
           echo "=== Checking bundled skills ==="
           test -d ${morpheus-agent}/share/morpheus-agent/skills || (echo "FAIL: skills directory missing"; exit 1)
@@ -94,31 +94,31 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           test "$SKILL_COUNT" -gt 0 || (echo "FAIL: no SKILL.md files found in skills directory"; exit 1)
           echo "PASS: $SKILL_COUNT bundled skills found"
 
-          grep -q "HERMES_BUNDLED_SKILLS" ${morpheus-agent}/bin/hermes || \
-            (echo "FAIL: HERMES_BUNDLED_SKILLS not in wrapper"; exit 1)
-          echo "PASS: HERMES_BUNDLED_SKILLS set in wrapper"
+          grep -q "MORPHEUS_BUNDLED_SKILLS" ${morpheus-agent}/bin/morpheus || \
+            (echo "FAIL: MORPHEUS_BUNDLED_SKILLS not in wrapper"; exit 1)
+          echo "PASS: MORPHEUS_BUNDLED_SKILLS set in wrapper"
 
           echo "=== All bundled skills checks passed ==="
           mkdir -p $out
           echo "ok" > $out/result
         '';
 
-        # Verify HERMES_MANAGED guard works on all mutation commands
-        managed-guard = pkgs.runCommand "hermes-managed-guard" { } ''
+        # Verify MORPHEUS_MANAGED guard works on all mutation commands
+        managed-guard = pkgs.runCommand "morpheus-managed-guard" { } ''
           set -e
           export HOME=$(mktemp -d)
 
           check_blocked() {
             local label="$1"
             shift
-            OUTPUT=$(HERMES_MANAGED=true "$@" 2>&1 || true)
+            OUTPUT=$(MORPHEUS_MANAGED=true "$@" 2>&1 || true)
             echo "$OUTPUT" | grep -q "managed by NixOS" || (echo "FAIL: $label not guarded"; echo "$OUTPUT"; exit 1)
             echo "PASS: $label blocked in managed mode"
           }
 
-          echo "=== Checking HERMES_MANAGED guards ==="
-          check_blocked "config set" ${morpheus-agent}/bin/hermes config set model foo
-          check_blocked "config edit" ${morpheus-agent}/bin/hermes config edit
+          echo "=== Checking MORPHEUS_MANAGED guards ==="
+          check_blocked "config set" ${morpheus-agent}/bin/morpheus config set model foo
+          check_blocked "config edit" ${morpheus-agent}/bin/morpheus config edit
 
           echo "=== All guard checks passed ==="
           mkdir -p $out
@@ -185,7 +185,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
                 - USER_VAR
           '';
 
-        in pkgs.runCommand "hermes-config-roundtrip" {
+        in pkgs.runCommand "morpheus-config-roundtrip" {
           nativeBuildInputs = [ pkgs.jq ];
         } ''
           set -e
@@ -196,10 +196,10 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
           # Helper: run merge then load with Python, output merged JSON
           merge_and_load() {
-            local hermes_home="$1"
-            export HERMES_HOME="$hermes_home"
-            ${configMergeScript} ${nixSettings} "$hermes_home/config.yaml"
-            ${hermesVenv}/bin/python3 -c '
+            local morpheus_home="$1"
+            export MORPHEUS_HOME="$morpheus_home"
+            ${configMergeScript} ${nixSettings} "$morpheus_home/config.yaml"
+            ${morpheusVenv}/bin/python3 -c '
 import json, sys
 from morpheus_cli.config import load_config
 json.dump(load_config(), sys.stdout, default=str)

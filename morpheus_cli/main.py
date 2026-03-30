@@ -3,44 +3,44 @@
 Morpheus CLI - Main entry point.
 
 Usage:
-    hermes                     # Interactive chat (default)
-    hermes chat                # Interactive chat
-    hermes gateway             # Run gateway in foreground
-    hermes gateway start       # Start gateway as service
-    hermes gateway stop        # Stop gateway service
-    hermes gateway status      # Show gateway status
-    hermes gateway install     # Install gateway service
-    hermes gateway uninstall   # Uninstall gateway service
-    hermes setup               # Interactive setup wizard
-    hermes logout              # Clear stored authentication
-    hermes status              # Show status of all components
-    hermes cron                # Manage cron jobs
-    hermes cron list           # List cron jobs
-    hermes cron status         # Check if cron scheduler is running
-    hermes doctor              # Check configuration and dependencies
-    hermes honcho setup                    # Configure Honcho AI memory integration
-    hermes honcho status                   # Show Honcho config and connection status
-    hermes honcho sessions                 # List directory → session name mappings
-    hermes honcho map <name>               # Map current directory to a session name
-    hermes honcho peer                     # Show peer names and dialectic settings
-    hermes honcho peer --user NAME         # Set user peer name
-    hermes honcho peer --ai NAME           # Set AI peer name
-    hermes honcho peer --reasoning LEVEL   # Set dialectic reasoning level
-    hermes honcho mode                     # Show current memory mode
-    hermes honcho mode [hybrid|honcho|local]  # Set memory mode
-    hermes honcho tokens                   # Show token budget settings
-    hermes honcho tokens --context N       # Set session.context() token cap
-    hermes honcho tokens --dialectic N     # Set dialectic result char cap
-    hermes honcho identity                 # Show AI peer identity representation
-    hermes honcho identity <file>          # Seed AI peer identity from a file (SOUL.md etc.)
-    hermes honcho migrate                  # Step-by-step migration guide: OpenClaw native → Morpheus + Honcho
-    hermes version             Show version
-    hermes update              Update to latest version
-    hermes uninstall           Uninstall Morpheus Agent
-    hermes acp                 Run as an ACP server for editor integration
-    hermes sessions browse     Interactive session picker with search
+    morpheus                     # Interactive chat (default)
+    morpheus chat                # Interactive chat
+    morpheus gateway             # Run gateway in foreground
+    morpheus gateway start       # Start gateway as service
+    morpheus gateway stop        # Stop gateway service
+    morpheus gateway status      # Show gateway status
+    morpheus gateway install     # Install gateway service
+    morpheus gateway uninstall   # Uninstall gateway service
+    morpheus setup               # Interactive setup wizard
+    morpheus logout              # Clear stored authentication
+    morpheus status              # Show status of all components
+    morpheus cron                # Manage cron jobs
+    morpheus cron list           # List cron jobs
+    morpheus cron status         # Check if cron scheduler is running
+    morpheus doctor              # Check configuration and dependencies
+    morpheus honcho setup                    # Configure Honcho AI memory integration
+    morpheus honcho status                   # Show Honcho config and connection status
+    morpheus honcho sessions                 # List directory → session name mappings
+    morpheus honcho map <name>               # Map current directory to a session name
+    morpheus honcho peer                     # Show peer names and dialectic settings
+    morpheus honcho peer --user NAME         # Set user peer name
+    morpheus honcho peer --ai NAME           # Set AI peer name
+    morpheus honcho peer --reasoning LEVEL   # Set dialectic reasoning level
+    morpheus honcho mode                     # Show current memory mode
+    morpheus honcho mode [hybrid|honcho|local]  # Set memory mode
+    morpheus honcho tokens                   # Show token budget settings
+    morpheus honcho tokens --context N       # Set session.context() token cap
+    morpheus honcho tokens --dialectic N     # Set dialectic result char cap
+    morpheus honcho identity                 # Show AI peer identity representation
+    morpheus honcho identity <file>          # Seed AI peer identity from a file (SOUL.md etc.)
+    morpheus honcho migrate                  # Step-by-step migration guide: OpenClaw native → Morpheus + Honcho
+    morpheus version             Show version
+    morpheus update              Update to latest version
+    morpheus uninstall           Uninstall Morpheus Agent
+    morpheus acp                 Run as an ACP server for editor integration
+    morpheus sessions browse     Interactive session picker with search
 
-    hermes claw migrate --dry-run  # Preview migration without changes
+    morpheus claw migrate --dry-run  # Preview migration without changes
 """
 
 import argparse
@@ -57,8 +57,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 # Load .env from ~/.morpheus/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
 from morpheus_cli.config import get_morpheus_home
-from morpheus_cli.env_loader import load_hermes_dotenv
-load_hermes_dotenv(project_env=PROJECT_ROOT / '.env')
+from morpheus_cli.env_loader import load_morpheus_dotenv
+load_morpheus_dotenv(project_env=PROJECT_ROOT / '.env')
 
 
 import logging
@@ -448,7 +448,7 @@ def cmd_chat(args):
                 args.resume = resolved
             else:
                 print(f"No session found matching '{continue_val}'.")
-                print("Use 'hermes sessions list' to see available sessions.")
+                print("Use 'morpheus sessions list' to see available sessions.")
                 sys.exit(1)
         else:
             # -c with no argument — continue the most recent session
@@ -473,7 +473,7 @@ def cmd_chat(args):
         print()
         print("It looks like Morpheus isn't configured yet -- no API keys or providers found.")
         print()
-        print("  Run:  hermes setup")
+        print("  Run:  morpheus setup")
         print()
 
         from morpheus_cli.setup import is_interactive_stdin, print_noninteractive_setup_guidance
@@ -492,7 +492,7 @@ def cmd_chat(args):
             cmd_setup(args)
             return
         print()
-        print("You can run 'hermes setup' at any time to configure.")
+        print("You can run 'morpheus setup' at any time to configure.")
         sys.exit(1)
 
     # Start update check in background (runs while other init happens)
@@ -511,11 +511,11 @@ def cmd_chat(args):
 
     # --yolo: bypass all dangerous command approvals
     if getattr(args, "yolo", False):
-        os.environ["HERMES_YOLO_MODE"] = "1"
+        os.environ["MORPHEUS_YOLO_MODE"] = "1"
 
     # --source: tag session source for filtering (e.g. 'tool' for third-party integrations)
     if getattr(args, "source", None):
-        os.environ["HERMES_SESSION_SOURCE"] = args.source
+        os.environ["MORPHEUS_SESSION_SOURCE"] = args.source
 
     # Import and run the CLI
     from cli import main as cli_main
@@ -686,7 +686,7 @@ def cmd_whatsapp(args):
             print("  ✓ Session cleared")
         else:
             print("\n✓ WhatsApp is configured and paired!")
-            print("  Start the gateway with: hermes gateway")
+            print("  Start the gateway with: morpheus gateway")
             return
 
     # ── Step 6: QR code pairing ──────────────────────────────────────────
@@ -717,23 +717,23 @@ def cmd_whatsapp(args):
         print()
         if wa_mode == "bot":
             print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
+            print("    1. Start the gateway:  morpheus gateway")
             print("    2. Send a message to the bot's WhatsApp number")
             print("    3. The agent will reply automatically")
             print()
             print("  Tip: Agent responses are prefixed with '⚕ Morpheus Agent'")
         else:
             print("  Next steps:")
-            print("    1. Start the gateway:  hermes gateway")
+            print("    1. Start the gateway:  morpheus gateway")
             print("    2. Open WhatsApp → Message Yourself")
             print("    3. Type a message — the agent will reply")
             print()
             print("  Tip: Agent responses are prefixed with '⚕ Morpheus Agent'")
             print("  so you can tell them apart from your own messages.")
         print()
-        print("  Or install as a service: hermes gateway install")
+        print("  Or install as a service: morpheus gateway install")
     else:
-        print("⚠ Pairing may not have completed. Run 'hermes whatsapp' to try again.")
+        print("⚠ Pairing may not have completed. Run 'morpheus whatsapp' to try again.")
 
 
 def cmd_setup(args):
@@ -765,7 +765,7 @@ def cmd_model(args):
 
     effective_provider = (
         config_provider
-        or os.getenv("HERMES_INFERENCE_PROVIDER")
+        or os.getenv("MORPHEUS_INFERENCE_PROVIDER")
         or "auto"
     )
     try:
@@ -1210,7 +1210,7 @@ def _model_flow_custom(config):
     else:
         if base_url or api_key:
             deactivate_provider()
-        print("Endpoint saved. Use `/model` in chat or `hermes model` to set a model.")
+        print("Endpoint saved. Use `/model` in chat or `morpheus model` to set a model.")
 
     # Auto-save to custom_providers so it appears in the menu next time
     _save_custom_provider(effective_url, effective_key, model_name or "", context_length=context_length)
@@ -1825,7 +1825,7 @@ def _model_flow_copilot_acp(config, current_model=""):
         creds = resolve_external_process_provider_credentials(provider_id)
     except Exception as exc:
         print(f"  ⚠ {exc}")
-        print("  Set HERMES_COPILOT_ACP_COMMAND or COPILOT_CLI_PATH if Copilot CLI is installed elsewhere.")
+        print("  Set MORPHEUS_COPILOT_ACP_COMMAND or COPILOT_CLI_PATH if Copilot CLI is installed elsewhere.")
         return
 
     effective_base = creds.get("base_url") or effective_base
@@ -2165,7 +2165,7 @@ def _run_anthropic_oauth_flow(save_env_value):
         print("    1. Install Claude Code:  npm install -g @anthropic-ai/claude-code")
         print("    2. Run:                  claude setup-token")
         print("    3. Follow the browser prompts to authorize")
-        print("    4. Re-run:               hermes model")
+        print("    4. Re-run:               morpheus model")
         print()
         print("  Or paste an existing setup-token now (sk-ant-oat-...):")
         print()
@@ -2299,7 +2299,7 @@ def _model_flow_anthropic(config, current_model=""):
         # Update config with provider — clear base_url since
         # resolve_runtime_provider() always hardcodes Anthropic's URL.
         # Leaving a stale base_url in config can contaminate other
-        # providers if the user switches without running 'hermes model'.
+        # providers if the user switches without running 'morpheus model'.
         cfg = load_config()
         model = cfg.get("model")
         if not isinstance(model, dict):
@@ -2372,7 +2372,7 @@ def cmd_version(args):
         behind = check_for_updates()
         if behind and behind > 0:
             commits_word = "commit" if behind == 1 else "commits"
-            print(f"Update available: {behind} {commits_word} behind — run 'hermes update'")
+            print(f"Update available: {behind} {commits_word} behind — run 'morpheus update'")
         elif behind == 0:
             print("Up to date")
     except Exception:
@@ -2401,7 +2401,7 @@ def _update_via_zip(args):
     
     print("→ Downloading latest version...")
     try:
-        tmp_dir = tempfile.mkdtemp(prefix="hermes-update-")
+        tmp_dir = tempfile.mkdtemp(prefix="morpheus-update-")
         zip_path = os.path.join(tmp_dir, f"morpheus-agent-{branch}.zip")
         urlretrieve(zip_url, zip_path)
         
@@ -2513,7 +2513,7 @@ def _stash_local_changes_if_needed(git_cmd: list[str], cwd: Path) -> Optional[st
 
     from datetime import datetime, timezone
 
-    stash_name = datetime.now(timezone.utc).strftime("hermes-update-autostash-%Y%m%d-%H%M%S")
+    stash_name = datetime.now(timezone.utc).strftime("morpheus-update-autostash-%Y%m%d-%H%M%S")
     print("→ Local changes detected — stashing before update...")
     subprocess.run(
         git_cmd + ["stash", "push", "--include-untracked", "-m", stash_name],
@@ -2660,7 +2660,7 @@ def _restore_stashed_changes(
     return True
 
 def _invalidate_update_cache():
-    """Delete the update-check cache so ``hermes --version`` doesn't
+    """Delete the update-check cache so ``morpheus --version`` doesn't
     report a stale "commits behind" count after a successful update."""
     try:
         cache_file = Path(os.getenv(
@@ -2858,7 +2858,7 @@ def cmd_update(args):
                     print("✓ Configuration updated!")
             else:
                 print()
-                print("Skipped. Run 'hermes config migrate' later to configure.")
+                print("Skipped. Run 'morpheus config migrate' later to configure.")
         else:
             print("  ✓ Configuration is up to date")
         
@@ -2898,7 +2898,7 @@ def cmd_update(args):
                     plist_path = get_launchd_plist_path()
                     if plist_path.exists():
                         check = subprocess.run(
-                            ["launchctl", "list", "ai.hermes.gateway"],
+                            ["launchctl", "list", "ai.morpheus.gateway"],
                             capture_output=True, text=True, timeout=5,
                         )
                         has_launchd_service = check.returncode == 0
@@ -2943,9 +2943,9 @@ def cmd_update(args):
                                 print(f"  Run:  sudo loginctl enable-linger {_username}")
                                 print()
                                 print("  Then restart the gateway:")
-                                print("    hermes gateway restart")
+                                print("    morpheus gateway restart")
                             else:
-                                print("  Try manually: hermes gateway restart")
+                                print("  Try manually: morpheus gateway restart")
                 elif has_launchd_service:
                     # Refresh the plist first (picks up --replace and other
                     # changes from the update we just pulled).
@@ -2955,18 +2955,18 @@ def cmd_update(args):
                     # PID file cleanup.
                     print("→ Restarting gateway service...")
                     stop = subprocess.run(
-                        ["launchctl", "stop", "ai.hermes.gateway"],
+                        ["launchctl", "stop", "ai.morpheus.gateway"],
                         capture_output=True, text=True, timeout=10,
                     )
                     start = subprocess.run(
-                        ["launchctl", "start", "ai.hermes.gateway"],
+                        ["launchctl", "start", "ai.morpheus.gateway"],
                         capture_output=True, text=True, timeout=10,
                     )
                     if start.returncode == 0:
                         print("✓ Gateway restarted via launchd.")
                     else:
                         print(f"⚠ Gateway restart failed: {start.stderr.strip()}")
-                        print("  Try manually: hermes gateway restart")
+                        print("  Try manually: morpheus gateway restart")
                 elif existing_pid:
                     try:
                         os.kill(existing_pid, _signal.SIGTERM)
@@ -2977,13 +2977,13 @@ def cmd_update(args):
                         print(f"⚠ Permission denied killing gateway PID {existing_pid}")
                     remove_pid_file()
                     print("  ℹ️  Gateway was running manually (not as a service).")
-                    print("  Restart it with: hermes gateway run")
+                    print("  Restart it with: morpheus gateway run")
         except Exception as e:
             logger.debug("Gateway restart during update failed: %s", e)
         
         print()
         print("Tip: You can now select a provider and model:")
-        print("  hermes model              # Select provider and model")
+        print("  morpheus model              # Select provider and model")
         
     except subprocess.CalledProcessError as e:
         if sys.platform == "win32":
@@ -2999,7 +2999,7 @@ def cmd_update(args):
 def _coalesce_session_name_args(argv: list) -> list:
     """Join unquoted multi-word session names after -c/--continue and -r/--resume.
 
-    When a user types ``hermes -c Pokemon Agent Dev`` without quoting the
+    When a user types ``morpheus -c Pokemon Agent Dev`` without quoting the
     session name, argparse sees three separate tokens.  This function merges
     them into a single argument so argparse receives
     ``['-c', 'Pokemon Agent Dev']`` instead.
@@ -3035,35 +3035,35 @@ def _coalesce_session_name_args(argv: list) -> list:
 
 
 def main():
-    """Main entry point for hermes CLI."""
+    """Main entry point for morpheus CLI."""
     parser = argparse.ArgumentParser(
         prog="morpheus",
         description="Morpheus Agent - AI assistant with tool-calling capabilities",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-    hermes                        Start interactive chat
-    hermes chat -q "Hello"        Single query mode
-    hermes -c                     Resume the most recent session
-    hermes -c "my project"        Resume a session by name (latest in lineage)
-    hermes --resume <session_id>  Resume a specific session by ID
-    hermes setup                  Run setup wizard
-    hermes logout                 Clear stored authentication
-    hermes model                  Select default model
-    hermes config                 View configuration
-    hermes config edit            Edit config in $EDITOR
-    hermes config set model gpt-4 Set a config value
-    hermes gateway                Run messaging gateway
-    hermes -s morpheus-agent-dev,github-auth
-    hermes -w                     Start in isolated git worktree
-    hermes gateway install        Install gateway background service
-    hermes sessions list          List past sessions
-    hermes sessions browse        Interactive session picker
-    hermes sessions rename ID T   Rename/title a session
-    hermes update                 Update to latest version
+    morpheus                        Start interactive chat
+    morpheus chat -q "Hello"        Single query mode
+    morpheus -c                     Resume the most recent session
+    morpheus -c "my project"        Resume a session by name (latest in lineage)
+    morpheus --resume <session_id>  Resume a specific session by ID
+    morpheus setup                  Run setup wizard
+    morpheus logout                 Clear stored authentication
+    morpheus model                  Select default model
+    morpheus config                 View configuration
+    morpheus config edit            Edit config in $EDITOR
+    morpheus config set model gpt-4 Set a config value
+    morpheus gateway                Run messaging gateway
+    morpheus -s morpheus-agent-dev,github-auth
+    morpheus -w                     Start in isolated git worktree
+    morpheus gateway install        Install gateway background service
+    morpheus sessions list          List past sessions
+    morpheus sessions browse        Interactive session picker
+    morpheus sessions rename ID T   Rename/title a session
+    morpheus update                 Update to latest version
 
 For more help on a command:
-    hermes <command> --help
+    morpheus <command> --help
 """
     )
     
@@ -3266,7 +3266,7 @@ For more help on a command:
         "setup",
         help="Interactive setup wizard",
         description="Configure Morpheus Agent with an interactive wizard. "
-                    "Run a specific section: hermes setup model|terminal|gateway|tools|agent"
+                    "Run a specific section: morpheus setup model|terminal|gateway|tools|agent"
     )
     setup_parser.add_argument(
         "section",
@@ -3322,7 +3322,7 @@ For more help on a command:
     login_parser.add_argument(
         "--client-id",
         default=None,
-        help="OAuth client id to use (default: hermes-cli)"
+        help="OAuth client id to use (default: morpheus-cli)"
     )
     login_parser.add_argument(
         "--scope",
@@ -3618,7 +3618,7 @@ For more help on a command:
     )
     plugins_install.add_argument(
         "identifier",
-        help="Git URL or owner/repo shorthand (e.g. anpicasso/hermes-plugin-chrome-profiles)",
+        help="Git URL or owner/repo shorthand (e.g. anpicasso/morpheus-plugin-chrome-profiles)",
     )
     plugins_install.add_argument(
         "--force", "-f", action="store_true",
@@ -3741,7 +3741,7 @@ For more help on a command:
             "Enable, disable, or list tools for CLI, Telegram, Discord, etc.\n\n"
             "Built-in toolsets use plain names (e.g. web, memory).\n"
             "MCP tools use server:tool notation (e.g. github:create_issue).\n\n"
-            "Run 'hermes tools' with no subcommand for the interactive configuration UI."
+            "Run 'morpheus tools' with no subcommand for the interactive configuration UI."
         ),
     )
     tools_parser.add_argument(
@@ -3751,7 +3751,7 @@ For more help on a command:
     )
     tools_sub = tools_parser.add_subparsers(dest="tools_action")
 
-    # hermes tools list [--platform cli]
+    # morpheus tools list [--platform cli]
     tools_list_p = tools_sub.add_parser(
         "list",
         help="Show all tools and their enabled/disabled status",
@@ -3761,7 +3761,7 @@ For more help on a command:
         help="Platform to show (default: cli)",
     )
 
-    # hermes tools disable <name...> [--platform cli]
+    # morpheus tools disable <name...> [--platform cli]
     tools_disable_p = tools_sub.add_parser(
         "disable",
         help="Disable toolsets or MCP tools",
@@ -3775,7 +3775,7 @@ For more help on a command:
         help="Platform to apply to (default: cli)",
     )
 
-    # hermes tools enable <name...> [--platform cli]
+    # morpheus tools enable <name...> [--platform cli]
     tools_enable_p = tools_sub.add_parser(
         "enable",
         help="Enable toolsets or MCP tools",
@@ -3808,8 +3808,8 @@ For more help on a command:
         description=(
             "Add, remove, list, test, and configure MCP server connections.\n\n"
             "MCP servers provide additional tools via the Model Context Protocol.\n"
-            "Use 'hermes mcp add' to connect to a new server with interactive\n"
-            "tool discovery. Run 'hermes mcp' with no subcommand to list servers."
+            "Use 'morpheus mcp add' to connect to a new server with interactive\n"
+            "tool discovery. Run 'morpheus mcp' with no subcommand to list servers."
         ),
     )
     mcp_sub = mcp_parser.add_subparsers(dest="mcp_action")
@@ -3997,12 +3997,12 @@ For more help on a command:
                 print("Cancelled.")
                 return
 
-            # Launch hermes --resume <id> by replacing the current process
+            # Launch morpheus --resume <id> by replacing the current process
             print(f"Resuming session: {selected_id}")
             import shutil
-            hermes_bin = shutil.which("morpheus")
-            if hermes_bin:
-                os.execvp(hermes_bin, ["morpheus", "--resume", selected_id])
+            morpheus_bin = shutil.which("morpheus")
+            if morpheus_bin:
+                os.execvp(morpheus_bin, ["morpheus", "--resume", selected_id])
             else:
                 # Fallback: re-invoke via python -m
                 os.execvp(
@@ -4186,7 +4186,7 @@ For more help on a command:
     # =========================================================================
     # Pre-process argv so unquoted multi-word session names after -c / -r
     # are merged into a single token before argparse sees them.
-    # e.g. ``hermes -c Pokemon Agent Dev`` → ``hermes -c 'Pokemon Agent Dev'``
+    # e.g. ``morpheus -c Pokemon Agent Dev`` → ``morpheus -c 'Pokemon Agent Dev'``
     _processed_argv = _coalesce_session_name_args(sys.argv[1:])
     args = parser.parse_args(_processed_argv)
     

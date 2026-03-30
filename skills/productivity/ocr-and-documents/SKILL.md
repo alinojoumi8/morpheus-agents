@@ -5,7 +5,7 @@ version: 2.3.0
 author: Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [PDF, Documents, Research, Arxiv, Text-Extraction, OCR]
     related_skills: [powerpoint]
 ---

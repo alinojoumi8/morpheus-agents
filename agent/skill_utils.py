@@ -121,7 +121,7 @@ def skill_matches_platform(frontmatter: Dict[str, Any]) -> bool:
 def get_disabled_skill_names() -> Set[str]:
     """Read disabled skill names from config.yaml.
 
-    Resolves platform from ``HERMES_PLATFORM`` env var, falls back to
+    Resolves platform from ``MORPHEUS_PLATFORM`` env var, falls back to
     the global disabled list.  Reads the config file directly (no CLI
     config imports) to stay lightweight.
     """
@@ -140,7 +140,7 @@ def get_disabled_skill_names() -> Set[str]:
     if not isinstance(skills_cfg, dict):
         return set()
 
-    resolved_platform = os.getenv("HERMES_PLATFORM")
+    resolved_platform = os.getenv("MORPHEUS_PLATFORM")
     if resolved_platform:
         platform_disabled = (skills_cfg.get("platform_disabled") or {}).get(
             resolved_platform
@@ -163,12 +163,12 @@ def _normalize_string_set(values) -> Set[str]:
 
 def extract_skill_conditions(frontmatter: Dict[str, Any]) -> Dict[str, List]:
     """Extract conditional activation fields from parsed frontmatter."""
-    hermes = (frontmatter.get("metadata") or {}).get("morpheus") or {}
+    morpheus = (frontmatter.get("metadata") or {}).get("morpheus") or {}
     return {
-        "fallback_for_toolsets": hermes.get("fallback_for_toolsets", []),
-        "requires_toolsets": hermes.get("requires_toolsets", []),
-        "fallback_for_tools": hermes.get("fallback_for_tools", []),
-        "requires_tools": hermes.get("requires_tools", []),
+        "fallback_for_toolsets": morpheus.get("fallback_for_toolsets", []),
+        "requires_toolsets": morpheus.get("requires_toolsets", []),
+        "fallback_for_tools": morpheus.get("fallback_for_tools", []),
+        "requires_tools": morpheus.get("requires_tools", []),
     }
 
 

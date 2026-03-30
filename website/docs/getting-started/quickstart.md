@@ -32,18 +32,18 @@ source ~/.bashrc   # or source ~/.zshrc
 The installer configures your LLM provider automatically. To change it later, use one of these commands:
 
 ```bash
-hermes model       # Choose your LLM provider and model
-hermes tools       # Configure which tools are enabled
-hermes setup       # Or configure everything at once
+morpheus model       # Choose your LLM provider and model
+morpheus tools       # Configure which tools are enabled
+morpheus setup       # Or configure everything at once
 ```
 
-`hermes model` walks you through selecting an inference provider:
+`morpheus model` walks you through selecting an inference provider:
 
 | Provider | What it is | How to set up |
 |----------|-----------|---------------|
-| **Nous Portal** | Subscription-based, zero-config | OAuth login via `hermes model` |
-| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `hermes model` |
-| **Anthropic** | Claude models directly (Pro/Max or API key) | `hermes model` with Claude Code auth, or an Anthropic API key |
+| **Nous Portal** | Subscription-based, zero-config | OAuth login via `morpheus model` |
+| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `morpheus model` |
+| **Anthropic** | Claude models directly (Pro/Max or API key) | `morpheus model` with Claude Code auth, or an Anthropic API key |
 | **OpenRouter** | Multi-provider routing across many models | Enter your API key |
 | **Z.AI** | GLM / Zhipu-hosted models | Set `GLM_API_KEY` / `ZAI_API_KEY` |
 | **Kimi / Moonshot** | Moonshot-hosted coding and chat models | Set `KIMI_API_KEY` |
@@ -58,13 +58,13 @@ hermes setup       # Or configure everything at once
 | **Custom Endpoint** | VLLM, SGLang, Ollama, or any OpenAI-compatible API | Set base URL + API key |
 
 :::tip
-You can switch providers at any time with `hermes model` — no code changes, no lock-in. When configuring a custom endpoint, Morpheus will prompt for the context window size and auto-detect it when possible. See [Context Length Detection](../user-guide/configuration.md#context-length-detection) for details.
+You can switch providers at any time with `morpheus model` — no code changes, no lock-in. When configuring a custom endpoint, Morpheus will prompt for the context window size and auto-detect it when possible. See [Context Length Detection](../user-guide/configuration.md#context-length-detection) for details.
 :::
 
 ## 3. Start Chatting
 
 ```bash
-hermes
+morpheus
 ```
 
 That's it! You'll see a welcome banner with your model, available tools, and skills. Type a message and press Enter.
@@ -107,11 +107,11 @@ If the agent is taking too long, just type a new message and press Enter — it 
 
 ### Resume a session
 
-When you exit, hermes prints a resume command:
+When you exit, morpheus prints a resume command:
 
 ```bash
-hermes --continue    # Resume the most recent session
-hermes -c            # Short form
+morpheus --continue    # Resume the most recent session
+morpheus -c            # Short form
 ```
 
 ## 5. Explore Further
@@ -123,8 +123,8 @@ Here are some things to try next:
 For safety, run the agent in a Docker container or on a remote server:
 
 ```bash
-hermes config set terminal.backend docker    # Docker isolation
-hermes config set terminal.backend ssh       # Remote server
+morpheus config set terminal.backend docker    # Docker isolation
+morpheus config set terminal.backend ssh       # Remote server
 ```
 
 ### Connect messaging platforms
@@ -132,7 +132,7 @@ hermes config set terminal.backend ssh       # Remote server
 Chat with Morpheus from your phone or other surfaces via Telegram, Discord, Slack, WhatsApp, Signal, Email, or Home Assistant:
 
 ```bash
-hermes gateway setup    # Interactive platform configuration
+morpheus gateway setup    # Interactive platform configuration
 ```
 
 ### Add voice mode
@@ -165,12 +165,12 @@ The agent will set up a cron job that runs automatically via the gateway.
 ### Browse and install skills
 
 ```bash
-hermes skills search kubernetes
-hermes skills search react --source skills-sh
-hermes skills search https://mintlify.com/docs --source well-known
-hermes skills install openai/skills/k8s
-hermes skills install official/security/1password
-hermes skills install skills-sh/vercel-labs/json-render/json-render-react --force
+morpheus skills search kubernetes
+morpheus skills search react --source skills-sh
+morpheus skills search https://mintlify.com/docs --source well-known
+morpheus skills install openai/skills/k8s
+morpheus skills install official/security/1password
+morpheus skills install skills-sh/vercel-labs/json-render/json-render-react --force
 ```
 
 Tips:
@@ -186,7 +186,7 @@ Morpheus can also run as an ACP server for ACP-compatible editors like VS Code, 
 
 ```bash
 pip install -e '.[acp]'
-hermes acp
+morpheus acp
 ```
 
 See [ACP Editor Integration](../user-guide/features/acp.md) for setup details.
@@ -211,14 +211,14 @@ mcp_servers:
 
 | Command | Description |
 |---------|-------------|
-| `hermes` | Start chatting |
-| `hermes model` | Choose your LLM provider and model |
-| `hermes tools` | Configure which tools are enabled per platform |
-| `hermes setup` | Full setup wizard (configures everything at once) |
-| `hermes doctor` | Diagnose issues |
-| `hermes update` | Update to latest version |
-| `hermes gateway` | Start the messaging gateway |
-| `hermes --continue` | Resume last session |
+| `morpheus` | Start chatting |
+| `morpheus model` | Choose your LLM provider and model |
+| `morpheus tools` | Configure which tools are enabled per platform |
+| `morpheus setup` | Full setup wizard (configures everything at once) |
+| `morpheus doctor` | Diagnose issues |
+| `morpheus update` | Update to latest version |
+| `morpheus gateway` | Start the messaging gateway |
+| `morpheus --continue` | Resume last session |
 
 ## Next Steps
 

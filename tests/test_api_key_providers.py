@@ -125,8 +125,8 @@ PROVIDER_ENV_VARS = (
     "KILOCODE_API_KEY", "KILOCODE_BASE_URL",
     "DASHSCOPE_API_KEY", "OPENCODE_ZEN_API_KEY", "OPENCODE_GO_API_KEY",
     "NOUS_API_KEY", "GITHUB_TOKEN", "GH_TOKEN",
-    "OPENAI_BASE_URL", "HERMES_COPILOT_ACP_COMMAND", "COPILOT_CLI_PATH",
-    "HERMES_COPILOT_ACP_ARGS", "COPILOT_ACP_BASE_URL",
+    "OPENAI_BASE_URL", "MORPHEUS_COPILOT_ACP_COMMAND", "COPILOT_CLI_PATH",
+    "MORPHEUS_COPILOT_ACP_ARGS", "COPILOT_ACP_BASE_URL",
 )
 
 
@@ -316,7 +316,7 @@ class TestApiKeyProviderStatus:
         assert status["provider"] == "minimax"
 
     def test_copilot_acp_status_detects_local_cli(self, monkeypatch):
-        monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio --debug")
+        monkeypatch.setenv("MORPHEUS_COPILOT_ACP_ARGS", "--acp --stdio --debug")
         monkeypatch.setattr("morpheus_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
 
         status = get_external_process_provider_status("copilot-acp")
@@ -398,7 +398,7 @@ class TestResolveApiKeyProviderCredentials:
         assert calls == [["/opt/homebrew/bin/gh", "auth", "token"]]
 
     def test_resolve_copilot_acp_with_local_cli(self, monkeypatch):
-        monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio")
+        monkeypatch.setenv("MORPHEUS_COPILOT_ACP_ARGS", "--acp --stdio")
         monkeypatch.setattr("morpheus_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
 
         creds = resolve_external_process_provider_credentials("copilot-acp")
@@ -571,7 +571,7 @@ class TestRuntimeProviderResolution:
 
     def test_runtime_copilot_acp_uses_process_runtime(self, monkeypatch):
         monkeypatch.setattr("morpheus_cli.auth.shutil.which", lambda command: f"/usr/local/bin/{command}")
-        monkeypatch.setenv("HERMES_COPILOT_ACP_ARGS", "--acp --stdio --debug")
+        monkeypatch.setenv("MORPHEUS_COPILOT_ACP_ARGS", "--acp --stdio --debug")
 
         from morpheus_cli.runtime_provider import resolve_runtime_provider
 
@@ -594,30 +594,30 @@ class TestHasAnyProviderConfigured:
     def test_glm_key_counts(self, monkeypatch, tmp_path):
         from morpheus_cli import config as config_module
         monkeypatch.setenv("GLM_API_KEY", "test-key")
-        hermes_home = tmp_path / ".morpheus"
-        hermes_home.mkdir()
-        monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
-        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: hermes_home)
+        morpheus_home = tmp_path / ".morpheus"
+        morpheus_home.mkdir()
+        monkeypatch.setattr(config_module, "get_env_path", lambda: morpheus_home / ".env")
+        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: morpheus_home)
         from morpheus_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_minimax_key_counts(self, monkeypatch, tmp_path):
         from morpheus_cli import config as config_module
         monkeypatch.setenv("MINIMAX_API_KEY", "test-key")
-        hermes_home = tmp_path / ".morpheus"
-        hermes_home.mkdir()
-        monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
-        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: hermes_home)
+        morpheus_home = tmp_path / ".morpheus"
+        morpheus_home.mkdir()
+        monkeypatch.setattr(config_module, "get_env_path", lambda: morpheus_home / ".env")
+        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: morpheus_home)
         from morpheus_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 
     def test_gh_cli_token_counts(self, monkeypatch, tmp_path):
         from morpheus_cli import config as config_module
         monkeypatch.setattr("morpheus_cli.copilot_auth._try_gh_cli_token", lambda: "gho_cli_secret")
-        hermes_home = tmp_path / ".morpheus"
-        hermes_home.mkdir()
-        monkeypatch.setattr(config_module, "get_env_path", lambda: hermes_home / ".env")
-        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: hermes_home)
+        morpheus_home = tmp_path / ".morpheus"
+        morpheus_home.mkdir()
+        monkeypatch.setattr(config_module, "get_env_path", lambda: morpheus_home / ".env")
+        monkeypatch.setattr(config_module, "get_morpheus_home", lambda: morpheus_home)
         from morpheus_cli.main import _has_any_provider_configured
         assert _has_any_provider_configured() is True
 

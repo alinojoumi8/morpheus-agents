@@ -8,7 +8,7 @@ import pytest
 from tools.mcp_tool import MCPServerTask, _format_connect_error, _resolve_stdio_command
 
 
-def test_resolve_stdio_command_falls_back_to_hermes_node_bin(tmp_path):
+def test_resolve_stdio_command_falls_back_to_morpheus_node_bin(tmp_path):
     node_bin = tmp_path / "node" / "bin"
     node_bin.mkdir(parents=True)
     npx_path = node_bin / "npx"

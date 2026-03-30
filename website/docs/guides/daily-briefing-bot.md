@@ -29,10 +29,10 @@ Before starting, make sure you have:
 - **Morpheus Agent installed** — see the [Installation guide](/docs/getting-started/installation)
 - **Gateway running** — the gateway daemon handles cron execution:
   ```bash
-  hermes gateway install   # Install as a user service
-  sudo hermes gateway install --system   # Linux servers: boot-time system service
+  morpheus gateway install   # Install as a user service
+  sudo morpheus gateway install --system   # Linux servers: boot-time system service
   # or
-  hermes gateway           # Run in foreground
+  morpheus gateway           # Run in foreground
   ```
 - **Firecrawl API key** — set `FIRECRAWL_API_KEY` in your environment for web search
 - **Messaging configured** (optional but recommended) — [Telegram](/docs/user-guide/messaging/telegram) or Discord set up with a home channel
@@ -46,7 +46,7 @@ You can still follow this tutorial using `deliver: "local"`. Briefings will be s
 Before automating anything, let's make sure the briefing works. Start a chat session:
 
 ```bash
-hermes
+morpheus
 ```
 
 Then enter this prompt:
@@ -209,7 +209,7 @@ In chat:
 
 Or from the terminal:
 ```bash
-hermes cron list
+morpheus cron list
 ```
 
 You'll see output like:
@@ -240,15 +240,15 @@ Morpheus will use `cronjob(action="list")` to find it and `cronjob(action="remov
 Make sure the scheduler is actually running:
 
 ```bash
-hermes cron status
+morpheus cron status
 ```
 
 If the gateway isn't running, your jobs won't execute. Install it as a background service for reliability:
 
 ```bash
-hermes gateway install
+morpheus gateway install
 # or on Linux servers
-sudo hermes gateway install --system
+sudo morpheus gateway install --system
 ```
 
 ## Going Further

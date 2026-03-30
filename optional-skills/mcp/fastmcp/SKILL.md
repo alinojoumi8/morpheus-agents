@@ -5,7 +5,7 @@ version: 1.0.0
 author: Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [MCP, FastMCP, Python, Tools, Resources, Prompts, Deployment]
     homepage: https://gofastmcp.com
     related_skills: [native-mcp, mcporter]

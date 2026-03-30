@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from morpheus_cli import config as hermes_config
-from morpheus_cli import main as hermes_main
+from morpheus_cli import config as morpheus_config
+from morpheus_cli import main as morpheus_main
 
 
 def test_stash_local_changes_if_needed_returns_none_when_tree_clean(monkeypatch, tmp_path):
@@ -17,9 +17,9 @@ def test_stash_local_changes_if_needed_returns_none_when_tree_clean(monkeypatch,
             return SimpleNamespace(stdout="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    stash_ref = hermes_main._stash_local_changes_if_needed(["git"], tmp_path)
+    stash_ref = morpheus_main._stash_local_changes_if_needed(["git"], tmp_path)
 
     assert stash_ref is None
     assert [cmd[-2:] for cmd, _ in calls] == [["status", "--porcelain"]]
@@ -38,9 +38,9 @@ def test_stash_local_changes_if_needed_returns_specific_stash_commit(monkeypatch
             return SimpleNamespace(stdout="abc123\n", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    stash_ref = hermes_main._stash_local_changes_if_needed(["git"], tmp_path)
+    stash_ref = morpheus_main._stash_local_changes_if_needed(["git"], tmp_path)
 
     assert stash_ref == "abc123"
     assert calls[1][0][1:4] == ["stash", "push", "--include-untracked"]
@@ -55,9 +55,9 @@ def test_resolve_stash_selector_returns_matching_entry(monkeypatch, tmp_path):
             returncode=0,
         )
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    assert hermes_main._resolve_stash_selector(["git"], tmp_path, "abc123") == "stash@{1}"
+    assert morpheus_main._resolve_stash_selector(["git"], tmp_path, "abc123") == "stash@{1}"
 
 
 
@@ -76,10 +76,10 @@ def test_restore_stashed_changes_prompts_before_applying(monkeypatch, tmp_path, 
             return SimpleNamespace(stdout="dropped\n", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
     monkeypatch.setattr("builtins.input", lambda: "")
 
-    restored = hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
+    restored = morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
 
     assert restored is True
     assert calls[0][0] == ["git", "stash", "apply", "abc123"]
@@ -100,10 +100,10 @@ def test_restore_stashed_changes_can_skip_restore_and_keep_stash(monkeypatch, tm
         calls.append((cmd, kwargs))
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
     monkeypatch.setattr("builtins.input", lambda: "n")
 
-    restored = hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
+    restored = morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
 
     assert restored is False
     assert calls == []
@@ -128,9 +128,9 @@ def test_restore_stashed_changes_applies_without_prompt_when_disabled(monkeypatc
             return SimpleNamespace(stdout="dropped\n", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    restored = hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
+    restored = morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
 
     assert restored is True
     assert calls[0][0] == ["git", "stash", "apply", "abc123"]
@@ -142,7 +142,7 @@ def test_restore_stashed_changes_applies_without_prompt_when_disabled(monkeypatc
 
 
 def test_print_stash_cleanup_guidance_with_selector(capsys):
-    hermes_main._print_stash_cleanup_guidance("abc123", "stash@{2}")
+    morpheus_main._print_stash_cleanup_guidance("abc123", "stash@{2}")
 
     out = capsys.readouterr().out
     assert "Check `git status` first" in out
@@ -164,9 +164,9 @@ def test_restore_stashed_changes_keeps_going_when_stash_entry_cannot_be_resolved
             return SimpleNamespace(stdout="stash@{0} def456\n", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    restored = hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
+    restored = morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
 
     assert restored is True
     assert calls[0] == (["git", "stash", "apply", "abc123"], {"cwd": tmp_path, "capture_output": True, "text": True})
@@ -196,9 +196,9 @@ def test_restore_stashed_changes_keeps_going_when_drop_fails(monkeypatch, tmp_pa
             return SimpleNamespace(stdout="", stderr="drop failed\n", returncode=1)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    restored = hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
+    restored = morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
 
     assert restored is True
     assert calls[3][0] == ["git", "stash", "drop", "stash@{0}"]
@@ -224,11 +224,11 @@ def test_restore_stashed_changes_prompts_before_reset_on_conflict(monkeypatch, t
             return SimpleNamespace(stdout="", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
     monkeypatch.setattr("builtins.input", lambda: "y")
 
     with pytest.raises(SystemExit, match="1"):
-        hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
+        morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
 
     out = capsys.readouterr().out
     assert "Conflicted files:" in out
@@ -252,13 +252,13 @@ def test_restore_stashed_changes_user_declines_reset(monkeypatch, tmp_path, caps
             return SimpleNamespace(stdout="cli.py\n", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
     # First input: "y" to restore, second input: "n" to decline reset
     inputs = iter(["y", "n"])
     monkeypatch.setattr("builtins.input", lambda: next(inputs))
 
     with pytest.raises(SystemExit, match="1"):
-        hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
+        morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=True)
 
     out = capsys.readouterr().out
     assert "left as-is" in out
@@ -280,10 +280,10 @@ def test_restore_stashed_changes_auto_resets_non_interactive(monkeypatch, tmp_pa
             return SimpleNamespace(stdout="", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
     with pytest.raises(SystemExit, match="1"):
-        hermes_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
+        morpheus_main._restore_stashed_changes(["git"], tmp_path, "abc123", prompt_user=False)
 
     out = capsys.readouterr().out
     assert "Working tree reset to clean state" in out
@@ -301,10 +301,10 @@ def test_stash_local_changes_if_needed_raises_when_stash_ref_missing(monkeypatch
             raise CalledProcessError(returncode=128, cmd=cmd)
         raise AssertionError(f"unexpected command: {cmd}")
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
     with pytest.raises(CalledProcessError):
-        hermes_main._stash_local_changes_if_needed(["git"], Path(tmp_path))
+        morpheus_main._stash_local_changes_if_needed(["git"], Path(tmp_path))
 
 
 # ---------------------------------------------------------------------------
@@ -314,13 +314,13 @@ def test_stash_local_changes_if_needed_raises_when_stash_ref_missing(monkeypatch
 def _setup_update_mocks(monkeypatch, tmp_path):
     """Common setup for cmd_update tests."""
     (tmp_path / ".git").mkdir()
-    monkeypatch.setattr(hermes_main, "PROJECT_ROOT", tmp_path)
-    monkeypatch.setattr(hermes_main, "_stash_local_changes_if_needed", lambda *a, **kw: None)
-    monkeypatch.setattr(hermes_main, "_restore_stashed_changes", lambda *a, **kw: True)
-    monkeypatch.setattr(hermes_config, "get_missing_env_vars", lambda required_only=True: [])
-    monkeypatch.setattr(hermes_config, "get_missing_config_fields", lambda: [])
-    monkeypatch.setattr(hermes_config, "check_config_version", lambda: (5, 5))
-    monkeypatch.setattr(hermes_config, "migrate_config", lambda **kw: {"env_added": [], "config_added": []})
+    monkeypatch.setattr(morpheus_main, "PROJECT_ROOT", tmp_path)
+    monkeypatch.setattr(morpheus_main, "_stash_local_changes_if_needed", lambda *a, **kw: None)
+    monkeypatch.setattr(morpheus_main, "_restore_stashed_changes", lambda *a, **kw: True)
+    monkeypatch.setattr(morpheus_config, "get_missing_env_vars", lambda required_only=True: [])
+    monkeypatch.setattr(morpheus_config, "get_missing_config_fields", lambda: [])
+    monkeypatch.setattr(morpheus_config, "check_config_version", lambda: (5, 5))
+    monkeypatch.setattr(morpheus_config, "migrate_config", lambda **kw: {"env_added": [], "config_added": []})
 
 
 def test_cmd_update_tries_extras_first_then_falls_back(monkeypatch, tmp_path):
@@ -348,9 +348,9 @@ def test_cmd_update_tries_extras_first_then_falls_back(monkeypatch, tmp_path):
             return SimpleNamespace(returncode=0)
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    hermes_main.cmd_update(SimpleNamespace())
+    morpheus_main.cmd_update(SimpleNamespace())
 
     install_cmds = [c for c in recorded if "pip" in c and "install" in c]
     assert len(install_cmds) == 2
@@ -377,9 +377,9 @@ def test_cmd_update_succeeds_with_extras(monkeypatch, tmp_path):
             return SimpleNamespace(stdout="Updating\n", stderr="", returncode=0)
         return SimpleNamespace(returncode=0)
 
-    monkeypatch.setattr(hermes_main.subprocess, "run", fake_run)
+    monkeypatch.setattr(morpheus_main.subprocess, "run", fake_run)
 
-    hermes_main.cmd_update(SimpleNamespace())
+    morpheus_main.cmd_update(SimpleNamespace())
 
     install_cmds = [c for c in recorded if "pip" in c and "install" in c]
     assert len(install_cmds) == 1

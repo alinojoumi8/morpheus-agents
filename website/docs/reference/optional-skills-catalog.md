@@ -6,7 +6,7 @@ description: "Catalog of official optional skills available from the repository"
 
 # Official Optional Skills Catalog
 
-Official optional skills live in the repository under `optional-skills/`. Install them with `hermes skills install official/<category>/<skill>` or browse them with `hermes skills browse --source official`.
+Official optional skills live in the repository under `optional-skills/`. Install them with `morpheus skills install official/<category>/<skill>` or browse them with `morpheus skills browse --source official`.
 
 ## autonomous-ai-agents
 

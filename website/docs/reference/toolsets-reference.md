@@ -6,7 +6,7 @@ description: "Reference for Morpheus core, composite, platform, and dynamic tool
 
 # Toolsets Reference
 
-Toolsets are named bundles of tools that you can enable with `hermes chat --toolsets ...`, configure per platform, or resolve inside the agent runtime.
+Toolsets are named bundles of tools that you can enable with `morpheus chat --toolsets ...`, configure per platform, or resolve inside the agent runtime.
 
 | Toolset | Kind | Resolves to |
 |---------|------|-------------|
@@ -17,17 +17,17 @@ Toolsets are named bundles of tools that you can enable with `hermes chat --tool
 | `debugging` | composite | `patch`, `process`, `read_file`, `search_files`, `terminal`, `web_extract`, `web_search`, `write_file` |
 | `delegation` | core | `delegate_task` |
 | `file` | core | `patch`, `read_file`, `search_files`, `write_file` |
-| `hermes-acp` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `delegate_task`, `execute_code`, `memory`, `patch`, `process`, `read_file`, `search_files`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
-| `hermes-cli` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `clarify`, `cronjob`, `delegate_task`, `execute_code`, `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services`, `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search`, `image_generate`, `memory`, `mixture_of_agents`, `patch`, `process`, `read_file`, `search_files`, `send_message`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `text_to_speech`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
-| `hermes-discord` | platform | _(same as hermes-cli)_ |
-| `hermes-email` | platform | _(same as hermes-cli)_ |
-| `hermes-gateway` | composite | Union of all messaging platform toolsets |
-| `hermes-homeassistant` | platform | _(same as hermes-cli)_ |
-| `hermes-signal` | platform | _(same as hermes-cli)_ |
-| `hermes-slack` | platform | _(same as hermes-cli)_ |
-| `hermes-sms` | platform | _(same as hermes-cli)_ |
-| `hermes-telegram` | platform | _(same as hermes-cli)_ |
-| `hermes-whatsapp` | platform | _(same as hermes-cli)_ |
+| `morpheus-acp` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `delegate_task`, `execute_code`, `memory`, `patch`, `process`, `read_file`, `search_files`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
+| `morpheus-cli` | platform | `browser_back`, `browser_click`, `browser_close`, `browser_console`, `browser_get_images`, `browser_navigate`, `browser_press`, `browser_scroll`, `browser_snapshot`, `browser_type`, `browser_vision`, `clarify`, `cronjob`, `delegate_task`, `execute_code`, `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services`, `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search`, `image_generate`, `memory`, `mixture_of_agents`, `patch`, `process`, `read_file`, `search_files`, `send_message`, `session_search`, `skill_manage`, `skill_view`, `skills_list`, `terminal`, `text_to_speech`, `todo`, `vision_analyze`, `web_extract`, `web_search`, `write_file` |
+| `morpheus-discord` | platform | _(same as morpheus-cli)_ |
+| `morpheus-email` | platform | _(same as morpheus-cli)_ |
+| `morpheus-gateway` | composite | Union of all messaging platform toolsets |
+| `morpheus-homeassistant` | platform | _(same as morpheus-cli)_ |
+| `morpheus-signal` | platform | _(same as morpheus-cli)_ |
+| `morpheus-slack` | platform | _(same as morpheus-cli)_ |
+| `morpheus-sms` | platform | _(same as morpheus-cli)_ |
+| `morpheus-telegram` | platform | _(same as morpheus-cli)_ |
+| `morpheus-whatsapp` | platform | _(same as morpheus-cli)_ |
 | `homeassistant` | core | `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services` |
 | `honcho` | core | `honcho_conclude`, `honcho_context`, `honcho_profile`, `honcho_search` |
 | `image_gen` | core | `image_generate` |

@@ -22,7 +22,7 @@ Native Windows is **not supported**. Please install [WSL2](https://learn.microso
 
 ### What the Installer Does
 
-The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `hermes` command setup, and LLM provider configuration. By the end, you're ready to chat.
+The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `morpheus` command setup, and LLM provider configuration. By the end, you're ready to chat.
 
 ### After Installation
 
@@ -30,17 +30,17 @@ Reload your shell and start chatting:
 
 ```bash
 source ~/.bashrc   # or: source ~/.zshrc
-hermes             # Start chatting!
+morpheus             # Start chatting!
 ```
 
 To reconfigure individual settings later, use the dedicated commands:
 
 ```bash
-hermes model          # Choose your LLM provider and model
-hermes tools          # Configure which tools are enabled
-hermes gateway setup  # Set up messaging platforms
-hermes config set     # Set individual config values
-hermes setup          # Or run the full setup wizard to configure everything at once
+morpheus model          # Choose your LLM provider and model
+morpheus tools          # Configure which tools are enabled
+morpheus gateway setup  # Set up messaging platforms
+morpheus config set     # Set individual config values
+morpheus setup          # Or run the full setup wizard to configure everything at once
 ```
 
 ---
@@ -94,7 +94,7 @@ uv venv venv --python 3.11
 ```
 
 :::tip
-You do **not** need to activate the venv to use `hermes`. The entry point has a hardcoded shebang pointing to the venv Python, so it works globally once symlinked.
+You do **not** need to activate the venv to use `morpheus`. The entry point has a hardcoded shebang pointing to the venv Python, so it works globally once symlinked.
 :::
 
 ### Step 3: Install Python Dependencies
@@ -181,14 +181,14 @@ FAL_KEY=your-fal-key                   # Image generation (FLUX)
 
 Or set them via the CLI:
 ```bash
-hermes config set OPENROUTER_API_KEY sk-or-v1-your-key-here
+morpheus config set OPENROUTER_API_KEY sk-or-v1-your-key-here
 ```
 
-### Step 8: Add `hermes` to Your PATH
+### Step 8: Add `morpheus` to Your PATH
 
 ```bash
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/venv/bin/hermes" ~/.local/bin/hermes
+ln -sf "$(pwd)/venv/bin/morpheus" ~/.local/bin/morpheus
 ```
 
 If `~/.local/bin` isn't on your PATH, add it to your shell config:
@@ -207,16 +207,16 @@ fish_add_path $HOME/.local/bin
 ### Step 9: Configure Your Provider
 
 ```bash
-hermes model       # Select your LLM provider and model
+morpheus model       # Select your LLM provider and model
 ```
 
 ### Step 10: Verify the Installation
 
 ```bash
-hermes version    # Check that the command is available
-hermes doctor     # Run diagnostics to verify everything is working
-hermes status     # Check your configuration
-hermes chat -q "Hello! What tools do you have available?"
+morpheus version    # Check that the command is available
+morpheus doctor     # Run diagnostics to verify everything is working
+morpheus status     # Check your configuration
+morpheus chat -q "Hello! What tools do you have available?"
 ```
 
 ---
@@ -248,13 +248,13 @@ cp cli-config.yaml.example ~/.morpheus/config.yaml
 touch ~/.morpheus/.env
 echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.morpheus/.env
 
-# Make hermes available globally
+# Make morpheus available globally
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/venv/bin/hermes" ~/.local/bin/hermes
+ln -sf "$(pwd)/venv/bin/morpheus" ~/.local/bin/morpheus
 
 # Verify
-hermes doctor
-hermes
+morpheus doctor
+morpheus
 ```
 
 ---
@@ -263,8 +263,8 @@ hermes
 
 | Problem | Solution |
 |---------|----------|
-| `hermes: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
-| `API key not set` | Run `hermes model` to configure your provider, or `hermes config set OPENROUTER_API_KEY your_key` |
-| Missing config after update | Run `hermes config check` then `hermes config migrate` |
+| `morpheus: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
+| `API key not set` | Run `morpheus model` to configure your provider, or `morpheus config set OPENROUTER_API_KEY your_key` |
+| Missing config after update | Run `morpheus config check` then `morpheus config migrate` |
 
-For more diagnostics, run `hermes doctor` — it will tell you exactly what's missing and how to fix it.
+For more diagnostics, run `morpheus doctor` — it will tell you exactly what's missing and how to fix it.

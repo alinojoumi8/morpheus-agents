@@ -7,12 +7,12 @@ and the Atropos RL training framework.
 Core layers:
     - agent_loop: Reusable multi-turn agent loop with standard OpenAI-spec tool calling
     - tool_context: Per-rollout tool access handle for reward/verification functions
-    - hermes_base_env: Abstract base environment (BaseEnv subclass) for Atropos
+    - morpheus_base_env: Abstract base environment (BaseEnv subclass) for Atropos
     - tool_call_parsers: Client-side tool call parser registry for Phase 2 (VLLM /generate)
 
 Concrete environments:
     - terminal_test_env/: Simple file-creation tasks for testing the stack
-    - hermes_swe_env/: SWE-bench style tasks with Modal sandboxes
+    - morpheus_swe_env/: SWE-bench style tasks with Modal sandboxes
 
 Benchmarks (eval-only):
     - benchmarks/terminalbench_2/: Terminal-Bench 2.0 evaluation
@@ -21,7 +21,7 @@ Benchmarks (eval-only):
 try:
     from environments.agent_loop import AgentResult, MorpheusAgentLoop
     from environments.tool_context import ToolContext
-    from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+    from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 except ImportError:
     # atroposlib not installed — environments are unavailable but
     # submodules like tool_call_parsers can still be imported directly.

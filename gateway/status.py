@@ -20,7 +20,7 @@ from pathlib import Path
 from morpheus_constants import get_morpheus_home
 from typing import Any, Optional
 
-_GATEWAY_KIND = "hermes-gateway"
+_GATEWAY_KIND = "morpheus-gateway"
 _RUNTIME_STATUS_FILE = "gateway_state.json"
 _LOCKS_DIRNAME = "gateway-locks"
 
@@ -38,7 +38,7 @@ def _get_runtime_status_path() -> Path:
 
 def _get_lock_dir() -> Path:
     """Return the machine-local directory for token-scoped gateway locks."""
-    override = os.getenv("HERMES_GATEWAY_LOCK_DIR")
+    override = os.getenv("MORPHEUS_GATEWAY_LOCK_DIR")
     if override:
         return Path(override)
     state_home = Path(os.getenv("XDG_STATE_HOME", Path.home() / ".local" / "state"))
@@ -89,7 +89,7 @@ def _looks_like_gateway_process(pid: int) -> bool:
     patterns = (
         "morpheus_cli.main gateway",
         "morpheus_cli/main.py gateway",
-        "hermes gateway",
+        "morpheus gateway",
         "gateway/run.py",
     )
     return any(pattern in cmdline for pattern in patterns)
@@ -108,7 +108,7 @@ def _record_looks_like_gateway(record: dict[str, Any]) -> bool:
     patterns = (
         "morpheus_cli.main gateway",
         "morpheus_cli/main.py gateway",
-        "hermes gateway",
+        "morpheus gateway",
         "gateway/run.py",
     )
     return any(pattern in cmdline for pattern in patterns)

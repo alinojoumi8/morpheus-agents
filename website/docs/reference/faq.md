@@ -26,7 +26,7 @@ Morpheus Agent works with any OpenAI-compatible API. Supported providers include
 - **MiniMax** — global and China endpoints
 - **Local models** — via [Ollama](https://ollama.com/), [vLLM](https://docs.vllm.ai/), [llama.cpp](https://github.com/ggerganov/llama.cpp), [SGLang](https://github.com/sgl-project/sglang), or any OpenAI-compatible server
 
-Set your provider with `hermes model` or by editing `~/.morpheus/.env`. See the [Environment Variables](./environment-variables.md) reference for all provider keys.
+Set your provider with `morpheus model` or by editing `~/.morpheus/.env`. See the [Environment Variables](./environment-variables.md) reference for all provider keys.
 
 ### Does it work on Windows?
 
@@ -42,10 +42,10 @@ API calls go **only to the LLM provider you configure** (e.g., OpenRouter, your 
 
 ### Can I use it offline / with local models?
 
-Yes. Run `hermes model`, select **Custom endpoint**, and enter your server's URL:
+Yes. Run `morpheus model`, select **Custom endpoint**, and enter your server's URL:
 
 ```bash
-hermes model
+morpheus model
 # Select: Custom endpoint (enter URL manually)
 # API base URL: http://localhost:11434/v1
 # API key: ollama
@@ -90,9 +90,9 @@ Both persist across sessions. See [Memory](../user-guide/features/memory.md) and
 Yes. Import the `AIAgent` class and use Morpheus programmatically:
 
 ```python
-from hermes.agent import AIAgent
+from morpheus.agent import AIAgent
 
-agent = AIAgent(model="openrouter/nous/hermes-3-llama-3.1-70b")
+agent = AIAgent(model="openrouter/nous/morpheus-3-llama-3.1-70b")
 response = agent.chat("Explain quantum computing briefly")
 ```
 
@@ -104,7 +104,7 @@ See the [Python Library guide](../user-guide/features/code-execution.md) for ful
 
 ### Installation Issues
 
-#### `hermes: command not found` after installation
+#### `morpheus: command not found` after installation
 
 **Cause:** Your shell hasn't reloaded the updated PATH.
 
@@ -119,8 +119,8 @@ source ~/.zshrc     # zsh
 
 If it still doesn't work, verify the install location:
 ```bash
-which hermes
-ls ~/.local/bin/hermes
+which morpheus
+ls ~/.local/bin/morpheus
 ```
 
 :::tip
@@ -160,7 +160,7 @@ source ~/.bashrc
 ```bash
 # Don't use sudo with the installer — it installs to ~/.local/bin
 # If you previously installed with sudo, clean up:
-sudo rm /usr/local/bin/hermes
+sudo rm /usr/local/bin/morpheus
 # Then re-run the standard installer
 curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
@@ -176,13 +176,13 @@ curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/sc
 **Solution:**
 ```bash
 # Check your configuration
-hermes config show
+morpheus config show
 
 # Re-configure your provider
-hermes model
+morpheus model
 
 # Or set directly
-hermes config set OPENROUTER_API_KEY sk-or-v1-xxxxxxxxxxxx
+morpheus config set OPENROUTER_API_KEY sk-or-v1-xxxxxxxxxxxx
 ```
 
 :::warning
@@ -196,13 +196,13 @@ Make sure the key matches the provider. An OpenAI key won't work with OpenRouter
 **Solution:**
 ```bash
 # List available models for your provider
-hermes model
+morpheus model
 
 # Set a valid model
-hermes config set HERMES_MODEL openrouter/nous/hermes-3-llama-3.1-70b
+morpheus config set MORPHEUS_MODEL openrouter/nous/morpheus-3-llama-3.1-70b
 
 # Or specify per-session
-hermes chat --model openrouter/meta-llama/llama-3.1-70b-instruct
+morpheus chat --model openrouter/meta-llama/llama-3.1-70b-instruct
 ```
 
 #### Rate limiting (429 errors)
@@ -212,7 +212,7 @@ hermes chat --model openrouter/meta-llama/llama-3.1-70b-instruct
 **Solution:** Wait a moment and retry. For sustained usage, consider:
 - Upgrading your provider plan
 - Switching to a different model or provider
-- Using `hermes chat --provider <alternative>` to route to a different backend
+- Using `morpheus chat --provider <alternative>` to route to a different backend
 
 #### Context length exceeded
 
@@ -224,10 +224,10 @@ hermes chat --model openrouter/meta-llama/llama-3.1-70b-instruct
 /compress
 
 # Or start a fresh session
-hermes chat
+morpheus chat
 
 # Use a model with a larger context window
-hermes chat --model openrouter/google/gemini-2.0-flash-001
+morpheus chat --model openrouter/google/gemini-2.0-flash-001
 ```
 
 If this happens on the first long conversation, Morpheus may have the wrong context length for your model. Check what it detected:
@@ -279,7 +279,7 @@ This is working as intended — Morpheus never silently runs destructive command
 **Solution:**
 - Avoid `sudo` in messaging — ask the agent to find alternatives
 - If you must use `sudo`, configure passwordless sudo for specific commands in `/etc/sudoers`
-- Or switch to the terminal interface for administrative tasks: `hermes chat`
+- Or switch to the terminal interface for administrative tasks: `morpheus chat`
 
 #### Docker backend not connecting
 
@@ -309,10 +309,10 @@ docker run hello-world
 **Solution:**
 ```bash
 # Check if the gateway is running
-hermes gateway status
+morpheus gateway status
 
 # Start the gateway
-hermes gateway start
+morpheus gateway start
 
 # Check logs for errors
 cat ~/.morpheus/logs/gateway.log | tail -50
@@ -323,7 +323,7 @@ cat ~/.morpheus/logs/gateway.log | tail -50
 **Cause:** Network issues, bot token expired, or platform webhook misconfiguration.
 
 **Solution:**
-- Verify your bot token is valid with `hermes gateway setup`
+- Verify your bot token is valid with `morpheus gateway setup`
 - Check gateway logs: `cat ~/.morpheus/logs/gateway.log | tail -50`
 - For webhook-based platforms (Slack, WhatsApp), ensure your server is publicly accessible
 
@@ -354,7 +354,7 @@ pip install "morpheus-agent[telegram]"   # or [discord], [slack], [whatsapp]
 lsof -i :8080
 
 # Verify configuration
-hermes config show
+morpheus config show
 ```
 
 ---
@@ -366,8 +366,8 @@ hermes config show
 **Cause:** Large model, distant API server, or heavy system prompt with many tools.
 
 **Solution:**
-- Try a faster/smaller model: `hermes chat --model openrouter/meta-llama/llama-3.1-8b-instruct`
-- Reduce active toolsets: `hermes chat -t "terminal"`
+- Try a faster/smaller model: `morpheus chat --model openrouter/meta-llama/llama-3.1-8b-instruct`
+- Reduce active toolsets: `morpheus chat -t "terminal"`
 - Check your network latency to the provider
 - For local models, ensure you have enough GPU VRAM
 
@@ -398,10 +398,10 @@ Use `/compress` regularly during long sessions. It summarizes the conversation h
 /compress
 
 # Start a new session with a reference to the old one
-hermes chat
+morpheus chat
 
 # Resume a specific session later if needed
-hermes chat --continue
+morpheus chat --continue
 ```
 
 ---
@@ -446,15 +446,15 @@ mcp_servers:
 
 ```bash
 # Verify MCP servers are configured
-hermes config show | grep -A 12 mcp_servers
+morpheus config show | grep -A 12 mcp_servers
 
 # Restart Morpheus or reload MCP after config changes
-hermes chat
+morpheus chat
 ```
 
 See also:
 - [MCP (Model Context Protocol)](/docs/user-guide/features/mcp)
-- [Use MCP with Morpheus](/docs/guides/use-mcp-with-hermes)
+- [Use MCP with Morpheus](/docs/guides/use-mcp-with-morpheus)
 - [MCP Config Reference](/docs/reference/mcp-config-reference)
 
 #### MCP timeout errors
@@ -478,4 +478,4 @@ If your issue isn't covered here:
 
 1. **Search existing issues:** [GitHub Issues](https://github.com/NousResearch/morpheus-agent/issues)
 2. **Ask the community:** [Nous Research Discord](https://discord.gg/nousresearch)
-3. **File a bug report:** Include your OS, Python version (`python3 --version`), Morpheus version (`hermes --version`), and the full error message
+3. **File a bug report:** Include your OS, Python version (`python3 --version`), Morpheus version (`morpheus --version`), and the full error message

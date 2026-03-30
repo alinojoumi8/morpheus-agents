@@ -48,7 +48,7 @@ Press **Ctrl+C** once to interrupt the agent mid-response. You can then type a n
 
 ### Resume Sessions with `-c`
 
-Forgot something from your last session? Run `hermes -c` to resume exactly where you left off, with full conversation history restored. You can also resume by title: `hermes -r "my research project"`.
+Forgot something from your last session? Run `morpheus -c` to resume exactly where you left off, with full conversation history restored. You can also resume by title: `morpheus -r "my research project"`.
 
 ### Clipboard Image Paste
 
@@ -78,9 +78,9 @@ Create an `AGENTS.md` in your project root with architecture decisions, coding c
 
 ### SOUL.md: Customize Personality
 
-Want Morpheus to have a stable default voice? Edit `~/.morpheus/SOUL.md` (or `$HERMES_HOME/SOUL.md` if you use a custom Morpheus home). Morpheus now seeds a starter SOUL automatically and uses that global file as the instance-wide personality source.
+Want Morpheus to have a stable default voice? Edit `~/.morpheus/SOUL.md` (or `$MORPHEUS_HOME/SOUL.md` if you use a custom Morpheus home). Morpheus now seeds a starter SOUL automatically and uses that global file as the instance-wide personality source.
 
-For a full walkthrough, see [Use SOUL.md with Morpheus](/docs/guides/use-soul-with-hermes).
+For a full walkthrough, see [Use SOUL.md with Morpheus](/docs/guides/use-soul-with-morpheus).
 
 ```markdown
 # Soul
@@ -159,11 +159,11 @@ Use `/sethome` in your preferred Telegram or Discord chat to designate it as the
 
 ### Use /title to Organize Sessions
 
-Name your sessions with `/title auth-refactor` or `/title research-llm-quantization`. Named sessions are easy to find with `hermes sessions list` and resume with `hermes -r "auth-refactor"`. Unnamed sessions pile up and become impossible to distinguish.
+Name your sessions with `/title auth-refactor` or `/title research-llm-quantization`. Named sessions are easy to find with `morpheus sessions list` and resume with `morpheus -r "auth-refactor"`. Unnamed sessions pile up and become impossible to distinguish.
 
 ### DM Pairing for Team Access
 
-Instead of manually collecting user IDs for allowlists, enable DM pairing. When a teammate DMs the bot, they get a one-time pairing code. You approve it with `hermes pairing approve telegram XKGH5N7P` — simple and secure.
+Instead of manually collecting user IDs for allowlists, enable DM pairing. When a teammate DMs the bot, they get a one-time pairing code. You approve it with `morpheus pairing approve telegram XKGH5N7P` — simple and secure.
 
 ### Tool Progress Display Modes
 
@@ -182,7 +182,7 @@ When working with untrusted repositories or running unfamiliar code, use Docker 
 ```bash
 # In your .env:
 TERMINAL_BACKEND=docker
-TERMINAL_DOCKER_IMAGE=hermes-sandbox:latest
+TERMINAL_DOCKER_IMAGE=morpheus-sandbox:latest
 ```
 
 ### Avoid Windows Encoding Pitfalls

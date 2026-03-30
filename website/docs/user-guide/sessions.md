@@ -31,7 +31,7 @@ Each session is tagged with its source platform:
 
 | Source | Description |
 |--------|-------------|
-| `cli` | Interactive CLI (`hermes` or `hermes chat`) |
+| `cli` | Interactive CLI (`morpheus` or `morpheus chat`) |
 | `telegram` | Telegram messenger |
 | `discord` | Discord server/DM |
 | `whatsapp` | WhatsApp messenger |
@@ -45,12 +45,12 @@ Resume previous conversations from the CLI using `--continue` or `--resume`:
 
 ```bash
 # Resume the most recent CLI session
-hermes --continue
-hermes -c
+morpheus --continue
+morpheus -c
 
 # Or with the chat subcommand
-hermes chat --continue
-hermes chat -c
+morpheus chat --continue
+morpheus chat -c
 ```
 
 This looks up the most recent `cli` session from the SQLite database and loads its full conversation history.
@@ -61,28 +61,28 @@ If you've given a session a title (see [Session Naming](#session-naming) below),
 
 ```bash
 # Resume a named session
-hermes -c "my project"
+morpheus -c "my project"
 
 # If there are lineage variants (my project, my project #2, my project #3),
 # this automatically resumes the most recent one
-hermes -c "my project"   # → resumes "my project #3"
+morpheus -c "my project"   # → resumes "my project #3"
 ```
 
 ### Resume Specific Session
 
 ```bash
 # Resume a specific session by ID
-hermes --resume 20250305_091523_a1b2c3d4
-hermes -r 20250305_091523_a1b2c3d4
+morpheus --resume 20250305_091523_a1b2c3d4
+morpheus -r 20250305_091523_a1b2c3d4
 
 # Resume by title
-hermes --resume "refactoring auth"
+morpheus --resume "refactoring auth"
 
 # Or with the chat subcommand
-hermes chat --resume 20250305_091523_a1b2c3d4
+morpheus chat --resume 20250305_091523_a1b2c3d4
 ```
 
-Session IDs are shown when you exit a CLI session, and can be found with `hermes sessions list`.
+Session IDs are shown when you exit a CLI session, and can be found with `morpheus sessions list`.
 
 ### Conversation Recap on Resume
 
@@ -116,7 +116,7 @@ Give sessions human-readable titles so you can find and resume them easily.
 
 ### Auto-Generated Titles
 
-Morpheus automatically generates a short descriptive title (3–7 words) for each session after the first exchange. This runs in a background thread using a fast auxiliary model, so it adds no latency. You'll see auto-generated titles when browsing sessions with `hermes sessions list` or `hermes sessions browse`.
+Morpheus automatically generates a short descriptive title (3–7 words) for each session after the first exchange. This runs in a background thread using a fast auxiliary model, so it adds no latency. You'll see auto-generated titles when browsing sessions with `morpheus sessions list` or `morpheus sessions browse`.
 
 Auto-titling only fires once per session and is skipped if you've already set a title manually.
 
@@ -133,7 +133,7 @@ The title is applied immediately. If the session hasn't been created in the data
 You can also rename existing sessions from the command line:
 
 ```bash
-hermes sessions rename 20250305_091523_a1b2c3d4 "refactoring auth module"
+morpheus sessions rename 20250305_091523_a1b2c3d4 "refactoring auth module"
 ```
 
 ### Title Rules
@@ -151,7 +151,7 @@ When a session's context is compressed (manually via `/compress` or automaticall
 "my project" → "my project #2" → "my project #3"
 ```
 
-When you resume by name (`hermes -c "my project"`), it automatically picks the most recent session in the lineage.
+When you resume by name (`morpheus -c "my project"`), it automatically picks the most recent session in the lineage.
 
 ### /title in Messaging Platforms
 
@@ -162,19 +162,19 @@ The `/title` command works in all gateway platforms (Telegram, Discord, Slack, W
 
 ## Session Management Commands
 
-Morpheus provides a full set of session management commands via `hermes sessions`:
+Morpheus provides a full set of session management commands via `morpheus sessions`:
 
 ### List Sessions
 
 ```bash
 # List recent sessions (default: last 20)
-hermes sessions list
+morpheus sessions list
 
 # Filter by platform
-hermes sessions list --source telegram
+morpheus sessions list --source telegram
 
 # Show more sessions
-hermes sessions list --limit 50
+morpheus sessions list --limit 50
 ```
 
 When sessions have titles, the output shows titles, previews, and relative timestamps:
@@ -200,13 +200,13 @@ What's the weather in Las Vegas?                    3d ago        tele   2025030
 
 ```bash
 # Export all sessions to a JSONL file
-hermes sessions export backup.jsonl
+morpheus sessions export backup.jsonl
 
 # Export sessions from a specific platform
-hermes sessions export telegram-history.jsonl --source telegram
+morpheus sessions export telegram-history.jsonl --source telegram
 
 # Export a single session
-hermes sessions export session.jsonl --session-id 20250305_091523_a1b2c3d4
+morpheus sessions export session.jsonl --session-id 20250305_091523_a1b2c3d4
 ```
 
 Exported files contain one JSON object per line with full session metadata and all messages.
@@ -215,20 +215,20 @@ Exported files contain one JSON object per line with full session metadata and a
 
 ```bash
 # Delete a specific session (with confirmation)
-hermes sessions delete 20250305_091523_a1b2c3d4
+morpheus sessions delete 20250305_091523_a1b2c3d4
 
 # Delete without confirmation
-hermes sessions delete 20250305_091523_a1b2c3d4 --yes
+morpheus sessions delete 20250305_091523_a1b2c3d4 --yes
 ```
 
 ### Rename a Session
 
 ```bash
 # Set or change a session's title
-hermes sessions rename 20250305_091523_a1b2c3d4 "debugging auth flow"
+morpheus sessions rename 20250305_091523_a1b2c3d4 "debugging auth flow"
 
 # Multi-word titles don't need quotes in the CLI
-hermes sessions rename 20250305_091523_a1b2c3d4 debugging auth flow
+morpheus sessions rename 20250305_091523_a1b2c3d4 debugging auth flow
 ```
 
 If the title is already in use by another session, an error is shown.
@@ -237,16 +237,16 @@ If the title is already in use by another session, an error is shown.
 
 ```bash
 # Delete ended sessions older than 90 days (default)
-hermes sessions prune
+morpheus sessions prune
 
 # Custom age threshold
-hermes sessions prune --older-than 30
+morpheus sessions prune --older-than 30
 
 # Only prune sessions from a specific platform
-hermes sessions prune --source telegram --older-than 60
+morpheus sessions prune --source telegram --older-than 60
 
 # Skip confirmation
-hermes sessions prune --older-than 30 --yes
+morpheus sessions prune --older-than 30 --yes
 ```
 
 :::info
@@ -256,7 +256,7 @@ Pruning only deletes **ended** sessions (sessions that have been explicitly ende
 ### Session Statistics
 
 ```bash
-hermes sessions stats
+morpheus sessions stats
 ```
 
 Output:
@@ -270,7 +270,7 @@ Total messages: 3847
 Database size: 12.4 MB
 ```
 
-For deeper analytics — token usage, cost estimates, tool breakdown, and activity patterns — use [`hermes insights`](/docs/reference/cli-commands#hermes-insights).
+For deeper analytics — token usage, cost estimates, tool breakdown, and activity patterns — use [`morpheus insights`](/docs/reference/cli-commands#morpheus-insights).
 
 ## Session Search Tool
 
@@ -375,14 +375,14 @@ Key tables in `state.db`:
 
 ```bash
 # Prune sessions older than 90 days
-hermes sessions prune
+morpheus sessions prune
 
 # Delete a specific session
-hermes sessions delete <session_id>
+morpheus sessions delete <session_id>
 
 # Export before pruning (backup)
-hermes sessions export backup.jsonl
-hermes sessions prune --older-than 30 --yes
+morpheus sessions export backup.jsonl
+morpheus sessions prune --older-than 30 --yes
 ```
 
 :::tip

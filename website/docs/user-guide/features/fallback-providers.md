@@ -36,8 +36,8 @@ Both `provider` and `model` are **required**. If either is missing, the fallback
 |----------|-------|-------------|
 | AI Gateway | `ai-gateway` | `AI_GATEWAY_API_KEY` |
 | OpenRouter | `openrouter` | `OPENROUTER_API_KEY` |
-| Nous Portal | `nous` | `hermes login` (OAuth) |
-| OpenAI Codex | `openai-codex` | `hermes model` (ChatGPT OAuth) |
+| Nous Portal | `nous` | `morpheus login` (OAuth) |
+| OpenAI Codex | `openai-codex` | `morpheus model` (ChatGPT OAuth) |
 | Anthropic | `anthropic` | `ANTHROPIC_API_KEY` or Claude Code credentials |
 | z.ai / GLM | `zai` | `GLM_API_KEY` |
 | Kimi / Moonshot | `kimi-coding` | `KIMI_API_KEY` |
@@ -103,7 +103,7 @@ model:
 
 fallback_model:
   provider: nous
-  model: nous-hermes-3
+  model: nous-morpheus-3
 ```
 
 **Local model as fallback for cloud:**
@@ -237,8 +237,8 @@ All three — auxiliary, compression, fallback — work the same way: set `provi
 |----------|-------------|-------------|
 | `"auto"` | Try providers in order until one works (default) | At least one provider configured |
 | `"openrouter"` | Force OpenRouter | `OPENROUTER_API_KEY` |
-| `"nous"` | Force Nous Portal | `hermes login` |
-| `"codex"` | Force Codex OAuth | `hermes model` → Codex |
+| `"nous"` | Force Nous Portal | `morpheus login` |
+| `"codex"` | Force Codex OAuth | `morpheus model` → Codex |
 | `"main"` | Use whatever provider the main agent uses | Active main provider configured |
 | `"anthropic"` | Force Anthropic native | `ANTHROPIC_API_KEY` or Claude Code credentials |
 

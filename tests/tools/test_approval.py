@@ -334,7 +334,7 @@ class TestTeePattern:
         assert dangerous is True
         assert key is not None
 
-    def test_tee_hermes_env(self):
+    def test_tee_morpheus_env(self):
         dangerous, key, desc = detect_dangerous_command("echo x | tee ~/.morpheus/.env")
         assert dangerous is True
         assert key is not None
@@ -508,7 +508,7 @@ class TestGatewayProtection:
 
     def test_systemctl_restart_not_flagged(self):
         """Using systemctl to manage the gateway is the correct approach."""
-        cmd = "systemctl --user restart hermes-gateway"
+        cmd = "systemctl --user restart morpheus-gateway"
         dangerous, key, desc = detect_dangerous_command(cmd)
         assert dangerous is False
 

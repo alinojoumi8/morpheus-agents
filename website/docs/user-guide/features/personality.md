@@ -8,7 +8,7 @@ description: "Customize Morpheus Agent's personality with a global SOUL.md, buil
 
 Morpheus Agent's personality is fully customizable. `SOUL.md` is the **primary identity** — it's the first thing in the system prompt and defines who the agent is.
 
-- `SOUL.md` — a durable persona file that lives in `HERMES_HOME` and serves as the agent's identity (slot #1 in the system prompt)
+- `SOUL.md` — a durable persona file that lives in `MORPHEUS_HOME` and serves as the agent's identity (slot #1 in the system prompt)
 - built-in or custom `/personality` presets — session-level system-prompt overlays
 
 If you want to change who Morpheus is — or replace it with an entirely different agent persona — edit `SOUL.md`.
@@ -21,10 +21,10 @@ Morpheus now seeds a default `SOUL.md` automatically in:
 ~/.morpheus/SOUL.md
 ```
 
-More precisely, it uses the current instance's `HERMES_HOME`, so if you run Morpheus with a custom home directory, it will use:
+More precisely, it uses the current instance's `MORPHEUS_HOME`, so if you run Morpheus with a custom home directory, it will use:
 
 ```text
-$HERMES_HOME/SOUL.md
+$MORPHEUS_HOME/SOUL.md
 ```
 
 ### Important behavior
@@ -32,7 +32,7 @@ $HERMES_HOME/SOUL.md
 - **SOUL.md is the agent's primary identity.** It occupies slot #1 in the system prompt, replacing the hardcoded default identity.
 - Morpheus creates a starter `SOUL.md` automatically if one does not exist yet
 - Existing user `SOUL.md` files are never overwritten
-- Morpheus loads `SOUL.md` only from `HERMES_HOME`
+- Morpheus loads `SOUL.md` only from `MORPHEUS_HOME`
 - Morpheus does not look in the current working directory for `SOUL.md`
 - If `SOUL.md` exists but is empty, or cannot be loaded, Morpheus falls back to a built-in default identity
 - If `SOUL.md` has content, that content is injected verbatim after security scanning and truncation
@@ -44,7 +44,7 @@ That makes `SOUL.md` a true per-user or per-instance identity, not just an addit
 
 This keeps personality predictable.
 
-If Morpheus loaded `SOUL.md` from whatever directory you happened to launch it in, your personality could change unexpectedly between projects. By loading only from `HERMES_HOME`, the personality belongs to the Morpheus instance itself.
+If Morpheus loaded `SOUL.md` from whatever directory you happened to launch it in, your personality could change unexpectedly between projects. By loading only from `MORPHEUS_HOME`, the personality belongs to the Morpheus instance itself.
 
 That also makes it easier to teach users:
 - "Edit `~/.morpheus/SOUL.md` to change Morpheus' default personality."
@@ -60,7 +60,7 @@ For most users:
 If you use a custom home:
 
 ```bash
-$HERMES_HOME/SOUL.md
+$MORPHEUS_HOME/SOUL.md
 ```
 
 ## What should go in SOUL.md?
@@ -259,7 +259,7 @@ At a high level, the prompt stack includes:
 - [Context Files](/docs/user-guide/features/context-files)
 - [Configuration](/docs/user-guide/configuration)
 - [Tips & Best Practices](/docs/guides/tips)
-- [SOUL.md Guide](/docs/guides/use-soul-with-hermes)
+- [SOUL.md Guide](/docs/guides/use-soul-with-morpheus)
 
 ## CLI appearance vs conversational personality
 

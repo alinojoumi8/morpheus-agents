@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [MCP, Tools, API, Integrations, Interop]
     homepage: https://mcporter.dev
 prerequisites:

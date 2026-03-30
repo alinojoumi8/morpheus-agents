@@ -1,9 +1,9 @@
-"""hermes claw — OpenClaw migration commands.
+"""morpheus claw — OpenClaw migration commands.
 
 Usage:
-    hermes claw migrate              # Interactive migration from ~/.openclaw
-    hermes claw migrate --dry-run    # Preview what would be migrated
-    hermes claw migrate --preset full --overwrite  # Full migration, overwrite conflicts
+    morpheus claw migrate              # Interactive migration from ~/.openclaw
+    morpheus claw migrate --dry-run    # Preview what would be migrated
+    morpheus claw migrate --preset full --overwrite  # Full migration, overwrite conflicts
 """
 
 import importlib.util
@@ -32,7 +32,7 @@ _OPENCLAW_SCRIPT = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_morpheus.py"
 )
 
 # Fallback: user may have installed the skill from the Hub
@@ -42,12 +42,12 @@ _OPENCLAW_SCRIPT_INSTALLED = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_morpheus.py"
 )
 
 
 def _find_migration_script() -> Path | None:
-    """Find the openclaw_to_hermes.py script in known locations."""
+    """Find the openclaw_to_morpheus.py script in known locations."""
     for candidate in [_OPENCLAW_SCRIPT, _OPENCLAW_SCRIPT_INSTALLED]:
         if candidate.exists():
             return candidate
@@ -56,7 +56,7 @@ def _find_migration_script() -> Path | None:
 
 def _load_migration_module(script_path: Path):
     """Dynamically load the migration script as a module."""
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", script_path)
+    spec = importlib.util.spec_from_file_location("openclaw_to_morpheus", script_path)
     if spec is None or spec.loader is None:
         return None
     mod = importlib.util.module_from_spec(spec)
@@ -72,18 +72,18 @@ def _load_migration_module(script_path: Path):
 
 
 def claw_command(args):
-    """Route hermes claw subcommands."""
+    """Route morpheus claw subcommands."""
     action = getattr(args, "claw_action", None)
 
     if action == "migrate":
         _cmd_migrate(args)
     else:
-        print("Usage: hermes claw migrate [options]")
+        print("Usage: morpheus claw migrate [options]")
         print()
         print("Commands:")
         print("  migrate          Migrate settings from OpenClaw to Morpheus")
         print()
-        print("Run 'hermes claw migrate --help' for migration options.")
+        print("Run 'morpheus claw migrate --help' for migration options.")
 
 
 def _cmd_migrate(args):
@@ -125,7 +125,7 @@ def _cmd_migrate(args):
         print()
         print_error(f"OpenClaw directory not found: {source_dir}")
         print_info("Make sure your OpenClaw installation is at the expected path.")
-        print_info("You can specify a custom path: hermes claw migrate --source /path/to/.openclaw")
+        print_info("You can specify a custom path: morpheus claw migrate --source /path/to/.openclaw")
         return
 
     # Find the migration script
@@ -140,11 +140,11 @@ def _cmd_migrate(args):
         return
 
     # Show what we're doing
-    hermes_home = get_morpheus_home()
+    morpheus_home = get_morpheus_home()
     print()
     print_header("Migration Settings")
     print_info(f"Source:      {source_dir}")
-    print_info(f"Target:      {hermes_home}")
+    print_info(f"Target:      {morpheus_home}")
     print_info(f"Preset:      {preset}")
     print_info(f"Mode:        {'dry run (preview only)' if dry_run else 'execute'}")
     print_info(f"Overwrite:   {'yes' if overwrite else 'no (skip conflicts)'}")
@@ -178,7 +178,7 @@ def _cmd_migrate(args):
 
         migrator = mod.Migrator(
             source_root=source_dir.resolve(),
-            target_root=hermes_home.resolve(),
+            target_root=morpheus_home.resolve(),
             execute=not dry_run,
             workspace_target=ws_target,
             overwrite=overwrite,
@@ -287,7 +287,7 @@ def _print_migration_report(report: dict, dry_run: bool):
     if dry_run:
         print()
         print_info("To execute the migration, run without --dry-run:")
-        print_info(f"  hermes claw migrate --preset {report.get('preset', 'full')}")
+        print_info(f"  morpheus claw migrate --preset {report.get('preset', 'full')}")
     elif migrated:
         print()
         print_success("Migration complete!")
@@ -302,7 +302,7 @@ def _print_migration_report(report: dict, dry_run: bool):
             print(color("  Your OPENROUTER_API_KEY and other provider keys must be added manually.", Colors.YELLOW))
             print()
             print_info("To migrate API keys, re-run with:")
-            print_info("  hermes claw migrate --migrate-secrets")
+            print_info("  morpheus claw migrate --migrate-secrets")
             print()
             print_info("Or add your key manually:")
-            print_info("  hermes config set OPENROUTER_API_KEY sk-or-v1-...")
+            print_info("  morpheus config set OPENROUTER_API_KEY sk-or-v1-...")

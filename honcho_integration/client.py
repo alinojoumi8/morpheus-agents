@@ -129,7 +129,7 @@ class HonchoClientConfig:
     sessions: dict[str, str] = field(default_factory=dict)
     # Raw global config for anything else consumers need
     raw: dict[str, Any] = field(default_factory=dict)
-    # True when Honcho was explicitly configured for this host (hosts.hermes
+    # True when Honcho was explicitly configured for this host (hosts.morpheus
     # block exists or enabled was set explicitly), vs auto-enabled from a
     # stray HONCHO_API_KEY env var.
     explicitly_configured: bool = False
@@ -169,7 +169,7 @@ class HonchoClientConfig:
             return cls.from_env()
 
         host_block = (raw.get("hosts") or {}).get(host, {})
-        # A hosts.hermes block or explicit enabled flag means the user
+        # A hosts.morpheus block or explicit enabled flag means the user
         # intentionally configured Honcho for this host.
         _explicitly_configured = bool(host_block) or raw.get("enabled") is True
 
@@ -386,7 +386,7 @@ def get_honcho_client(config: HonchoClientConfig | None = None) -> Honcho:
         raise ValueError(
             "Honcho API key not found. "
             "Get your API key at https://app.honcho.dev, "
-            "then run 'hermes honcho setup' or set HONCHO_API_KEY. "
+            "then run 'morpheus honcho setup' or set HONCHO_API_KEY. "
             "For local instances, set HONCHO_BASE_URL instead."
         )
 
@@ -405,8 +405,8 @@ def get_honcho_client(config: HonchoClientConfig | None = None) -> Honcho:
     if not resolved_base_url:
         try:
             from morpheus_cli.config import load_config
-            hermes_cfg = load_config()
-            honcho_cfg = hermes_cfg.get("honcho", {})
+            morpheus_cfg = load_config()
+            honcho_cfg = morpheus_cfg.get("honcho", {})
             if isinstance(honcho_cfg, dict):
                 resolved_base_url = honcho_cfg.get("base_url", "").strip() or None
         except Exception:

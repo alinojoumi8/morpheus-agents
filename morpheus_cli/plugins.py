@@ -6,8 +6,8 @@ Discovers, loads, and manages plugins from three sources:
 
 1. **User plugins**   – ``~/.morpheus/plugins/<name>/``
 2. **Project plugins** – ``./.morpheus/plugins/<name>/`` (opt-in via
-   ``HERMES_ENABLE_PROJECT_PLUGINS``)
-3. **Pip plugins**     – packages that expose the ``hermes_agent.plugins``
+   ``MORPHEUS_ENABLE_PROJECT_PLUGINS``)
+3. **Pip plugins**     – packages that expose the ``morpheus_agent.plugins``
    entry-point group.
 
 Each directory plugin must contain a ``plugin.yaml`` manifest **and** an
@@ -58,9 +58,9 @@ VALID_HOOKS: Set[str] = {
     "on_session_end",
 }
 
-ENTRY_POINTS_GROUP = "hermes_agent.plugins"
+ENTRY_POINTS_GROUP = "morpheus_agent.plugins"
 
-_NS_PARENT = "hermes_plugins"
+_NS_PARENT = "morpheus_plugins"
 
 
 def _env_enabled(name: str) -> bool:
@@ -187,12 +187,12 @@ class PluginManager:
         manifests: List[PluginManifest] = []
 
         # 1. User plugins (~/.morpheus/plugins/)
-        hermes_home = os.environ.get("MORPHEUS_HOME", os.path.expanduser("~/.morpheus"))
-        user_dir = Path(hermes_home) / "plugins"
+        morpheus_home = os.environ.get("MORPHEUS_HOME", os.path.expanduser("~/.morpheus"))
+        user_dir = Path(morpheus_home) / "plugins"
         manifests.extend(self._scan_directory(user_dir, source="user"))
 
         # 2. Project plugins (./.morpheus/plugins/)
-        if _env_enabled("HERMES_ENABLE_PROJECT_PLUGINS"):
+        if _env_enabled("MORPHEUS_ENABLE_PROJECT_PLUGINS"):
             project_dir = Path.cwd() / ".morpheus" / "plugins"
             manifests.extend(self._scan_directory(project_dir, source="project"))
 
@@ -334,7 +334,7 @@ class PluginManager:
         self._plugins[manifest.name] = loaded
 
     def _load_directory_module(self, manifest: PluginManifest) -> types.ModuleType:
-        """Import a directory-based plugin as ``hermes_plugins.<name>``."""
+        """Import a directory-based plugin as ``morpheus_plugins.<name>``."""
         plugin_dir = Path(manifest.path)  # type: ignore[arg-type]
         init_file = plugin_dir / "__init__.py"
         if not init_file.exists():
@@ -459,7 +459,7 @@ def get_plugin_tool_names() -> Set[str]:
 def get_plugin_toolsets() -> List[tuple]:
     """Return plugin toolsets as ``(key, label, description)`` tuples.
 
-    Used by the ``hermes tools`` TUI so plugin-provided toolsets appear
+    Used by the ``morpheus tools`` TUI so plugin-provided toolsets appear
     alongside the built-in ones and can be toggled on/off per platform.
     """
     manager = get_plugin_manager()

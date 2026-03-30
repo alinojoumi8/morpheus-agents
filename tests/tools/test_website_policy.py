@@ -239,10 +239,10 @@ def test_load_website_blocklist_wraps_shared_file_read_errors(tmp_path, monkeypa
     assert result["rules"] == []  # shared file rules skipped
 
 
-def test_check_website_access_uses_dynamic_hermes_home(monkeypatch, tmp_path):
-    hermes_home = tmp_path / "hermes-home"
-    hermes_home.mkdir()
-    (hermes_home / "config.yaml").write_text(
+def test_check_website_access_uses_dynamic_morpheus_home(monkeypatch, tmp_path):
+    morpheus_home = tmp_path / "morpheus-home"
+    morpheus_home.mkdir()
+    (morpheus_home / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "security": {
@@ -257,7 +257,7 @@ def test_check_website_access_uses_dynamic_hermes_home(monkeypatch, tmp_path):
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(morpheus_home))
 
     blocked = check_website_access("https://dynamic.example/path")
 

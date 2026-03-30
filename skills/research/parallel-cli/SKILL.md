@@ -5,7 +5,7 @@ version: 1.1.0
 author: Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Research, Web, Search, Deep-Research, Enrichment, CLI]
     related_skills: [duckduckgo-search, mcporter]
 ---

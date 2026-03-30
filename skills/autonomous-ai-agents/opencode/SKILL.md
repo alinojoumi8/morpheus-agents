@@ -5,7 +5,7 @@ version: 1.2.0
 author: Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Coding-Agent, OpenCode, Autonomous, Refactoring, Code-Review]
     related_skills: [claude-code, codex, morpheus-agent]
 ---

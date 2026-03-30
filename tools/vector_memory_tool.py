@@ -214,6 +214,15 @@ def vector_remember(
     if not db:
         return "Intelligence module is not enabled. Enable it in config.yaml under 'intelligence.enabled: true'."
 
+    # Security scan before storage (content may be injected into system prompt)
+    try:
+        from intelligence.security import scan_content
+        threat = scan_content(content)
+        if threat:
+            return f"Content blocked by security scan: {threat}"
+    except ImportError:
+        pass
+
     provider = _get_embedding_provider()
 
     try:

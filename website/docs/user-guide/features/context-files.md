@@ -1,26 +1,26 @@
 ---
 sidebar_position: 8
 title: "Context Files"
-description: "Project context files — .hermes.md, AGENTS.md, CLAUDE.md, global SOUL.md, and .cursorrules — automatically injected into every conversation"
+description: "Project context files — .morpheus.md, AGENTS.md, CLAUDE.md, global SOUL.md, and .cursorrules — automatically injected into every conversation"
 ---
 
 # Context Files
 
-Morpheus Agent automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Morpheus instance and is loaded from `HERMES_HOME` only.
+Morpheus Agent automatically discovers and loads context files that shape how it behaves. Some are project-local and discovered from your working directory. `SOUL.md` is now global to the Morpheus instance and is loaded from `MORPHEUS_HOME` only.
 
 ## Supported Context Files
 
 | File | Purpose | Discovery |
 |------|---------|-----------| 
-| **.hermes.md** / **HERMES.md** | Project instructions (highest priority) | Walks to git root |
+| **.morpheus.md** / **MORPHEUS.md** | Project instructions (highest priority) | Walks to git root |
 | **AGENTS.md** | Project instructions, conventions, architecture | Recursive (walks subdirectories) |
 | **CLAUDE.md** | Claude Code context files (also detected) | CWD only |
-| **SOUL.md** | Global personality and tone customization for this Morpheus instance | `HERMES_HOME/SOUL.md` only |
+| **SOUL.md** | Global personality and tone customization for this Morpheus instance | `MORPHEUS_HOME/SOUL.md` only |
 | **.cursorrules** | Cursor IDE coding conventions | CWD only |
 | **.cursor/rules/*.mdc** | Cursor IDE rule modules | CWD only |
 
 :::info Priority system
-Only **one** project context type is loaded per session (first match wins): `.hermes.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. **SOUL.md** is always loaded independently as the agent identity (slot #1).
+Only **one** project context type is loaded per session (first match wins): `.morpheus.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. **SOUL.md** is always loaded independently as the agent identity (slot #1).
 :::
 
 ## AGENTS.md
@@ -80,19 +80,19 @@ This is a Next.js 14 web application with a Python FastAPI backend.
 **Location:**
 
 - `~/.morpheus/SOUL.md`
-- or `$HERMES_HOME/SOUL.md` if you run Morpheus with a custom home directory
+- or `$MORPHEUS_HOME/SOUL.md` if you run Morpheus with a custom home directory
 
 Important details:
 
 - Morpheus seeds a default `SOUL.md` automatically if one does not exist yet
-- Morpheus loads `SOUL.md` only from `HERMES_HOME`
+- Morpheus loads `SOUL.md` only from `MORPHEUS_HOME`
 - Morpheus does not probe the working directory for `SOUL.md`
 - If the file is empty, nothing from `SOUL.md` is added to the prompt
 - If the file has content, the content is injected verbatim after scanning and truncation
 
 ## .cursorrules
 
-Morpheus is compatible with Cursor IDE's `.cursorrules` file and `.cursor/rules/*.mdc` rule modules. If these files exist in your project root and no higher-priority context file (`.hermes.md`, `AGENTS.md`, or `CLAUDE.md`) is found, they're loaded as the project context.
+Morpheus is compatible with Cursor IDE's `.cursorrules` file and `.cursor/rules/*.mdc` rule modules. If these files exist in your project root and no higher-priority context file (`.morpheus.md`, `AGENTS.md`, or `CLAUDE.md`) is found, they're loaded as the project context.
 
 This means your existing Cursor conventions automatically apply when using Morpheus.
 

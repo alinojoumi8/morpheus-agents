@@ -26,7 +26,7 @@ API_SERVER_KEY=change-me-local-dev
 ### 2. Start the gateway
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 You'll see:

@@ -241,15 +241,15 @@ def test_defaults_allowed_root_to_cwd(tmp_path: Path):
 
 
 @pytest.mark.asyncio
-async def test_blocks_sensitive_home_and_hermes_paths(tmp_path: Path, monkeypatch):
+async def test_blocks_sensitive_home_and_morpheus_paths(tmp_path: Path, monkeypatch):
     from agent.context_references import preprocess_context_references_async
 
     monkeypatch.setenv("HOME", str(tmp_path))
     monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / ".morpheus"))
 
-    hermes_env = tmp_path / ".morpheus" / ".env"
-    hermes_env.parent.mkdir(parents=True)
-    hermes_env.write_text("API_KEY=super-secret\n", encoding="utf-8")
+    morpheus_env = tmp_path / ".morpheus" / ".env"
+    morpheus_env.parent.mkdir(parents=True)
+    morpheus_env.write_text("API_KEY=super-secret\n", encoding="utf-8")
 
     ssh_key = tmp_path / ".ssh" / "id_rsa"
     ssh_key.parent.mkdir(parents=True)

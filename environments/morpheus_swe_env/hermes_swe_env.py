@@ -11,9 +11,9 @@ the model's tool calls is preserved for verification.
 
 Usage:
     # Phase 1: OpenAI server type
-    vllm serve YourModel --tool-parser hermes
+    vllm serve YourModel --tool-parser morpheus
     run-api
-    python environments/hermes_swe_env.py serve \\
+    python environments/morpheus_swe_env.py serve \\
         --openai.base_url http://localhost:8000/v1 \\
         --openai.model_name YourModel \\
         --openai.server_type openai \\
@@ -21,11 +21,11 @@ Usage:
         --env.terminal_backend modal
 
     # Phase 2: VLLM server type (full RL training)
-    python environments/hermes_swe_env.py serve \\
+    python environments/morpheus_swe_env.py serve \\
         --openai.base_url http://localhost:8000/v1 \\
         --openai.model_name YourModel \\
         --openai.server_type vllm \\
-        --env.tool_call_parser hermes \\
+        --env.tool_call_parser morpheus \\
         --env.terminal_backend modal
 """
 
@@ -47,7 +47,7 @@ from atroposlib.envs.server_handling.server_manager import APIServerConfig
 from atroposlib.type_definitions import Item
 
 from environments.agent_loop import AgentResult
-from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 from environments.tool_context import ToolContext
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class MorpheusSweEnv(MorpheusAgentBaseEnv):
     and customize format_prompt() and compute_reward() as needed.
     """
 
-    name = "hermes-swe"
+    name = "morpheus-swe"
     env_config_cls = MorpheusSweEnvConfig
 
     @classmethod
@@ -107,7 +107,7 @@ class MorpheusSweEnv(MorpheusAgentBaseEnv):
             steps_per_eval=50,
             total_steps=500,
             use_wandb=True,
-            wandb_name="hermes-swe",
+            wandb_name="morpheus-swe",
         )
 
         server_configs = [

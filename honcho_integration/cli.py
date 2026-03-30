@@ -1,6 +1,6 @@
 """CLI commands for Honcho integration management.
 
-Handles: hermes honcho setup | status | sessions | map | peer
+Handles: morpheus honcho setup | status | sessions | map | peer
 """
 
 from __future__ import annotations
@@ -107,10 +107,10 @@ def cmd_setup(args) -> None:
     if not _ensure_sdk_installed():
         return
 
-    # All writes go to hosts.hermes — root keys are managed by the user
+    # All writes go to hosts.morpheus — root keys are managed by the user
     # or the honcho CLI only.
     hosts = cfg.setdefault("hosts", {})
-    hermes_host = hosts.setdefault(HOST, {})
+    morpheus_host = hosts.setdefault(HOST, {})
 
     # API key — shared credential, lives at root so all hosts can read it
     current_key = cfg.get("apiKey", "")
@@ -123,35 +123,35 @@ def cmd_setup(args) -> None:
     effective_key = cfg.get("apiKey", "")
     if not effective_key:
         print("\n  No API key configured. Get your API key at https://app.honcho.dev")
-        print("  Run 'hermes honcho setup' again once you have a key.\n")
+        print("  Run 'morpheus honcho setup' again once you have a key.\n")
         return
 
     # Peer name
-    current_peer = hermes_host.get("peerName") or cfg.get("peerName", "")
+    current_peer = morpheus_host.get("peerName") or cfg.get("peerName", "")
     new_peer = _prompt("Your name (user peer)", default=current_peer or os.getenv("USER", "user"))
     if new_peer:
-        hermes_host["peerName"] = new_peer
+        morpheus_host["peerName"] = new_peer
 
-    current_workspace = hermes_host.get("workspace") or cfg.get("workspace", "morpheus")
+    current_workspace = morpheus_host.get("workspace") or cfg.get("workspace", "morpheus")
     new_workspace = _prompt("Workspace ID", default=current_workspace)
     if new_workspace:
-        hermes_host["workspace"] = new_workspace
+        morpheus_host["workspace"] = new_workspace
 
-    hermes_host.setdefault("aiPeer", HOST)
+    morpheus_host.setdefault("aiPeer", HOST)
 
     # Memory mode
-    current_mode = hermes_host.get("memoryMode") or cfg.get("memoryMode", "hybrid")
+    current_mode = morpheus_host.get("memoryMode") or cfg.get("memoryMode", "hybrid")
     print("\n  Memory mode options:")
     print("    hybrid  — write to both Honcho and local MEMORY.md (default)")
     print("    honcho  — Honcho only, skip MEMORY.md writes")
     new_mode = _prompt("Memory mode", default=current_mode)
     if new_mode in ("hybrid", "honcho"):
-        hermes_host["memoryMode"] = new_mode
+        morpheus_host["memoryMode"] = new_mode
     else:
-        hermes_host["memoryMode"] = "hybrid"
+        morpheus_host["memoryMode"] = "hybrid"
 
     # Write frequency
-    current_wf = str(hermes_host.get("writeFrequency") or cfg.get("writeFrequency", "async"))
+    current_wf = str(morpheus_host.get("writeFrequency") or cfg.get("writeFrequency", "async"))
     print("\n  Write frequency options:")
     print("    async   — background thread, no token cost (recommended)")
     print("    turn    — sync write after every turn")
@@ -159,12 +159,12 @@ def cmd_setup(args) -> None:
     print("    N       — write every N turns (e.g. 5)")
     new_wf = _prompt("Write frequency", default=current_wf)
     try:
-        hermes_host["writeFrequency"] = int(new_wf)
+        morpheus_host["writeFrequency"] = int(new_wf)
     except (ValueError, TypeError):
-        hermes_host["writeFrequency"] = new_wf if new_wf in ("async", "turn", "session") else "async"
+        morpheus_host["writeFrequency"] = new_wf if new_wf in ("async", "turn", "session") else "async"
 
     # Recall mode
-    _raw_recall = hermes_host.get("recallMode") or cfg.get("recallMode", "hybrid")
+    _raw_recall = morpheus_host.get("recallMode") or cfg.get("recallMode", "hybrid")
     current_recall = "hybrid" if _raw_recall not in ("hybrid", "context", "tools") else _raw_recall
     print("\n  Recall mode options:")
     print("    hybrid  — auto-injected context + Honcho tools available (default)")
@@ -172,10 +172,10 @@ def cmd_setup(args) -> None:
     print("    tools   — Honcho tools only, no auto-injected context")
     new_recall = _prompt("Recall mode", default=current_recall)
     if new_recall in ("hybrid", "context", "tools"):
-        hermes_host["recallMode"] = new_recall
+        morpheus_host["recallMode"] = new_recall
 
     # Session strategy
-    current_strat = hermes_host.get("sessionStrategy") or cfg.get("sessionStrategy", "per-directory")
+    current_strat = morpheus_host.get("sessionStrategy") or cfg.get("sessionStrategy", "per-directory")
     print("\n  Session strategy options:")
     print("    per-directory — one session per working directory (default)")
     print("    per-session   — new Honcho session each run, named by Morpheus session ID")
@@ -183,10 +183,10 @@ def cmd_setup(args) -> None:
     print("    global        — single session across all directories")
     new_strat = _prompt("Session strategy", default=current_strat)
     if new_strat in ("per-session", "per-repo", "per-directory", "global"):
-        hermes_host["sessionStrategy"] = new_strat
+        morpheus_host["sessionStrategy"] = new_strat
 
-    hermes_host.setdefault("enabled", True)
-    hermes_host.setdefault("saveMessages", True)
+    morpheus_host.setdefault("enabled", True)
+    morpheus_host.setdefault("saveMessages", True)
 
     _write_config(cfg)
     print(f"\n  Config written to {active_path}")
@@ -219,11 +219,11 @@ def cmd_setup(args) -> None:
     print("    honcho_profile      — your peer card, key facts (no LLM)")
     print("    honcho_conclude     — persist a user fact to Honcho memory (no LLM)")
     print("\n  Other commands:")
-    print("    hermes honcho status     — show full config")
-    print("    hermes honcho mode       — show or change memory mode")
-    print("    hermes honcho tokens     — show or set token budgets")
-    print("    hermes honcho identity   — seed or show AI peer identity")
-    print("    hermes honcho map <name> — map this directory to a session name\n")
+    print("    morpheus honcho status     — show full config")
+    print("    morpheus honcho mode       — show or change memory mode")
+    print("    morpheus honcho tokens     — show or set token budgets")
+    print("    morpheus honcho identity   — seed or show AI peer identity")
+    print("    morpheus honcho map <name> — map this directory to a session name\n")
 
 
 def cmd_status(args) -> None:
@@ -231,7 +231,7 @@ def cmd_status(args) -> None:
     try:
         import honcho  # noqa: F401
     except ImportError:
-        print("  honcho-ai is not installed. Run: hermes honcho setup\n")
+        print("  honcho-ai is not installed. Run: morpheus honcho setup\n")
         return
 
     cfg = _read_config()
@@ -240,7 +240,7 @@ def cmd_status(args) -> None:
 
     if not cfg:
         print(f"  No Honcho config found at {active_path}")
-        print("  Run 'hermes honcho setup' to configure.\n")
+        print("  Run 'morpheus honcho setup' to configure.\n")
         return
 
     try:
@@ -289,7 +289,7 @@ def cmd_sessions(args) -> None:
 
     if not sessions:
         print("  No session mappings configured.\n")
-        print("  Add one with: hermes honcho map <session-name>")
+        print("  Add one with: morpheus honcho map <session-name>")
         print(f"  Or edit {_config_path()} directly.\n")
         return
 
@@ -340,16 +340,16 @@ def cmd_peer(args) -> None:
     if user_name is None and ai_name is None and reasoning is None:
         # Show current values
         hosts = cfg.get("hosts", {})
-        hermes = hosts.get(HOST, {})
-        user = hermes.get('peerName') or cfg.get('peerName') or '(not set)'
-        ai = hermes.get('aiPeer') or cfg.get('aiPeer') or HOST
-        lvl = hermes.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
-        max_chars = hermes.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
+        morpheus = hosts.get(HOST, {})
+        user = morpheus.get('peerName') or cfg.get('peerName') or '(not set)'
+        ai = morpheus.get('aiPeer') or cfg.get('aiPeer') or HOST
+        lvl = morpheus.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
+        max_chars = morpheus.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
         print("\nHoncho peers\n" + "─" * 40)
         print(f"  User peer:   {user}")
         print("    Your identity in Honcho. Messages you send build this peer's card.")
         print(f"  AI peer:     {ai}")
-        print("    Morpheus' identity in Honcho. Seed with 'hermes honcho identity <file>'.")
+        print("    Morpheus' identity in Honcho. Seed with 'morpheus honcho identity <file>'.")
         print("    Dialectic calls ask this peer questions to warm session context.")
         print()
         print(f"  Dialectic reasoning:  {lvl}  ({', '.join(REASONING_LEVELS)})")
@@ -398,7 +398,7 @@ def cmd_mode(args) -> None:
         for m, desc in MODES.items():
             marker = " ←" if m == current else ""
             print(f"  {m:<8}  {desc}{marker}")
-        print("\n  Set with: hermes honcho mode [hybrid|honcho]\n")
+        print("\n  Set with: morpheus honcho mode [hybrid|honcho]\n")
         return
 
     if mode_arg not in MODES:
@@ -414,15 +414,15 @@ def cmd_tokens(args) -> None:
     """Show or set token budget settings."""
     cfg = _read_config()
     hosts = cfg.get("hosts", {})
-    hermes = hosts.get(HOST, {})
+    morpheus = hosts.get(HOST, {})
 
     context = getattr(args, "context", None)
     dialectic = getattr(args, "dialectic", None)
 
     if context is None and dialectic is None:
-        ctx_tokens = hermes.get("contextTokens") or cfg.get("contextTokens") or "(Honcho default)"
-        d_chars = hermes.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
-        d_level = hermes.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
+        ctx_tokens = morpheus.get("contextTokens") or cfg.get("contextTokens") or "(Honcho default)"
+        d_chars = morpheus.get("dialecticMaxChars") or cfg.get("dialecticMaxChars") or 600
+        d_level = morpheus.get("dialecticReasoningLevel") or cfg.get("dialecticReasoningLevel") or "low"
         print("\nHoncho budgets\n" + "─" * 40)
         print()
         print(f"  Context     {ctx_tokens} tokens")
@@ -434,7 +434,7 @@ def cmd_tokens(args) -> None:
         print("    (e.g. \"what were we working on?\") and Honcho runs its own model")
         print("    to synthesize an answer. Used for first-turn session continuity.")
         print("    Level controls how much reasoning Honcho spends on the answer.")
-        print("\n  Set with: hermes honcho tokens [--context N] [--dialectic N]\n")
+        print("\n  Set with: morpheus honcho tokens [--context N] [--dialectic N]\n")
         return
 
     changed = False
@@ -456,7 +456,7 @@ def cmd_identity(args) -> None:
     """Seed AI peer identity or show both peer representations."""
     cfg = _read_config()
     if not _resolve_api_key(cfg):
-        print("  No API key configured. Run 'hermes honcho setup' first.\n")
+        print("  No API key configured. Run 'morpheus honcho setup' first.\n")
         return
 
     file_path = getattr(args, "file", None)
@@ -493,7 +493,7 @@ def cmd_identity(args) -> None:
             print(ai_rep["card"])
         else:
             print("  No representation built yet.")
-            print("  Run 'hermes honcho identity <file>' to seed one.")
+            print("  Run 'morpheus honcho identity <file>' to seed one.")
         print()
         return
 
@@ -502,8 +502,8 @@ def cmd_identity(args) -> None:
         print(f"  User peer: {hcfg.peer_name or 'not set'}")
         print(f"  AI peer:   {hcfg.ai_peer}")
         print()
-        print("    hermes honcho identity --show        — show both peer representations")
-        print("    hermes honcho identity <file>        — seed AI peer from SOUL.md or any .md/.txt\n")
+        print("    morpheus honcho identity --show        — show both peer representations")
+        print("    morpheus honcho identity <file>        — seed AI peer from SOUL.md or any .md/.txt\n")
         return
 
     from pathlib import Path
@@ -576,17 +576,17 @@ def cmd_migrate(args) -> None:
         print("  across sessions. You need an API key to use it.")
         print()
         print("  1. Get your API key at https://app.honcho.dev")
-        print("  2. Run:  hermes honcho setup")
+        print("  2. Run:  morpheus honcho setup")
         print("     Paste the key when prompted.")
         print()
-        answer = _prompt("  Run 'hermes honcho setup' now?", default="y")
+        answer = _prompt("  Run 'morpheus honcho setup' now?", default="y")
         if answer.lower() in ("y", "yes"):
             cmd_setup(args)
             cfg = _read_config()
             has_key = bool(cfg.get("apiKey", ""))
         else:
             print()
-            print("  Run 'hermes honcho setup' when ready, then re-run this walkthrough.")
+            print("  Run 'morpheus honcho setup' when ready, then re-run this walkthrough.")
 
     # ── Step 2: Detected files ────────────────────────────────────────────────
     print()
@@ -604,7 +604,7 @@ def cmd_migrate(args) -> None:
     else:
         print("  No OpenClaw native memory files found in cwd or ~/.openclaw/.")
         print("  If your files are elsewhere, copy them here before continuing,")
-        print("  or seed them manually:  hermes honcho identity <path/to/file>")
+        print("  or seed them manually:  morpheus honcho identity <path/to/file>")
 
     # ── Step 3: Migrate user memory ───────────────────────────────────────────
     print()
@@ -623,7 +623,7 @@ def cmd_migrate(args) -> None:
         print()
         print("  If you want to migrate them now without starting a session:")
         for f in user_files:
-            print("    hermes honcho migrate  — this step handles it interactively")
+            print("    morpheus honcho migrate  — this step handles it interactively")
         if has_key:
             answer = _prompt("  Upload user memory files to Honcho now?", default="y")
             if answer.lower() in ("y", "yes"):
@@ -654,7 +654,7 @@ def cmd_migrate(args) -> None:
                 except Exception as e:
                     print(f"  Failed: {e}")
         else:
-            print("  Run 'hermes honcho setup' first, then re-run this step.")
+            print("  Run 'morpheus honcho setup' first, then re-run this step.")
     else:
         print("  No user memory files detected. Nothing to migrate here.")
 
@@ -700,12 +700,12 @@ def cmd_migrate(args) -> None:
                 except Exception as e:
                     print(f"  Failed: {e}")
         else:
-            print("  Run 'hermes honcho setup' first, then seed manually:")
+            print("  Run 'morpheus honcho setup' first, then seed manually:")
             for f in agent_files:
-                print(f"    hermes honcho identity {f}")
+                print(f"    morpheus honcho identity {f}")
     else:
         print("  No agent identity files detected.")
-        print("  To seed manually:  hermes honcho identity <path/to/SOUL.md>")
+        print("  To seed manually:  morpheus honcho identity <path/to/SOUL.md>")
 
     # ── Step 5: What changes ──────────────────────────────────────────────────
     print()
@@ -735,22 +735,22 @@ def cmd_migrate(args) -> None:
     print("  Session naming")
     print("    OpenClaw: no persistent session concept — files are global.")
     print("    Morpheus:   per-session by default — each run gets its own session")
-    print("              Map a custom name:  hermes honcho map <session-name>")
+    print("              Map a custom name:  morpheus honcho map <session-name>")
 
     # ── Step 6: Next steps ────────────────────────────────────────────────────
     print()
     print("Step 6  Next steps")
     print()
     if not has_key:
-        print("  1. hermes honcho setup              — configure API key (required)")
-        print("  2. hermes honcho migrate            — re-run this walkthrough")
+        print("  1. morpheus honcho setup              — configure API key (required)")
+        print("  2. morpheus honcho migrate            — re-run this walkthrough")
     else:
-        print("  1. hermes honcho status             — verify Honcho connection")
-        print("  2. hermes                           — start a session")
+        print("  1. morpheus honcho status             — verify Honcho connection")
+        print("  2. morpheus                           — start a session")
         print("     (user memory files auto-uploaded on first turn if not done above)")
-        print("  3. hermes honcho identity --show    — verify AI peer representation")
-        print("  4. hermes honcho tokens             — tune context and dialectic budgets")
-        print("  5. hermes honcho mode               — view or change memory mode")
+        print("  3. morpheus honcho identity --show    — verify AI peer representation")
+        print("  4. morpheus honcho tokens             — tune context and dialectic budgets")
+        print("  5. morpheus honcho mode               — view or change memory mode")
     print()
 
 

@@ -14,7 +14,7 @@ class TestGatewayPidState:
 
         payload = json.loads((tmp_path / "gateway.pid").read_text())
         assert payload["pid"] == os.getpid()
-        assert payload["kind"] == "hermes-gateway"
+        assert payload["kind"] == "morpheus-gateway"
         assert isinstance(payload["argv"], list)
         assert payload["argv"]
 
@@ -31,7 +31,7 @@ class TestGatewayPidState:
         pid_path = tmp_path / "gateway.pid"
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
-            "kind": "hermes-gateway",
+            "kind": "morpheus-gateway",
             "argv": ["python", "-m", "morpheus_cli.main", "gateway"],
             "start_time": 123,
         }))
@@ -47,7 +47,7 @@ class TestGatewayPidState:
         pid_path = tmp_path / "gateway.pid"
         pid_path.write_text(json.dumps({
             "pid": os.getpid(),
-            "kind": "hermes-gateway",
+            "kind": "morpheus-gateway",
             "argv": ["/venv/bin/python", "/repo/morpheus_cli/main.py", "gateway", "run", "--replace"],
             "start_time": 123,
         }))
@@ -73,7 +73,7 @@ class TestGatewayRuntimeStatus:
         state_path.write_text(json.dumps({
             "pid": 99999,
             "start_time": 1000.0,
-            "kind": "hermes-gateway",
+            "kind": "morpheus-gateway",
             "platforms": {},
             "updated_at": "2025-01-01T00:00:00Z",
         }))
@@ -106,13 +106,13 @@ class TestGatewayRuntimeStatus:
 
 class TestScopedLocks:
     def test_acquire_scoped_lock_rejects_live_other_process(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
+        monkeypatch.setenv("MORPHEUS_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
         lock_path = tmp_path / "locks" / "telegram-bot-token-2bb80d537b1da3e3.lock"
         lock_path.parent.mkdir(parents=True, exist_ok=True)
         lock_path.write_text(json.dumps({
             "pid": 99999,
             "start_time": 123,
-            "kind": "hermes-gateway",
+            "kind": "morpheus-gateway",
         }))
 
         monkeypatch.setattr(status.os, "kill", lambda pid, sig: None)
@@ -124,13 +124,13 @@ class TestScopedLocks:
         assert existing["pid"] == 99999
 
     def test_acquire_scoped_lock_replaces_stale_record(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
+        monkeypatch.setenv("MORPHEUS_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
         lock_path = tmp_path / "locks" / "telegram-bot-token-2bb80d537b1da3e3.lock"
         lock_path.parent.mkdir(parents=True, exist_ok=True)
         lock_path.write_text(json.dumps({
             "pid": 99999,
             "start_time": 123,
-            "kind": "hermes-gateway",
+            "kind": "morpheus-gateway",
         }))
 
         def fake_kill(pid, sig):
@@ -146,7 +146,7 @@ class TestScopedLocks:
         assert payload["metadata"]["platform"] == "telegram"
 
     def test_release_scoped_lock_only_removes_current_owner(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
+        monkeypatch.setenv("MORPHEUS_GATEWAY_LOCK_DIR", str(tmp_path / "locks"))
 
         acquired, _ = status.acquire_scoped_lock("telegram-bot-token", "secret", metadata={"platform": "telegram"})
         assert acquired is True

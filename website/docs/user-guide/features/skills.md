@@ -35,8 +35,8 @@ The bundled `plan` skill is a good example of a skill-backed slash command with 
 You can also interact with skills through natural conversation:
 
 ```bash
-hermes chat --toolsets skills -q "What skills do you have?"
-hermes chat --toolsets skills -q "Show me the axolotl skill"
+morpheus chat --toolsets skills -q "What skills do you have?"
+morpheus chat --toolsets skills -q "Show me the axolotl skill"
 ```
 
 ## Progressive Disclosure
@@ -60,7 +60,7 @@ description: Brief description of what this skill does
 version: 1.0.0
 platforms: [macos, linux]     # Optional — restrict to specific OS platforms
 metadata:
-  hermes:
+  morpheus:
     tags: [python, automation]
     category: devops
     fallback_for_toolsets: [web]    # Optional — conditional activation (see below)
@@ -106,7 +106,7 @@ Skills can automatically show or hide themselves based on which tools are availa
 
 ```yaml
 metadata:
-  hermes:
+  morpheus:
     fallback_for_toolsets: [web]      # Show ONLY when these toolsets are unavailable
     requires_toolsets: [terminal]     # Show ONLY when these toolsets are available
     fallback_for_tools: [web_search]  # Show ONLY when these specific tools are unavailable
@@ -136,7 +136,7 @@ required_environment_variables:
     required_for: full functionality
 ```
 
-When a missing value is encountered, Morpheus asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `hermes setup` or `~/.morpheus/.env` locally instead.
+When a missing value is encountered, Morpheus asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `morpheus setup` or `~/.morpheus/.env` locally instead.
 
 Once set, declared env vars are **automatically passed through** to `execute_code` and `terminal` sandboxes — the skill's scripts can use `$TENOR_API_KEY` directly. For non-skill env vars, use the `terminal.env_passthrough` config option. See [Environment Variable Passthrough](/docs/user-guide/security#environment-variable-passthrough) for details.
 
@@ -197,24 +197,24 @@ Browse, search, install, and manage skills from online registries, `skills.sh`, 
 ### Common commands
 
 ```bash
-hermes skills browse                              # Browse all hub skills (official first)
-hermes skills browse --source official            # Browse only official optional skills
-hermes skills search kubernetes                   # Search all sources
-hermes skills search react --source skills-sh     # Search the skills.sh directory
-hermes skills search https://mintlify.com/docs --source well-known
-hermes skills inspect openai/skills/k8s           # Preview before installing
-hermes skills install openai/skills/k8s           # Install with security scan
-hermes skills install official/security/1password
-hermes skills install skills-sh/vercel-labs/json-render/json-render-react --force
-hermes skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify
-hermes skills list --source hub                   # List hub-installed skills
-hermes skills check                               # Check installed hub skills for upstream updates
-hermes skills update                              # Reinstall hub skills with upstream changes when needed
-hermes skills audit                               # Re-scan all hub skills for security
-hermes skills uninstall k8s                       # Remove a hub skill
-hermes skills publish skills/my-skill --to github --repo owner/repo
-hermes skills snapshot export setup.json          # Export skill config
-hermes skills tap add myorg/skills-repo           # Add a custom GitHub source
+morpheus skills browse                              # Browse all hub skills (official first)
+morpheus skills browse --source official            # Browse only official optional skills
+morpheus skills search kubernetes                   # Search all sources
+morpheus skills search react --source skills-sh     # Search the skills.sh directory
+morpheus skills search https://mintlify.com/docs --source well-known
+morpheus skills inspect openai/skills/k8s           # Preview before installing
+morpheus skills install openai/skills/k8s           # Install with security scan
+morpheus skills install official/security/1password
+morpheus skills install skills-sh/vercel-labs/json-render/json-render-react --force
+morpheus skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify
+morpheus skills list --source hub                   # List hub-installed skills
+morpheus skills check                               # Check installed hub skills for upstream updates
+morpheus skills update                              # Reinstall hub skills with upstream changes when needed
+morpheus skills audit                               # Re-scan all hub skills for security
+morpheus skills uninstall k8s                       # Remove a hub skill
+morpheus skills publish skills/my-skill --to github --repo owner/repo
+morpheus skills snapshot export setup.json          # Export skill config
+morpheus skills tap add myorg/skills-repo           # Add a custom GitHub source
 ```
 
 ### Supported hub sources
@@ -222,7 +222,7 @@ hermes skills tap add myorg/skills-repo           # Add a custom GitHub source
 | Source | Example | Notes |
 |--------|---------|-------|
 | `official` | `official/security/1password` | Optional skills shipped with Morpheus. |
-| `skills-sh` | `skills-sh/vercel-labs/agent-skills/vercel-react-best-practices` | Searchable via `hermes skills search <query> --source skills-sh`. Morpheus resolves alias-style skills when the skills.sh slug differs from the repo folder. |
+| `skills-sh` | `skills-sh/vercel-labs/agent-skills/vercel-react-best-practices` | Searchable via `morpheus skills search <query> --source skills-sh`. Morpheus resolves alias-style skills when the skills.sh slug differs from the repo folder. |
 | `well-known` | `well-known:https://mintlify.com/docs/.well-known/skills/mintlify` | Skills served directly from `/.well-known/skills/index.json` on a website. Search using the site or docs URL. |
 | `github` | `openai/skills/k8s` | Direct GitHub repo/path installs and custom taps. |
 | `clawhub`, `lobehub`, `claude-marketplace` | Source-specific identifiers | Community or marketplace integrations. |
@@ -240,8 +240,8 @@ These are maintained in the Morpheus repository itself and install with builtin 
 - Example:
 
 ```bash
-hermes skills browse --source official
-hermes skills install official/security/1password
+morpheus skills browse --source official
+morpheus skills install official/security/1password
 ```
 
 #### 2. skills.sh (`skills-sh`)
@@ -254,9 +254,9 @@ This is Vercel's public skills directory. Morpheus can search it directly, inspe
 - Example:
 
 ```bash
-hermes skills search react --source skills-sh
-hermes skills inspect skills-sh/vercel-labs/json-render/json-render-react
-hermes skills install skills-sh/vercel-labs/json-render/json-render-react --force
+morpheus skills search react --source skills-sh
+morpheus skills inspect skills-sh/vercel-labs/json-render/json-render-react
+morpheus skills install skills-sh/vercel-labs/json-render/json-render-react --force
 ```
 
 #### 3. Well-known skill endpoints (`well-known`)
@@ -268,9 +268,9 @@ This is URL-based discovery from sites that publish `/.well-known/skills/index.j
 - Example:
 
 ```bash
-hermes skills search https://mintlify.com/docs --source well-known
-hermes skills inspect well-known:https://mintlify.com/docs/.well-known/skills/mintlify
-hermes skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify
+morpheus skills search https://mintlify.com/docs --source well-known
+morpheus skills inspect well-known:https://mintlify.com/docs/.well-known/skills/mintlify
+morpheus skills install well-known:https://mintlify.com/docs/.well-known/skills/mintlify
 ```
 
 #### 4. Direct GitHub skills (`github`)
@@ -283,8 +283,8 @@ Morpheus can install directly from GitHub repositories and GitHub-based taps. Th
 - Example:
 
 ```bash
-hermes skills install openai/skills/k8s
-hermes skills tap add myorg/skills-repo
+morpheus skills install openai/skills/k8s
+morpheus skills tap add myorg/skills-repo
 ```
 
 #### 5. ClawHub (`clawhub`)
@@ -317,7 +317,7 @@ Morpheus can search and convert agent entries from LobeHub's public catalog into
 
 All hub-installed skills go through a **security scanner** that checks for data exfiltration, prompt injection, destructive commands, supply-chain signals, and other threats.
 
-`hermes skills inspect ...` now also surfaces upstream metadata when available:
+`morpheus skills inspect ...` now also surfaces upstream metadata when available:
 - repo URL
 - skills.sh detail page URL
 - install command
@@ -328,7 +328,7 @@ All hub-installed skills go through a **security scanner** that checks for data 
 Use `--force` when you have reviewed a third-party skill and want to override a non-dangerous policy block:
 
 ```bash
-hermes skills install skills-sh/anthropics/skills/pdf --force
+morpheus skills install skills-sh/anthropics/skills/pdf --force
 ```
 
 Important behavior:
@@ -350,9 +350,9 @@ Important behavior:
 The hub now tracks enough provenance to re-check upstream copies of installed skills:
 
 ```bash
-hermes skills check          # Report which installed hub skills changed upstream
-hermes skills update         # Reinstall only the skills with updates available
-hermes skills update react   # Update one specific installed hub skill
+morpheus skills check          # Report which installed hub skills changed upstream
+morpheus skills update         # Reinstall only the skills with updates available
+morpheus skills update react   # Update one specific installed hub skill
 ```
 
 This uses the stored source identifier plus the current upstream bundle content hash to detect drift.

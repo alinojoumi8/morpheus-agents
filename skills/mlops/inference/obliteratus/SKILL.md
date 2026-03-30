@@ -6,7 +6,7 @@ author: Morpheus Agent
 license: MIT
 dependencies: [obliteratus, torch, transformers, bitsandbytes, accelerate, safetensors]
 metadata:
-  hermes:
+  morpheus:
     tags: [Abliteration, Uncensoring, Refusal-Removal, LLM, Weight-Projection, SVD, Mechanistic-Interpretability, HuggingFace, Model-Surgery]
     related_skills: [vllm, gguf, huggingface-tokenizers]
 ---

@@ -1,4 +1,4 @@
-"""Tests for morpheus_cli.plugins_cmd — the ``hermes plugins`` CLI subcommand."""
+"""Tests for morpheus_cli.plugins_cmd — the ``morpheus plugins`` CLI subcommand."""
 
 from __future__ import annotations
 

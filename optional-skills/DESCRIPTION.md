@@ -6,10 +6,10 @@ These skills ship with the morpheus-agent repository but are not copied to
 `~/.morpheus/skills/` during setup. They are discoverable via the Skills Hub:
 
 ```bash
-hermes skills browse               # browse all skills, official shown first
-hermes skills browse --source official  # browse only official optional skills
-hermes skills search <query>       # finds optional skills labeled "official"
-hermes skills install <identifier> # copies to ~/.morpheus/skills/ and activates
+morpheus skills browse               # browse all skills, official shown first
+morpheus skills browse --source official  # browse only official optional skills
+morpheus skills search <query>       # finds optional skills labeled "official"
+morpheus skills install <identifier> # copies to ~/.morpheus/skills/ and activates
 ```
 
 ## Why optional?

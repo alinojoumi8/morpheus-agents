@@ -5,7 +5,7 @@ version: 1.0.0
 author: Nous Research
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, Email, OAuth]
     homepage: https://github.com/NousResearch/morpheus-agent
     related_skills: [himalaya]

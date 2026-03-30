@@ -26,27 +26,27 @@ All settings are stored in the `~/.morpheus/` directory for easy access.
 ## Managing Configuration
 
 ```bash
-hermes config              # View current configuration
-hermes config edit         # Open config.yaml in your editor
-hermes config set KEY VAL  # Set a specific value
-hermes config check        # Check for missing options (after updates)
-hermes config migrate      # Interactively add missing options
+morpheus config              # View current configuration
+morpheus config edit         # Open config.yaml in your editor
+morpheus config set KEY VAL  # Set a specific value
+morpheus config check        # Check for missing options (after updates)
+morpheus config migrate      # Interactively add missing options
 
 # Examples:
-hermes config set model anthropic/claude-opus-4
-hermes config set terminal.backend docker
-hermes config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
+morpheus config set model anthropic/claude-opus-4
+morpheus config set terminal.backend docker
+morpheus config set OPENROUTER_API_KEY sk-or-...  # Saves to .env
 ```
 
 :::tip
-The `hermes config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
+The `morpheus config set` command automatically routes values to the right file — API keys are saved to `.env`, everything else to `config.yaml`.
 :::
 
 ## Configuration Precedence
 
 Settings are resolved in this order (highest priority first):
 
-1. **CLI arguments** — e.g., `hermes chat --model anthropic/claude-sonnet-4` (per-invocation override)
+1. **CLI arguments** — e.g., `morpheus chat --model anthropic/claude-sonnet-4` (per-invocation override)
 2. **`~/.morpheus/config.yaml`** — the primary config file for all non-secret settings
 3. **`~/.morpheus/.env`** — fallback for env vars; **required** for secrets (API keys, tokens, passwords)
 4. **Built-in defaults** — hardcoded safe defaults when nothing else is set
@@ -73,15 +73,15 @@ Multiple references in a single value work: `url: "${HOST}:${PORT}"`. If a refer
 
 ## Inference Providers
 
-You need at least one way to connect to an LLM. Use `hermes model` to switch providers and models interactively, or configure directly:
+You need at least one way to connect to an LLM. Use `morpheus model` to switch providers and models interactively, or configure directly:
 
 | Provider | Setup |
 |----------|-------|
-| **Nous Portal** | `hermes model` (OAuth, subscription-based) |
-| **OpenAI Codex** | `hermes model` (ChatGPT OAuth, uses Codex models) |
-| **GitHub Copilot** | `hermes model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
-| **GitHub Copilot ACP** | `hermes model` (spawns local `copilot --acp --stdio`) |
-| **Anthropic** | `hermes model` (Claude Pro/Max via Claude Code auth, Anthropic API key, or manual setup-token) |
+| **Nous Portal** | `morpheus model` (OAuth, subscription-based) |
+| **OpenAI Codex** | `morpheus model` (ChatGPT OAuth, uses Codex models) |
+| **GitHub Copilot** | `morpheus model` (OAuth device code flow, `COPILOT_GITHUB_TOKEN`, `GH_TOKEN`, or `gh auth token`) |
+| **GitHub Copilot ACP** | `morpheus model` (spawns local `copilot --acp --stdio`) |
+| **Anthropic** | `morpheus model` (Claude Pro/Max via Claude Code auth, Anthropic API key, or manual setup-token) |
 | **OpenRouter** | `OPENROUTER_API_KEY` in `~/.morpheus/.env` |
 | **AI Gateway** | `AI_GATEWAY_API_KEY` in `~/.morpheus/.env` (provider: `ai-gateway`) |
 | **z.ai / GLM** | `GLM_API_KEY` in `~/.morpheus/.env` (provider: `zai`) |
@@ -93,7 +93,7 @@ You need at least one way to connect to an LLM. Use `hermes model` to switch pro
 | **OpenCode Zen** | `OPENCODE_ZEN_API_KEY` in `~/.morpheus/.env` (provider: `opencode-zen`) |
 | **OpenCode Go** | `OPENCODE_GO_API_KEY` in `~/.morpheus/.env` (provider: `opencode-go`) |
 | **Hugging Face** | `HF_TOKEN` in `~/.morpheus/.env` (provider: `huggingface`, aliases: `hf`) |
-| **Custom Endpoint** | `hermes model` (saved in `config.yaml`) or `OPENAI_BASE_URL` + `OPENAI_API_KEY` in `~/.morpheus/.env` |
+| **Custom Endpoint** | `morpheus model` (saved in `config.yaml`) or `OPENAI_BASE_URL` + `OPENAI_API_KEY` in `~/.morpheus/.env` |
 
 :::info Codex Note
 The OpenAI Codex provider authenticates via device code (open a URL, enter a code). Morpheus stores the resulting credentials in its own auth store under `~/.morpheus/auth.json` and can import existing Codex CLI credentials from `~/.codex/auth.json` when present. No Codex CLI installation is required.
@@ -110,21 +110,21 @@ Use Claude models directly through the Anthropic API — no OpenRouter proxy nee
 ```bash
 # With an API key (pay-per-token)
 export ANTHROPIC_API_KEY=***
-hermes chat --provider anthropic --model claude-sonnet-4-6
+morpheus chat --provider anthropic --model claude-sonnet-4-6
 
-# Preferred: authenticate through `hermes model`
+# Preferred: authenticate through `morpheus model`
 # Morpheus will use Claude Code's credential store directly when available
-hermes model
+morpheus model
 
 # Manual override with a setup-token (fallback / legacy)
 export ANTHROPIC_TOKEN=***  # setup-token or manual OAuth token
-hermes chat --provider anthropic
+morpheus chat --provider anthropic
 
 # Auto-detect Claude Code credentials (if you already use Claude Code)
-hermes chat --provider anthropic  # reads Claude Code credential files automatically
+morpheus chat --provider anthropic  # reads Claude Code credential files automatically
 ```
 
-When you choose Anthropic OAuth through `hermes model`, Morpheus prefers Claude Code's own credential store over copying the token into `~/.morpheus/.env`. That keeps refreshable Claude credentials refreshable.
+When you choose Anthropic OAuth through `morpheus model`, Morpheus prefers Claude Code's own credential store over copying the token into `~/.morpheus/.env`. That keeps refreshable Claude credentials refreshable.
 
 Or set it permanently:
 ```yaml
@@ -144,7 +144,7 @@ Morpheus supports GitHub Copilot as a first-class provider with two modes:
 **`copilot` — Direct Copilot API** (recommended). Uses your GitHub Copilot subscription to access GPT-5.x, Claude, Gemini, and other models through the Copilot API.
 
 ```bash
-hermes chat --provider copilot --model gpt-5.4
+morpheus chat --provider copilot --model gpt-5.4
 ```
 
 **Authentication options** (checked in this order):
@@ -154,18 +154,18 @@ hermes chat --provider copilot --model gpt-5.4
 3. `GITHUB_TOKEN` environment variable
 4. `gh auth token` CLI fallback
 
-If no token is found, `hermes model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
+If no token is found, `morpheus model` offers an **OAuth device code login** — the same flow used by the Copilot CLI and opencode.
 
 :::warning Token types
 The Copilot API does **not** support classic Personal Access Tokens (`ghp_*`). Supported token types:
 
 | Type | Prefix | How to get |
 |------|--------|------------|
-| OAuth token | `gho_` | `hermes model` → GitHub Copilot → Login with GitHub |
+| OAuth token | `gho_` | `morpheus model` → GitHub Copilot → Login with GitHub |
 | Fine-grained PAT | `github_pat_` | GitHub Settings → Developer settings → Fine-grained tokens (needs **Copilot Requests** permission) |
 | GitHub App token | `ghu_` | Via GitHub App installation |
 
-If your `gh auth token` returns a `ghp_*` token, use `hermes model` to authenticate via OAuth instead.
+If your `gh auth token` returns a `ghp_*` token, use `morpheus model` to authenticate via OAuth instead.
 :::
 
 **API routing**: GPT-5+ models (except `gpt-5-mini`) automatically use the Responses API. All other models (GPT-4o, Claude, Gemini, etc.) use Chat Completions. Models are auto-detected from the live Copilot catalog.
@@ -173,7 +173,7 @@ If your `gh auth token` returns a `ghp_*` token, use `hermes model` to authentic
 **`copilot-acp` — Copilot ACP agent backend**. Spawns the local Copilot CLI as a subprocess:
 
 ```bash
-hermes chat --provider copilot-acp --model copilot-acp
+morpheus chat --provider copilot-acp --model copilot-acp
 # Requires the GitHub Copilot CLI in PATH and an existing `copilot login` session
 ```
 
@@ -187,8 +187,8 @@ model:
 | Environment variable | Description |
 |---------------------|-------------|
 | `COPILOT_GITHUB_TOKEN` | GitHub token for Copilot API (first priority) |
-| `HERMES_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
-| `HERMES_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
+| `MORPHEUS_COPILOT_ACP_COMMAND` | Override the Copilot CLI binary path (default: `copilot`) |
+| `MORPHEUS_COPILOT_ACP_ARGS` | Override ACP args (default: `--acp --stdio`) |
 
 ### First-Class Chinese AI Providers
 
@@ -196,23 +196,23 @@ These providers have built-in support with dedicated provider IDs. Set the API k
 
 ```bash
 # z.ai / ZhipuAI GLM
-hermes chat --provider zai --model glm-4-plus
+morpheus chat --provider zai --model glm-4-plus
 # Requires: GLM_API_KEY in ~/.morpheus/.env
 
 # Kimi / Moonshot AI
-hermes chat --provider kimi-coding --model moonshot-v1-auto
+morpheus chat --provider kimi-coding --model moonshot-v1-auto
 # Requires: KIMI_API_KEY in ~/.morpheus/.env
 
 # MiniMax (global endpoint)
-hermes chat --provider minimax --model MiniMax-M2.7
+morpheus chat --provider minimax --model MiniMax-M2.7
 # Requires: MINIMAX_API_KEY in ~/.morpheus/.env
 
 # MiniMax (China endpoint)
-hermes chat --provider minimax-cn --model MiniMax-M2.7
+morpheus chat --provider minimax-cn --model MiniMax-M2.7
 # Requires: MINIMAX_CN_API_KEY in ~/.morpheus/.env
 
 # Alibaba Cloud / DashScope (Qwen models)
-hermes chat --provider alibaba --model qwen-plus
+morpheus chat --provider alibaba --model qwen-plus
 # Requires: DASHSCOPE_API_KEY in ~/.morpheus/.env
 ```
 
@@ -231,11 +231,11 @@ Base URLs can be overridden with `GLM_BASE_URL`, `KIMI_BASE_URL`, `MINIMAX_BASE_
 
 ```bash
 # Use any available model
-hermes chat --provider huggingface --model Qwen/Qwen3-235B-A22B-Thinking-2507
+morpheus chat --provider huggingface --model Qwen/Qwen3-235B-A22B-Thinking-2507
 # Requires: HF_TOKEN in ~/.morpheus/.env
 
 # Short alias
-hermes chat --provider hf --model deepseek-ai/DeepSeek-V3.2
+morpheus chat --provider hf --model deepseek-ai/DeepSeek-V3.2
 ```
 
 Or set it permanently in `config.yaml`:
@@ -261,7 +261,7 @@ Three ways to configure a custom endpoint:
 
 **Interactive setup (recommended):**
 ```bash
-hermes model
+morpheus model
 # Select "Custom endpoint (self-hosted / VLLM / etc.)"
 # Enter: API base URL, API key, Model name
 ```
@@ -284,7 +284,7 @@ OPENAI_API_KEY=your-key     # Any non-empty string for local servers
 LLM_MODEL=your-model-name
 ```
 
-All three approaches end up in the same runtime path. `hermes model` persists provider, model, and base URL to `config.yaml` so later sessions keep using that endpoint even if env vars are not set.
+All three approaches end up in the same runtime path. `morpheus model` persists provider, model, and base URL to `config.yaml` so later sessions keep using that endpoint even if env vars are not set.
 
 ### Switching Models with `/model`
 
@@ -353,7 +353,7 @@ OPENAI_API_KEY=dummy
 LLM_MODEL=meta-llama/Llama-3.1-70B-Instruct
 ```
 
-vLLM supports tool calling, structured output, and multi-modal models. Use `--enable-auto-tool-choice` and `--tool-call-parser hermes` for Morpheus-format tool calling with NousResearch models.
+vLLM supports tool calling, structured output, and multi-modal models. Use `--enable-auto-tool-choice` and `--tool-call-parser morpheus` for Morpheus-format tool calling with NousResearch models.
 
 ---
 
@@ -528,7 +528,7 @@ custom_providers:
         context_length: 65536
 ```
 
-`hermes model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
+`morpheus model` will prompt for context length when configuring a custom endpoint. Leave it blank for auto-detection.
 
 :::tip When to set this manually
 - You're using Ollama with a custom `num_ctx` that's lower than the model's maximum
@@ -565,7 +565,7 @@ Switch between them mid-session with the triple syntax:
 /model custom:anthropic-proxy:claude-sonnet-4  # Use the proxy
 ```
 
-You can also select named custom providers from the interactive `hermes model` menu.
+You can also select named custom providers from the interactive `morpheus model` menu.
 
 ---
 
@@ -584,7 +584,7 @@ You can also select named custom providers from the interactive `hermes model` m
 | **Chinese AI models** | z.ai (GLM), Kimi/Moonshot, or MiniMax (first-class providers) |
 
 :::tip
-You can switch between providers at any time with `hermes model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
+You can switch between providers at any time with `morpheus model` — no restart required. Your conversation history, memory, and skills carry over regardless of which provider you use.
 :::
 
 ## Optional API Keys
@@ -619,7 +619,7 @@ By default, Morpheus uses the [Firecrawl cloud API](https://firecrawl.dev/) for 
 
 2. Point Morpheus at your instance (no API key needed):
    ```bash
-   hermes config set FIRECRAWL_API_URL http://localhost:3002
+   morpheus config set FIRECRAWL_API_URL http://localhost:3002
    ```
 
 You can also set both `FIRECRAWL_API_KEY` and `FIRECRAWL_API_URL` if your self-hosted instance has authentication enabled.
@@ -737,7 +737,7 @@ If terminal commands fail immediately or the terminal tool is reported as disabl
     ```
     If this fails, fix your Docker installation or switch back to the local backend:
     ```bash
-    hermes config set terminal.backend local
+    morpheus config set terminal.backend local
     ```
 
 - **SSH backend**
@@ -787,7 +787,7 @@ terminal:
     - "NPM_TOKEN"
 ```
 
-Morpheus resolves each listed variable from your current shell first, then falls back to `~/.morpheus/.env` if it was saved with `hermes config set`.
+Morpheus resolves each listed variable from your current shell first, then falls back to `~/.morpheus/.env` if it was saved with `morpheus config set`.
 
 :::warning
 Anything listed in `docker_forward_env` becomes visible to commands run inside the container. Only forward credentials you are comfortable exposing to the terminal session.
@@ -832,7 +832,7 @@ terminal:
 To disable:
 
 ```bash
-hermes config set terminal.persistent_shell false
+morpheus config set terminal.persistent_shell false
 ```
 
 **What persists across commands:**
@@ -875,7 +875,7 @@ memory:
 Enable isolated git worktrees for running multiple agents in parallel on the same repo:
 
 ```yaml
-worktree: true    # Always create a worktree (same as hermes -w)
+worktree: true    # Always create a worktree (same as morpheus -w)
 # worktree: false # Default — only when -w flag is passed
 ```
 
@@ -1057,9 +1057,9 @@ AUXILIARY_VISION_MODEL=openai/gpt-4o
 |----------|-------------|-------------|
 | `"auto"` | Best available (default). Vision tries OpenRouter → Nous → Codex. | — |
 | `"openrouter"` | Force OpenRouter — routes to any model (Gemini, GPT-4o, Claude, etc.) | `OPENROUTER_API_KEY` |
-| `"nous"` | Force Nous Portal | `hermes login` |
-| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `hermes model` → Codex |
-| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `hermes model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. | Custom endpoint credentials + base URL |
+| `"nous"` | Force Nous Portal | `morpheus login` |
+| `"codex"` | Force Codex OAuth (ChatGPT account). Supports vision (gpt-5.3-codex). | `morpheus model` → Codex |
+| `"main"` | Use your active custom/main endpoint. This can come from `OPENAI_BASE_URL` + `OPENAI_API_KEY` or from a custom endpoint saved via `morpheus model` / `config.yaml`. Works with OpenAI, local models, or any OpenAI-compatible API. | Custom endpoint credentials + base URL |
 
 ### Common Setups
 
@@ -1110,7 +1110,7 @@ auxiliary:
     model: "my-local-model"
 ```
 
-`provider: "main"` follows the same custom endpoint Morpheus uses for normal chat. That endpoint can be set directly with `OPENAI_BASE_URL`, or saved once through `hermes model` and persisted in `config.yaml`.
+`provider: "main"` follows the same custom endpoint Morpheus uses for normal chat. That endpoint can be set directly with `OPENAI_BASE_URL`, or saved once through `morpheus model` and persisted in `config.yaml`.
 
 :::tip
 If you use Codex OAuth as your main model provider, vision works automatically — no extra configuration needed. Codex is included in the auto-detection chain for vision.
@@ -1138,7 +1138,7 @@ Auxiliary models can also be configured via environment variables. However, `con
 Compression and fallback model settings are config.yaml-only.
 
 :::tip
-Run `hermes config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
+Run `morpheus config` to see your current auxiliary model settings. Overrides only show up when they differ from the defaults.
 :::
 
 ## Reasoning Effort
@@ -1415,7 +1415,7 @@ code_execution:
 
 ## Web Search Backends
 
-The `web_search`, `web_extract`, and `web_crawl` tools support three backend providers. Configure the backend in `config.yaml` or via `hermes tools`:
+The `web_search`, `web_extract`, and `web_crawl` tools support three backend providers. Configure the backend in `config.yaml` or via `morpheus tools`:
 
 ```yaml
 web:
@@ -1459,7 +1459,7 @@ security:
       - "admin.example.com"
       - "*.local"
     shared_files:                # Load additional rules from external files
-      - "/etc/hermes/blocked-sites.txt"
+      - "/etc/morpheus/blocked-sites.txt"
 ```
 
 When enabled, any URL matching a blocked domain pattern is rejected before the web or browser tool executes. This applies to `web_search`, `web_extract`, `browser_navigate`, and any tool that accesses URLs.
@@ -1486,7 +1486,7 @@ approvals:
 |------|----------|
 | `manual` (default) | Prompt the user before executing any flagged command. In the CLI, shows an interactive approval dialog. In messaging, queues a pending approval request. |
 | `smart` | Use an auxiliary LLM to assess whether a flagged command is actually dangerous. Low-risk commands are auto-approved with session-level persistence. Genuinely risky commands are escalated to the user. |
-| `off` | Skip all approval checks. Equivalent to `HERMES_YOLO_MODE=true`. **Use with caution.** |
+| `off` | Skip all approval checks. Equivalent to `MORPHEUS_YOLO_MODE=true`. **Use with caution.** |
 
 Smart mode is particularly useful for reducing approval fatigue — it lets the agent work more autonomously on safe operations while still catching genuinely destructive commands.
 
@@ -1500,7 +1500,7 @@ Automatic filesystem snapshots before destructive file operations. See the [Chec
 
 ```yaml
 checkpoints:
-  enabled: true                  # Enable automatic checkpoints (also: hermes --checkpoints)
+  enabled: true                  # Enable automatic checkpoints (also: morpheus --checkpoints)
   max_snapshots: 50              # Max checkpoints to keep per directory
 ```
 
@@ -1540,8 +1540,8 @@ Morpheus uses two different context scopes:
 
 | File | Purpose | Scope |
 |------|---------|-------|
-| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.morpheus/SOUL.md` or `$HERMES_HOME/SOUL.md` |
-| `.hermes.md` / `HERMES.md` | Project-specific instructions (highest priority) | Walks to git root |
+| `SOUL.md` | **Primary agent identity** — defines who the agent is (slot #1 in the system prompt) | `~/.morpheus/SOUL.md` or `$MORPHEUS_HOME/SOUL.md` |
+| `.morpheus.md` / `MORPHEUS.md` | Project-specific instructions (highest priority) | Walks to git root |
 | `AGENTS.md` | Project-specific instructions, coding conventions | Recursive directory walk |
 | `CLAUDE.md` | Claude Code context files (also detected) | Working directory only |
 | `.cursorrules` | Cursor IDE rules (also detected) | Working directory only |
@@ -1549,7 +1549,7 @@ Morpheus uses two different context scopes:
 
 - **SOUL.md** is the agent's primary identity. It occupies slot #1 in the system prompt, completely replacing the built-in default identity. Edit it to fully customize who the agent is.
 - If SOUL.md is missing, empty, or cannot be loaded, Morpheus falls back to a built-in default identity.
-- **Project context files use a priority system** — only ONE type is loaded (first match wins): `.hermes.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. SOUL.md is always loaded independently.
+- **Project context files use a priority system** — only ONE type is loaded (first match wins): `.morpheus.md` → `AGENTS.md` → `CLAUDE.md` → `.cursorrules`. SOUL.md is always loaded independently.
 - **AGENTS.md** is hierarchical: if subdirectories also have AGENTS.md, all are combined.
 - Morpheus automatically seeds a default `SOUL.md` if one does not already exist.
 - All loaded context files are capped at 20,000 characters with smart truncation.
@@ -1562,7 +1562,7 @@ See also:
 
 | Context | Default |
 |---------|---------|
-| **CLI (`hermes`)** | Current directory where you run the command |
+| **CLI (`morpheus`)** | Current directory where you run the command |
 | **Messaging gateway** | Home directory `~` (override with `MESSAGING_CWD`) |
 | **Docker / Singularity / Modal / SSH** | User's home directory inside the container or remote machine |
 

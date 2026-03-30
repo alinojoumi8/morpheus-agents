@@ -67,10 +67,10 @@ def _check_disk_usage_warning():
     try:
         scratch_dir = _get_scratch_dir()
 
-        # Get total size of hermes directories
+        # Get total size of morpheus directories
         total_bytes = 0
         import glob
-        for path in glob.glob(str(scratch_dir / "hermes-*")):
+        for path in glob.glob(str(scratch_dir / "morpheus-*")):
             for f in Path(path).rglob('*'):
                 if f.is_file():
                     try:
@@ -143,7 +143,7 @@ def _handle_sudo_failure(output: str, env_type: str) -> str:
     
     Returns enhanced output if sudo failed in messaging context, else original.
     """
-    is_gateway = os.getenv("HERMES_GATEWAY_SESSION")
+    is_gateway = os.getenv("MORPHEUS_GATEWAY_SESSION")
     
     if not is_gateway:
         return output
@@ -171,7 +171,7 @@ def _prompt_for_sudo_password(timeout_seconds: int = 45) -> str:
     - Timeout expires (45s default)
     - Any error occurs
     
-    Only works in interactive mode (HERMES_INTERACTIVE=1).
+    Only works in interactive mode (MORPHEUS_INTERACTIVE=1).
     If a _sudo_password_callback is registered (by the CLI), delegates to it
     so the prompt integrates with prompt_toolkit's UI.  Otherwise reads
     directly from /dev/tty with echo disabled.
@@ -237,7 +237,7 @@ def _prompt_for_sudo_password(timeout_seconds: int = 45) -> str:
             result["done"] = True
     
     try:
-        os.environ["HERMES_SPINNER_PAUSE"] = "1"
+        os.environ["MORPHEUS_SPINNER_PAUSE"] = "1"
         time_module.sleep(0.2)
         
         print()
@@ -283,8 +283,8 @@ def _prompt_for_sudo_password(timeout_seconds: int = 45) -> str:
         sys.stdout.flush()
         return ""
     finally:
-        if "HERMES_SPINNER_PAUSE" in os.environ:
-            del os.environ["HERMES_SPINNER_PAUSE"]
+        if "MORPHEUS_SPINNER_PAUSE" in os.environ:
+            del os.environ["MORPHEUS_SPINNER_PAUSE"]
 
 
 def _transform_sudo_command(command: str) -> tuple[str, str | None]:
@@ -315,7 +315,7 @@ def _transform_sudo_command(command: str) -> tuple[str, str | None]:
     password in the command string themselves; see their execute() methods for
     how they handle the non-None sudo_stdin case.
 
-    If SUDO_PASSWORD is not set and in interactive mode (HERMES_INTERACTIVE=1):
+    If SUDO_PASSWORD is not set and in interactive mode (MORPHEUS_INTERACTIVE=1):
       Prompts user for password with 45s timeout, caches for session.
 
     If SUDO_PASSWORD is not set and NOT interactive:
@@ -333,7 +333,7 @@ def _transform_sudo_command(command: str) -> tuple[str, str | None]:
 
     if not sudo_password:
         # No password configured - check if we're in interactive mode
-        if os.getenv("HERMES_INTERACTIVE"):
+        if os.getenv("MORPHEUS_INTERACTIVE"):
             # Prompt user for password
             sudo_password = _prompt_for_sudo_password(timeout_seconds=45)
             if sudo_password:
@@ -738,7 +738,7 @@ def get_active_environments_info() -> Dict[str, Any]:
     total_size = 0
     for task_id in _active_environments.keys():
         scratch_dir = _get_scratch_dir()
-        pattern = f"hermes-*{task_id[:8]}*"
+        pattern = f"morpheus-*{task_id[:8]}*"
         import glob
         for path in glob.glob(str(scratch_dir / pattern)):
             try:
@@ -768,7 +768,7 @@ def cleanup_all_environments():
     # Also clean any orphaned directories
     scratch_dir = _get_scratch_dir()
     import glob
-    for path in glob.glob(str(scratch_dir / "hermes-*")):
+    for path in glob.glob(str(scratch_dir / "morpheus-*")):
         try:
             shutil.rmtree(path, ignore_errors=True)
             logger.info("Removed orphaned: %s", path)
@@ -1027,7 +1027,7 @@ def terminal_tool(
             # For non-local backends: runs inside the sandbox via env.execute().
             from tools.process_registry import process_registry
 
-            session_key = os.getenv("HERMES_SESSION_KEY", "")
+            session_key = os.getenv("MORPHEUS_SESSION_KEY", "")
             effective_cwd = workdir or cwd
             try:
                 if env_type == "local":
@@ -1071,9 +1071,9 @@ def terminal_tool(
                         result_data["check_interval_note"] = (
                             f"Requested {check_interval}s raised to minimum 30s"
                         )
-                    watcher_platform = os.getenv("HERMES_SESSION_PLATFORM", "")
-                    watcher_chat_id = os.getenv("HERMES_SESSION_CHAT_ID", "")
-                    watcher_thread_id = os.getenv("HERMES_SESSION_THREAD_ID", "")
+                    watcher_platform = os.getenv("MORPHEUS_SESSION_PLATFORM", "")
+                    watcher_chat_id = os.getenv("MORPHEUS_SESSION_CHAT_ID", "")
+                    watcher_thread_id = os.getenv("MORPHEUS_SESSION_THREAD_ID", "")
 
                     # Store on session for checkpoint persistence
                     proc_session.watcher_platform = watcher_platform

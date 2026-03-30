@@ -181,7 +181,7 @@ Beyond MEMORY.md and USER.md, the agent can search its past conversations using 
 - The agent can find things it discussed weeks ago, even if they're not in its active memory
 
 ```bash
-hermes sessions list    # Browse past sessions
+morpheus sessions list    # Browse past sessions
 ```
 
 ### session_search vs memory
@@ -212,7 +212,7 @@ memory:
 For deeper, AI-generated user understanding that works across sessions and platforms, you can enable [Honcho Memory](./honcho.md). Honcho runs alongside built-in memory in `hybrid` mode (the default) — `MEMORY.md` and `USER.md` stay as-is, and Honcho adds a persistent user modeling layer on top.
 
 ```bash
-hermes honcho setup
+morpheus honcho setup
 ```
 
 See the [Honcho Memory](./honcho.md) docs for full configuration, tools, and CLI reference.

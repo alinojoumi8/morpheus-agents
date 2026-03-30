@@ -22,7 +22,7 @@ Key implementation files:
 ## Boot flow
 
 ```text
-hermes acp / hermes-acp / python -m acp_adapter
+morpheus acp / morpheus-acp / python -m acp_adapter
   -> acp_adapter.entry.main()
   -> load ~/.morpheus/.env
   -> configure stderr logging
@@ -114,7 +114,7 @@ Examples:
 ```text
 new_session(cwd)
   -> create SessionState
-  -> create AIAgent(platform="acp", enabled_toolsets=["hermes-acp"])
+  -> create AIAgent(platform="acp", enabled_toolsets=["morpheus-acp"])
   -> bind task_id/session_id to cwd override
 
 prompt(..., session_id)
@@ -177,6 +177,6 @@ ACP temporarily installs an approval callback on the terminal tool during prompt
 ## Related files
 
 - `tests/acp/` — ACP test suite
-- `toolsets.py` — `hermes-acp` toolset definition
-- `morpheus_cli/main.py` — `hermes acp` CLI subcommand
-- `pyproject.toml` — `[acp]` optional dependency + `hermes-acp` script
+- `toolsets.py` — `morpheus-acp` toolset definition
+- `morpheus_cli/main.py` — `morpheus acp` CLI subcommand
+- `pyproject.toml` — `[acp]` optional dependency + `morpheus-acp` script

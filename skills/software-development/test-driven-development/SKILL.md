@@ -5,7 +5,7 @@ version: 1.1.0
 author: Morpheus Agent (adapted from obra/superpowers)
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [testing, tdd, development, quality, red-green-refactor]
     related_skills: [systematic-debugging, writing-plans, subagent-driven-development]
 ---

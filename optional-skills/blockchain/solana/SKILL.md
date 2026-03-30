@@ -5,7 +5,7 @@ version: 0.2.0
 author: Deniz Alagoz (gizdusum), enhanced by Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Solana, Blockchain, Crypto, Web3, RPC, DeFi, NFT]
     related_skills: []
 ---

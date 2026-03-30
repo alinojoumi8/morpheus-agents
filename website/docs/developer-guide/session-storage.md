@@ -10,7 +10,7 @@ Morpheus uses a SQLite-backed session store as the main source of truth for hist
 
 Primary files:
 
-- `hermes_state.py`
+- `morpheus_state.py`
 - `gateway/session.py`
 - `tools/session_search_tool.py`
 

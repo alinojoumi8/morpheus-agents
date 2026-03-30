@@ -60,7 +60,7 @@ def _normalize_forward_env_names(forward_env: list[str] | None) -> list[str]:
     return normalized
 
 
-def _load_hermes_env_vars() -> dict[str, str]:
+def _load_morpheus_env_vars() -> dict[str, str]:
     """Load ~/.morpheus/.env values without failing Docker command execution."""
     try:
         from morpheus_cli.config import load_env
@@ -321,7 +321,7 @@ class DockerEnvironment(BaseEnvironment):
         self._docker_exe = find_docker() or "docker"
 
         # Start the container directly via `docker run -d`.
-        container_name = f"hermes-{uuid.uuid4().hex[:8]}"
+        container_name = f"morpheus-{uuid.uuid4().hex[:8]}"
         run_cmd = [
             self._docker_exe, "run", "-d",
             "--name", container_name,
@@ -406,11 +406,11 @@ class DockerEnvironment(BaseEnvironment):
         if effective_stdin is not None:
             cmd.append("-i")
         cmd.extend(["-w", work_dir])
-        hermes_env = _load_hermes_env_vars() if self._forward_env else {}
+        morpheus_env = _load_morpheus_env_vars() if self._forward_env else {}
         for key in self._forward_env:
             value = os.getenv(key)
             if value is None:
-                value = hermes_env.get(key)
+                value = morpheus_env.get(key)
             if value is not None:
                 cmd.extend(["-e", f"{key}={value}"])
         cmd.extend([self._container_id, "bash", "-lc", exec_command])

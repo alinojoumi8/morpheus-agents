@@ -68,12 +68,12 @@ If you run your own homeserver (Synapse, Conduit, Dendrite):
 register_new_matrix_user -c /etc/synapse/homeserver.yaml http://localhost:8008
 ```
 
-2. Choose a username like `hermes` — the full user ID will be `@hermes:your-server.org`.
+2. Choose a username like `morpheus` — the full user ID will be `@morpheus:your-server.org`.
 
 ### Option B: Use matrix.org or Another Public Homeserver
 
 1. Go to [Element Web](https://app.element.io) and create a new account.
-2. Pick a username for your bot (e.g., `hermes-bot`).
+2. Pick a username for your bot (e.g., `morpheus-bot`).
 
 ### Option C: Use Your Own Account
 
@@ -100,7 +100,7 @@ curl -X POST https://your-server/_matrix/client/v3/login \
   -H "Content-Type: application/json" \
   -d '{
     "type": "m.login.password",
-    "user": "@hermes:your-server.org",
+    "user": "@morpheus:your-server.org",
     "password": "your-password"
   }'
 ```
@@ -116,7 +116,7 @@ The access token gives full access to the bot's Matrix account. Never share it p
 Instead of providing an access token, you can give Morpheus the bot's user ID and password. Morpheus will log in automatically on startup. This is simpler but means the password is stored in your `.env` file.
 
 ```bash
-MATRIX_USER_ID=@hermes:your-server.org
+MATRIX_USER_ID=@morpheus:your-server.org
 MATRIX_PASSWORD=your-password
 ```
 
@@ -141,7 +141,7 @@ Matrix User IDs always start with `@` and contain a `:` followed by the server n
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+morpheus gateway setup
 ```
 
 Select **Matrix** when prompted, then provide your homeserver URL, access token (or user ID + password), and allowed user IDs when asked.
@@ -158,7 +158,7 @@ MATRIX_HOMESERVER=https://matrix.example.org
 MATRIX_ACCESS_TOKEN=***
 
 # Optional: user ID (auto-detected from token if omitted)
-# MATRIX_USER_ID=@hermes:matrix.example.org
+# MATRIX_USER_ID=@morpheus:matrix.example.org
 
 # Security: restrict who can interact with the bot
 MATRIX_ALLOWED_USERS=@alice:matrix.example.org
@@ -172,7 +172,7 @@ MATRIX_ALLOWED_USERS=@alice:matrix.example.org
 ```bash
 # Required
 MATRIX_HOMESERVER=https://matrix.example.org
-MATRIX_USER_ID=@hermes:matrix.example.org
+MATRIX_USER_ID=@morpheus:matrix.example.org
 MATRIX_PASSWORD=***
 
 # Security
@@ -192,13 +192,13 @@ group_sessions_per_user: true
 Once configured, start the Matrix gateway:
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 The bot should connect to your homeserver and start syncing within a few seconds. Send it a message — either a DM or in a room it has joined — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `morpheus gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## End-to-End Encryption (E2EE)
@@ -213,7 +213,7 @@ E2EE requires the `matrix-nio` library with encryption extras and the `libolm` C
 # Install matrix-nio with E2EE support
 pip install 'matrix-nio[e2e]'
 
-# Or install with hermes extras
+# Or install with morpheus extras
 pip install 'morpheus-agent[matrix]'
 ```
 
@@ -330,7 +330,7 @@ pip install 'morpheus-agent[matrix]'
 
 **Cause**: The Morpheus gateway isn't running, or it failed to connect.
 
-**Fix**: Check that `hermes gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
+**Fix**: Check that `morpheus gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
 
 ### "User not allowed" / Bot ignores you
 

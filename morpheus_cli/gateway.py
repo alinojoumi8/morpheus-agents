@@ -1,7 +1,7 @@
 """
-Gateway subcommand for hermes CLI.
+Gateway subcommand for morpheus CLI.
 
-Handles: hermes gateway [run|start|stop|restart|status|install|uninstall|setup]
+Handles: morpheus gateway [run|start|stop|restart|status|install|uninstall|setup]
 """
 
 import asyncio
@@ -32,7 +32,7 @@ def find_gateway_pids() -> list:
     patterns = [
         "morpheus_cli.main gateway",
         "morpheus_cli/main.py gateway",
-        "hermes gateway",
+        "morpheus gateway",
         "gateway/run.py",
     ]
 
@@ -121,14 +121,14 @@ def is_windows() -> bool:
 # Service Configuration
 # =============================================================================
 
-_SERVICE_BASE = "hermes-gateway"
+_SERVICE_BASE = "morpheus-gateway"
 SERVICE_DESCRIPTION = "Morpheus Agent Gateway - Messaging Platform Integration"
 
 
 def get_service_name() -> str:
     """Derive a systemd service name scoped to this MORPHEUS_HOME.
 
-    Default ``~/.morpheus`` returns ``hermes-gateway`` (backward compatible).
+    Default ``~/.morpheus`` returns ``morpheus-gateway`` (backward compatible).
     Any other MORPHEUS_HOME appends a short hash so multiple installations
     can each have their own systemd service without conflicting.
     """
@@ -215,8 +215,8 @@ def print_systemd_scope_conflict_warning() -> None:
     print_info("  This is confusing and can make start/stop/status behavior ambiguous.")
     print_info("  Default gateway commands target the user service unless you pass --system.")
     print_info("  Keep one of these:")
-    print_info("    hermes gateway uninstall")
-    print_info("    sudo hermes gateway uninstall --system")
+    print_info("    morpheus gateway uninstall")
+    print_info("    sudo morpheus gateway uninstall --system")
 
 
 def _require_root_for_system_service(action: str) -> None:
@@ -286,10 +286,10 @@ def install_linux_gateway_from_setup(force: bool = False) -> tuple[str | None, b
         if os.geteuid() != 0:
             print_warning("  System service install requires sudo, so Morpheus can't create it from this user session.")
             if run_as_user:
-                print_info(f"  After setup, run: sudo hermes gateway install --system --run-as-user {run_as_user}")
+                print_info(f"  After setup, run: sudo morpheus gateway install --system --run-as-user {run_as_user}")
             else:
-                print_info("  After setup, run: sudo hermes gateway install --system --run-as-user <your-user>")
-            print_info("  Then start it with: sudo hermes gateway start --system")
+                print_info("  After setup, run: sudo morpheus gateway install --system --run-as-user <your-user>")
+            print_info("  Then start it with: sudo morpheus gateway start --system")
             return scope, False
 
         if not run_as_user:
@@ -369,7 +369,7 @@ def print_systemd_linger_guidance() -> None:
         print("  sudo loginctl enable-linger $USER")
 
 def get_launchd_plist_path() -> Path:
-    return Path.home() / "Library" / "LaunchAgents" / "ai.hermes.gateway.plist"
+    return Path.home() / "Library" / "LaunchAgents" / "ai.morpheus.gateway.plist"
 
 def _detect_venv_dir() -> Path | None:
     """Detect the active virtualenv directory.
@@ -405,12 +405,12 @@ def get_python_path() -> str:
     return sys.executable
 
 def get_morpheus_cli_path() -> str:
-    """Get the path to the hermes CLI."""
+    """Get the path to the morpheus CLI."""
     # Check if installed via pip
     import shutil
-    hermes_bin = shutil.which("morpheus")
-    if hermes_bin:
-        return hermes_bin
+    morpheus_bin = shutil.which("morpheus")
+    if morpheus_bin:
+        return morpheus_bin
     
     # Fallback to direct module execution
     return f"{get_python_path()} -m morpheus_cli.main"
@@ -437,7 +437,7 @@ def generate_systemd_unit(system: bool = False, run_as_user: str | None = None) 
     path_entries.extend(["/usr/local/sbin", "/usr/local/bin", "/usr/sbin", "/usr/bin", "/sbin", "/bin"])
     sane_path = ":".join(path_entries)
 
-    hermes_home = str(get_morpheus_home().resolve())
+    morpheus_home = str(get_morpheus_home().resolve())
 
     if system:
         username, group_name, home_dir = _system_service_identity(run_as_user)
@@ -459,7 +459,7 @@ Environment="USER={username}"
 Environment="LOGNAME={username}"
 Environment="PATH={sane_path}"
 Environment="VIRTUAL_ENV={venv_dir}"
-Environment="MORPHEUS_HOME={hermes_home}"
+Environment="MORPHEUS_HOME={morpheus_home}"
 Restart=on-failure
 RestartSec=30
 KillMode=mixed
@@ -484,7 +484,7 @@ ExecStart={python_path} -m morpheus_cli.main gateway run --replace
 WorkingDirectory={working_dir}
 Environment="PATH={sane_path}"
 Environment="VIRTUAL_ENV={venv_dir}"
-Environment="MORPHEUS_HOME={hermes_home}"
+Environment="MORPHEUS_HOME={morpheus_home}"
 Restart=on-failure
 RestartSec=30
 KillMode=mixed
@@ -620,8 +620,8 @@ def systemd_install(force: bool = False, system: bool = False, run_as_user: str 
     print(f"✓ {_service_scope_label(system).capitalize()} service installed and enabled!")
     print()
     print("Next steps:")
-    print(f"  {'sudo ' if system else ''}hermes gateway start{scope_flag}              # Start the service")
-    print(f"  {'sudo ' if system else ''}hermes gateway status{scope_flag}             # Check status")
+    print(f"  {'sudo ' if system else ''}morpheus gateway start{scope_flag}              # Start the service")
+    print(f"  {'sudo ' if system else ''}morpheus gateway status{scope_flag}             # Check status")
     print(f"  {'journalctl' if system else 'journalctl --user'} -u {get_service_name()} -f  # View logs")
     print()
 
@@ -688,7 +688,7 @@ def systemd_status(deep: bool = False, system: bool = False):
 
     if not unit_path.exists():
         print("✗ Gateway service is not installed")
-        print(f"  Run: {'sudo ' if system else ''}hermes gateway install{scope_flag}")
+        print(f"  Run: {'sudo ' if system else ''}morpheus gateway install{scope_flag}")
         return
 
     if has_conflicting_systemd_units():
@@ -697,7 +697,7 @@ def systemd_status(deep: bool = False, system: bool = False):
 
     if not systemd_unit_is_current(system=system):
         print("⚠ Installed gateway service definition is outdated")
-        print(f"  Run: {'sudo ' if system else ''}hermes gateway restart{scope_flag}  # auto-refreshes the unit")
+        print(f"  Run: {'sudo ' if system else ''}morpheus gateway restart{scope_flag}  # auto-refreshes the unit")
         print()
 
     subprocess.run(
@@ -717,7 +717,7 @@ def systemd_status(deep: bool = False, system: bool = False):
         print(f"✓ {_service_scope_label(system).capitalize()} gateway service is running")
     else:
         print(f"✗ {_service_scope_label(system).capitalize()} gateway service is stopped")
-        print(f"  Run: {'sudo ' if system else ''}hermes gateway start{scope_flag}")
+        print(f"  Run: {'sudo ' if system else ''}morpheus gateway start{scope_flag}")
 
     configured_user = _read_systemd_user_from_unit(unit_path) if system else None
     if configured_user:
@@ -763,7 +763,7 @@ def generate_launchd_plist() -> str:
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>ai.hermes.gateway</string>
+    <string>ai.morpheus.gateway</string>
     
     <key>ProgramArguments</key>
     <array>
@@ -849,7 +849,7 @@ def launchd_install(force: bool = False):
     print("✓ Service installed and loaded!")
     print()
     print("Next steps:")
-    print("  hermes gateway status             # Check status")
+    print("  morpheus gateway status             # Check status")
     print("  tail -f ~/.morpheus/logs/gateway.log  # View logs")
 
 def launchd_uninstall():
@@ -866,17 +866,17 @@ def launchd_start():
     refresh_launchd_plist_if_needed()
     plist_path = get_launchd_plist_path()
     try:
-        subprocess.run(["launchctl", "start", "ai.hermes.gateway"], check=True)
+        subprocess.run(["launchctl", "start", "ai.morpheus.gateway"], check=True)
     except subprocess.CalledProcessError as e:
         if e.returncode != 3 or not plist_path.exists():
             raise
         print("↻ launchd job was unloaded; reloading service definition")
         subprocess.run(["launchctl", "load", str(plist_path)], check=True)
-        subprocess.run(["launchctl", "start", "ai.hermes.gateway"], check=True)
+        subprocess.run(["launchctl", "start", "ai.morpheus.gateway"], check=True)
     print("✓ Service started")
 
 def launchd_stop():
-    subprocess.run(["launchctl", "stop", "ai.hermes.gateway"], check=True)
+    subprocess.run(["launchctl", "stop", "ai.morpheus.gateway"], check=True)
     print("✓ Service stopped")
 
 def _wait_for_gateway_exit(timeout: float = 10.0, force_after: float = 5.0):
@@ -932,7 +932,7 @@ def launchd_restart():
 def launchd_status(deep: bool = False):
     plist_path = get_launchd_plist_path()
     result = subprocess.run(
-        ["launchctl", "list", "ai.hermes.gateway"],
+        ["launchctl", "list", "ai.morpheus.gateway"],
         capture_output=True,
         text=True
     )
@@ -942,7 +942,7 @@ def launchd_status(deep: bool = False):
         print("✓ Service definition matches the current Morpheus install")
     else:
         print("⚠ Service definition is stale relative to the current Morpheus install")
-        print("  Run: hermes gateway start")
+        print("  Run: morpheus gateway start")
     
     if result.returncode == 0:
         print("✓ Gateway service is loaded")
@@ -950,7 +950,7 @@ def launchd_status(deep: bool = False):
     else:
         print("✗ Gateway service is not loaded")
         print("  Service definition exists locally but launchd has not loaded it.")
-        print("  Run: hermes gateway start")
+        print("  Run: morpheus gateway start")
     
     if deep:
         log_file = get_morpheus_home() / "logs" / "gateway.log"
@@ -1100,7 +1100,7 @@ _PLATFORMS = [
             {"name": "MATRIX_ACCESS_TOKEN", "prompt": "Access token (leave empty to use password login instead)", "password": True,
              "help": "Paste your access token, or leave empty and provide user ID + password below."},
             {"name": "MATRIX_USER_ID", "prompt": "User ID (@bot:server — required for password login)", "password": False,
-             "help": "Full Matrix user ID, e.g. @hermes:matrix.example.org"},
+             "help": "Full Matrix user ID, e.g. @morpheus:matrix.example.org"},
             {"name": "MATRIX_ALLOWED_USERS", "prompt": "Allowed user IDs (comma-separated, e.g. @you:server)", "password": False,
              "is_allowlist": True,
              "help": "Matrix user IDs who can interact with the bot."},
@@ -1116,7 +1116,7 @@ _PLATFORMS = [
         "setup_instructions": [
             "1. In Mattermost: Integrations → Bot Accounts → Add Bot Account",
             "   (System Console → Integrations → Bot Accounts must be enabled)",
-            "2. Give it a username (e.g. hermes) and copy the bot token",
+            "2. Give it a username (e.g. morpheus) and copy the bot token",
             "3. Works with any self-hosted Mattermost instance — enter your server URL",
             "4. To find your user ID: click your avatar (top-left) → Profile",
             "   Your user ID is displayed there — click it to copy.",
@@ -1163,7 +1163,7 @@ _PLATFORMS = [
         ],
         "vars": [
             {"name": "EMAIL_ADDRESS", "prompt": "Email address", "password": False,
-             "help": "The email address Morpheus will use (e.g., hermes@gmail.com)."},
+             "help": "The email address Morpheus will use (e.g., morpheus@gmail.com)."},
             {"name": "EMAIL_PASSWORD", "prompt": "Email password (or app password)", "password": True,
              "help": "For Gmail, use an App Password (not your regular password)."},
             {"name": "EMAIL_IMAP_HOST", "prompt": "IMAP host", "password": False,
@@ -1358,7 +1358,7 @@ def _setup_standard_platform(platform: dict):
                 print()
                 access_choices = [
                     "Enable open access (anyone can message the bot)",
-                    "Use DM pairing (unknown users request access, you approve with 'hermes pairing approve')",
+                    "Use DM pairing (unknown users request access, you approve with 'morpheus pairing approve')",
                     "Skip for now (bot will deny all users until configured)",
                 ]
                 access_idx = prompt_choice("  How should unauthorized users be handled?", access_choices, 1)
@@ -1367,9 +1367,9 @@ def _setup_standard_platform(platform: dict):
                     print_warning("  Open access enabled — anyone can use your bot!")
                 elif access_idx == 1:
                     print_success("  DM pairing mode — users will receive a code to request access.")
-                    print_info("  Approve with: hermes pairing approve {platform} {code}")
+                    print_info("  Approve with: morpheus pairing approve {platform} {code}")
                 else:
-                    print_info("  Skipped — configure later with 'hermes gateway setup'")
+                    print_info("  Skipped — configure later with 'morpheus gateway setup'")
             continue
 
         value = prompt(f"  {var['prompt']}", password=var.get("password", False))
@@ -1437,7 +1437,7 @@ def _is_service_running() -> bool:
         return False
     elif is_macos() and get_launchd_plist_path().exists():
         result = subprocess.run(
-            ["launchctl", "list", "ai.hermes.gateway"],
+            ["launchctl", "list", "ai.morpheus.gateway"],
             capture_output=True, text=True
         )
         return result.returncode == 0
@@ -1646,7 +1646,7 @@ def gateway_setup():
                         launchd_restart()
                     else:
                         kill_gateway_processes()
-                        print_info("Start manually: hermes gateway")
+                        print_info("Start manually: morpheus gateway")
                 except subprocess.CalledProcessError as e:
                     print_error(f"  Restart failed: {e}")
         elif service_installed:
@@ -1682,18 +1682,18 @@ def gateway_setup():
                                 print_error(f"  Start failed: {e}")
                     except subprocess.CalledProcessError as e:
                         print_error(f"  Install failed: {e}")
-                        print_info("  You can try manually: hermes gateway install")
+                        print_info("  You can try manually: morpheus gateway install")
                 else:
-                    print_info("  You can install later: hermes gateway install")
+                    print_info("  You can install later: morpheus gateway install")
                     if is_linux():
-                        print_info("  Or as a boot-time service: sudo hermes gateway install --system")
-                    print_info("  Or run in foreground:  hermes gateway")
+                        print_info("  Or as a boot-time service: sudo morpheus gateway install --system")
+                    print_info("  Or run in foreground:  morpheus gateway")
             else:
                 print_info("  Service install not supported on this platform.")
-                print_info("  Run in foreground: hermes gateway")
+                print_info("  Run in foreground: morpheus gateway")
     else:
         print()
-        print_info("No platforms configured. Run 'hermes gateway setup' when ready.")
+        print_info("No platforms configured. Run 'morpheus gateway setup' when ready.")
 
     print()
 
@@ -1731,7 +1731,7 @@ def gateway_command(args):
             launchd_install(force)
         else:
             print("Service installation not supported on this platform.")
-            print("Run manually: hermes gateway run")
+            print("Run manually: morpheus gateway run")
             sys.exit(1)
     
     elif subcmd == "uninstall":
@@ -1819,14 +1819,14 @@ def gateway_command(args):
                     print(f"  Run:  sudo loginctl enable-linger {_username}")
                     print()
                     print("  Then restart the gateway:")
-                    print("    hermes gateway restart")
+                    print("    morpheus gateway restart")
                     return
 
             if service_configured:
                 print()
                 print("✗ Gateway service restart failed.")
                 print("  The service definition exists, but the service manager did not recover it.")
-                print("  Fix the service, then retry: hermes gateway start")
+                print("  Fix the service, then retry: morpheus gateway start")
                 sys.exit(1)
 
             # Manual restart: kill existing processes
@@ -1863,8 +1863,8 @@ def gateway_command(args):
                         print(f"  {line}")
                 print()
                 print("To install as a service:")
-                print("  hermes gateway install")
-                print("  sudo hermes gateway install --system")
+                print("  morpheus gateway install")
+                print("  sudo morpheus gateway install --system")
             else:
                 print("✗ Gateway is not running")
                 runtime_lines = _runtime_health_lines()
@@ -1875,6 +1875,6 @@ def gateway_command(args):
                         print(f"  {line}")
                 print()
                 print("To start:")
-                print("  hermes gateway          # Run in foreground")
-                print("  hermes gateway install  # Install as user service")
-                print("  sudo hermes gateway install --system  # Install as boot-time system service")
+                print("  morpheus gateway          # Run in foreground")
+                print("  morpheus gateway install  # Install as user service")
+                print("  sudo morpheus gateway install --system  # Install as boot-time system service")

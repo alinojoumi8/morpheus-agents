@@ -68,7 +68,7 @@ from atroposlib.envs.base import ScoredDataGroup
 from atroposlib.envs.server_handling.server_manager import APIServerConfig
 from atroposlib.type_definitions import Item
 
-from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 from environments.agent_loop import AgentResult
 from environments.tool_context import ToolContext
 

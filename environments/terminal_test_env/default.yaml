@@ -17,7 +17,7 @@ env:
   total_steps: 3
   steps_per_eval: 3
   terminal_backend: "modal"
-  tool_call_parser: "hermes"
+  tool_call_parser: "morpheus"
   tokenizer_name: "NousResearch/DeepMorpheus-3-Llama-3-3B-Preview"
   ensure_scores_are_not_same: false
   use_wandb: false

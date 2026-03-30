@@ -29,12 +29,12 @@ import yaml
 
 # Load .env from ~/.morpheus/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-_hermes_home = get_morpheus_home()
+_morpheus_home = get_morpheus_home()
 _project_env = Path(__file__).parent / '.env'
 
-from morpheus_cli.env_loader import load_hermes_dotenv
+from morpheus_cli.env_loader import load_morpheus_dotenv
 
-_loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
+_loaded_env_paths = load_morpheus_dotenv(morpheus_home=_morpheus_home, project_env=_project_env)
 for _env_path in _loaded_env_paths:
     print(f"✅ Loaded environment variables from {_env_path}")
 
@@ -43,12 +43,12 @@ for _env_path in _loaded_env_paths:
 tinker_atropos_dir = Path(__file__).parent / 'tinker-atropos'
 if tinker_atropos_dir.exists():
     os.environ['TERMINAL_CWD'] = str(tinker_atropos_dir)
-    os.environ['HERMES_QUIET'] = '1'  # Disable temp subdirectory creation
+    os.environ['MORPHEUS_QUIET'] = '1'  # Disable temp subdirectory creation
     print(f"📂 Terminal working directory: {tinker_atropos_dir}")
 else:
     # Fall back to morpheus-agent directory if submodule not found
     os.environ['TERMINAL_CWD'] = str(Path(__file__).parent)
-    os.environ['HERMES_QUIET'] = '1'
+    os.environ['MORPHEUS_QUIET'] = '1'
     print(f"⚠️  tinker-atropos submodule not found, using: {Path(__file__).parent}")
 
 # Import agent and tools
@@ -66,14 +66,14 @@ DEFAULT_MODEL = "anthropic/claude-opus-4.5"
 DEFAULT_BASE_URL = OPENROUTER_BASE_URL
 
 
-def load_hermes_config() -> dict:
+def load_morpheus_config() -> dict:
     """
     Load configuration from ~/.morpheus/config.yaml.
     
     Returns:
         dict: Configuration with model, base_url, etc.
     """
-    config_path = _hermes_home / 'config.yaml'
+    config_path = _morpheus_home / 'config.yaml'
     
     config = {
         "model": DEFAULT_MODEL,
@@ -273,7 +273,7 @@ def main(
         python rl_cli.py --check-server
     """
     # Load config from ~/.morpheus/config.yaml
-    config = load_hermes_config()
+    config = load_morpheus_config()
     
     # Use config values if not explicitly provided
     if model is None:

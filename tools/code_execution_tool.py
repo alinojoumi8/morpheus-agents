@@ -180,7 +180,7 @@ def _connect():
     global _sock
     if _sock is None:
         _sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        _sock.connect(os.environ["HERMES_RPC_SOCKET"])
+        _sock.connect(os.environ["MORPHEUS_RPC_SOCKET"])
         _sock.settimeout(300)
     return _sock
 
@@ -385,12 +385,12 @@ def execute_code(
         sandbox_tools = SANDBOX_ALLOWED_TOOLS
 
     # --- Set up temp directory with morpheus_tools.py and script.py ---
-    tmpdir = tempfile.mkdtemp(prefix="hermes_sandbox_")
+    tmpdir = tempfile.mkdtemp(prefix="morpheus_sandbox_")
     # Use /tmp on macOS to avoid the long /var/folders/... path that pushes
     # Unix domain socket paths past the 104-byte macOS AF_UNIX limit.
     # On Linux, tempfile.gettempdir() already returns /tmp.
     _sock_tmpdir = "/tmp" if sys.platform == "darwin" else tempfile.gettempdir()
-    sock_path = os.path.join(_sock_tmpdir, f"hermes_rpc_{uuid.uuid4().hex}.sock")
+    sock_path = os.path.join(_sock_tmpdir, f"morpheus_rpc_{uuid.uuid4().hex}.sock")
 
     tool_call_log: list = []
     tool_call_counter = [0]  # mutable so the RPC thread can increment
@@ -452,16 +452,16 @@ def execute_code(
             # Allow vars with known safe prefixes.
             if any(k.startswith(p) for p in _SAFE_ENV_PREFIXES):
                 child_env[k] = v
-        child_env["HERMES_RPC_SOCKET"] = sock_path
+        child_env["MORPHEUS_RPC_SOCKET"] = sock_path
         child_env["PYTHONDONTWRITEBYTECODE"] = "1"
         # Ensure the morpheus-agent root is importable in the sandbox so
         # repo-root modules are available to child scripts.
-        _hermes_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        _morpheus_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         _existing_pp = child_env.get("PYTHONPATH", "")
-        child_env["PYTHONPATH"] = _hermes_root + (os.pathsep + _existing_pp if _existing_pp else "")
+        child_env["PYTHONPATH"] = _morpheus_root + (os.pathsep + _existing_pp if _existing_pp else "")
         # Inject user's configured timezone so datetime.now() in sandboxed
         # code reflects the correct wall-clock time.
-        _tz_name = os.getenv("HERMES_TIMEZONE", "").strip()
+        _tz_name = os.getenv("MORPHEUS_TIMEZONE", "").strip()
         if _tz_name:
             child_env["TZ"] = _tz_name
 
@@ -724,7 +724,7 @@ _TOOL_DOC_LINES = [
 def build_execute_code_schema(enabled_sandbox_tools: set = None) -> dict:
     """Build the execute_code schema with description listing only enabled tools.
 
-    When tools are disabled via ``hermes tools`` (e.g. web is turned off),
+    When tools are disabled via ``morpheus tools`` (e.g. web is turned off),
     the schema description should NOT mention web_search / web_extract —
     otherwise the model thinks they are available and keeps trying to use them.
     """

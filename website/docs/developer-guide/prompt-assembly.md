@@ -28,7 +28,7 @@ Primary files:
 
 The cached system prompt is assembled in roughly this order:
 
-1. agent identity — `SOUL.md` from `HERMES_HOME` when available, otherwise falls back to `DEFAULT_AGENT_IDENTITY` in `prompt_builder.py`
+1. agent identity — `SOUL.md` from `MORPHEUS_HOME` when available, otherwise falls back to `DEFAULT_AGENT_IDENTITY` in `prompt_builder.py`
 2. tool-aware behavior guidance
 3. Honcho static block (when active)
 4. optional system message
@@ -60,7 +60,7 @@ Local memory and user profile data are injected as frozen snapshots at session s
 
 `agent/prompt_builder.py` scans and sanitizes project context files using a **priority system** — only one type is loaded (first match wins):
 
-1. `.hermes.md` / `HERMES.md` (walks to git root)
+1. `.morpheus.md` / `MORPHEUS.md` (walks to git root)
 2. `AGENTS.md` (recursive directory walk)
 3. `CLAUDE.md` (CWD only)
 4. `.cursorrules` / `.cursor/rules/*.mdc` (CWD only)

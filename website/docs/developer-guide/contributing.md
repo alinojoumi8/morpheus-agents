@@ -71,11 +71,11 @@ echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.morpheus/.env
 ```bash
 # Symlink for global access
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/venv/bin/hermes" ~/.local/bin/hermes
+ln -sf "$(pwd)/venv/bin/morpheus" ~/.local/bin/morpheus
 
 # Verify
-hermes doctor
-hermes chat -q "Hello"
+morpheus doctor
+morpheus chat -q "Hello"
 ```
 
 ### Run Tests
@@ -175,7 +175,7 @@ refactor/description   # Code restructuring
 ### Before Submitting
 
 1. **Run tests**: `pytest tests/ -v`
-2. **Test manually**: Run `hermes` and exercise the code path you changed
+2. **Test manually**: Run `morpheus` and exercise the code path you changed
 3. **Check cross-platform impact**: Consider macOS and different Linux distros
 4. **Keep PRs focused**: One logical change per PR
 
@@ -216,7 +216,7 @@ fix(security): prevent shell injection in sudo password piping
 ## Reporting Issues
 
 - Use [GitHub Issues](https://github.com/NousResearch/morpheus-agent/issues)
-- Include: OS, Python version, Morpheus version (`hermes version`), full error traceback
+- Include: OS, Python version, Morpheus version (`morpheus version`), full error traceback
 - Include steps to reproduce
 - Check existing issues before creating duplicates
 - For security vulnerabilities, please report privately

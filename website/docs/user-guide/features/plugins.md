@@ -6,7 +6,7 @@ sidebar_position: 20
 
 Morpheus has a plugin system for adding custom tools, hooks, slash commands, and integrations without modifying core code.
 
-**→ [Build a Morpheus Plugin](/docs/guides/build-a-hermes-plugin)** — step-by-step guide with a complete working example.
+**→ [Build a Morpheus Plugin](/docs/guides/build-a-morpheus-plugin)** — step-by-step guide with a complete working example.
 
 ## Quick overview
 
@@ -22,7 +22,7 @@ Drop a directory into `~/.morpheus/plugins/` with a `plugin.yaml` and Python cod
 
 Start Morpheus — your tools appear alongside built-in tools. The model can call them immediately.
 
-Project-local plugins under `./.morpheus/plugins/` are disabled by default. Enable them only for trusted repositories by setting `HERMES_ENABLE_PROJECT_PLUGINS=true` before starting Morpheus.
+Project-local plugins under `./.morpheus/plugins/` are disabled by default. Enable them only for trusted repositories by setting `MORPHEUS_ENABLE_PROJECT_PLUGINS=true` before starting Morpheus.
 
 ## What plugins can do
 
@@ -34,15 +34,15 @@ Project-local plugins under `./.morpheus/plugins/` are disabled by default. Enab
 | Ship data files | `Path(__file__).parent / "data" / "file.yaml"` |
 | Bundle skills | Copy `skill.md` to `~/.morpheus/skills/` at load time |
 | Gate on env vars | `requires_env: [API_KEY]` in plugin.yaml |
-| Distribute via pip | `[project.entry-points."hermes_agent.plugins"]` |
+| Distribute via pip | `[project.entry-points."morpheus_agent.plugins"]` |
 
 ## Plugin discovery
 
 | Source | Path | Use case |
 |--------|------|----------|
 | User | `~/.morpheus/plugins/` | Personal plugins |
-| Project | `.morpheus/plugins/` | Project-specific plugins (requires `HERMES_ENABLE_PROJECT_PLUGINS=true`) |
-| pip | `hermes_agent.plugins` entry_points | Distributed packages |
+| Project | `.morpheus/plugins/` | Project-specific plugins (requires `MORPHEUS_ENABLE_PROJECT_PLUGINS=true`) |
+| pip | `morpheus_agent.plugins` entry_points | Distributed packages |
 
 ## Available hooks
 
@@ -89,7 +89,7 @@ The handler receives the argument string (everything after `/greet`) and returns
 
 ```
 /plugins              # list loaded plugins in a session
-hermes config set display.show_cost true  # show cost in status bar
+morpheus config set display.show_cost true  # show cost in status bar
 ```
 
-See the **[full guide](/docs/guides/build-a-hermes-plugin)** for handler contracts, schema format, hook behavior, error handling, and common mistakes.
+See the **[full guide](/docs/guides/build-a-morpheus-plugin)** for handler contracts, schema format, hook behavior, error handling, and common mistakes.

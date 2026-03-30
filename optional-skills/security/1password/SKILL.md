@@ -5,7 +5,7 @@ version: 1.0.0
 author: arceus77-7, enhanced by Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [security, secrets, 1password, op, cli]
     category: security
 setup:
@@ -92,9 +92,9 @@ For reliable `op` use with desktop app integration, run sign-in and secret opera
 Note: This is NOT needed when using `OP_SERVICE_ACCOUNT_TOKEN` — the token persists across terminal calls automatically.
 
 ```bash
-SOCKET_DIR="${TMPDIR:-/tmp}/hermes-tmux-sockets"
+SOCKET_DIR="${TMPDIR:-/tmp}/morpheus-tmux-sockets"
 mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/hermes-op.sock"
+SOCKET="$SOCKET_DIR/morpheus-op.sock"
 SESSION="op-auth-$(date +%Y%m%d-%H%M%S)"
 
 tmux -S "$SOCKET" new -d -s "$SESSION" -n shell

@@ -1,11 +1,11 @@
 ---
-name: hermes-atropos-environments
+name: morpheus-atropos-environments
 description: Build, test, and debug Morpheus Agent RL environments for Atropos training. Covers the MorpheusAgentBaseEnv interface, reward functions, agent loop integration, evaluation with tools, wandb logging, and the three CLI modes (serve/process/evaluate). Use when creating, reviewing, or fixing RL environments in the morpheus-agent repo.
 version: 1.1.0
 author: Morpheus Agent
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [atropos, rl, environments, training, reinforcement-learning, reward-functions]
     related_skills: [axolotl, grpo-rl-training, trl-fine-tuning, lm-evaluation-harness]
 ---
@@ -18,7 +18,7 @@ Guide for building RL environments in the morpheus-agent repo that integrate wit
 
 ```
 Atropos BaseEnv (atroposlib/envs/base.py)
-    └── MorpheusAgentBaseEnv (environments/hermes_base_env.py)
+    └── MorpheusAgentBaseEnv (environments/morpheus_base_env.py)
             ├── Handles agent loop orchestration
             ├── Handles tool resolution per group
             ├── Handles ToolContext for reward verification
@@ -33,10 +33,10 @@ Morpheus environments are special because they run a **multi-turn agent loop wit
 
 | File | Purpose |
 |------|---------|
-| `environments/hermes_base_env.py` | Base class with agent loop + tool resolution |
+| `environments/morpheus_base_env.py` | Base class with agent loop + tool resolution |
 | `environments/agent_loop.py` | `MorpheusAgentLoop` + `AgentResult` dataclass |
 | `environments/tool_context.py` | `ToolContext` for reward verification |
-| `environments/tool_call_parsers.py` | Phase 2 tool call parsers (hermes, mistral, etc.) |
+| `environments/tool_call_parsers.py` | Phase 2 tool call parsers (morpheus, mistral, etc.) |
 | `environments/your_env.py` | Your environment implementation |
 
 ## Inference Setup — Ask the User First

@@ -90,7 +90,7 @@ class TestMorpheusToolsGeneration(unittest.TestCase):
 
     def test_rpc_infrastructure_present(self):
         src = generate_morpheus_tools_module(["terminal"])
-        self.assertIn("HERMES_RPC_SOCKET", src)
+        self.assertIn("MORPHEUS_RPC_SOCKET", src)
         self.assertIn("AF_UNIX", src)
         self.assertIn("def _connect(", src)
         self.assertIn("def _call(", src)
@@ -472,7 +472,7 @@ class TestBuildExecuteCodeSchema(unittest.TestCase):
     def test_real_scenario_all_sandbox_tools_disabled(self):
         """Reproduce the exact code path from model_tools.py:231-234.
 
-        Scenario: user runs `hermes tools code_execution` (only code_execution
+        Scenario: user runs `morpheus tools code_execution` (only code_execution
         toolset enabled). tools_to_include = {"execute_code"}.
 
         model_tools.py does:
@@ -497,7 +497,7 @@ class TestBuildExecuteCodeSchema(unittest.TestCase):
                          "Bug: broken import syntax sent to the model")
 
     def test_real_scenario_only_vision_enabled(self):
-        """Another real path: user runs `hermes tools code_execution,vision`.
+        """Another real path: user runs `morpheus tools code_execution,vision`.
 
         tools_to_include = {"execute_code", "vision_analyze"}
         SANDBOX_ALLOWED_TOOLS has neither, so intersection is empty.
@@ -604,9 +604,9 @@ class TestEnvVarFiltering(unittest.TestCase):
         child_env = self._get_child_env()
         self.assertIn("HOME", child_env)
 
-    def test_hermes_rpc_socket_injected(self):
+    def test_morpheus_rpc_socket_injected(self):
         child_env = self._get_child_env()
-        self.assertIn("HERMES_RPC_SOCKET", child_env)
+        self.assertIn("MORPHEUS_RPC_SOCKET", child_env)
 
     def test_pythondontwritebytecode_set(self):
         child_env = self._get_child_env()
@@ -615,7 +615,7 @@ class TestEnvVarFiltering(unittest.TestCase):
     def test_timezone_injected_when_set(self):
         env_backup = os.environ.copy()
         try:
-            os.environ["HERMES_TIMEZONE"] = "America/New_York"
+            os.environ["MORPHEUS_TIMEZONE"] = "America/New_York"
             child_env = self._get_child_env()
             self.assertEqual(child_env.get("TZ"), "America/New_York")
         finally:
@@ -625,7 +625,7 @@ class TestEnvVarFiltering(unittest.TestCase):
     def test_timezone_not_set_when_empty(self):
         env_backup = os.environ.copy()
         try:
-            os.environ.pop("HERMES_TIMEZONE", None)
+            os.environ.pop("MORPHEUS_TIMEZONE", None)
             child_env = self._get_child_env()
             if "TZ" in child_env:
                 self.assertNotEqual(child_env["TZ"], "")

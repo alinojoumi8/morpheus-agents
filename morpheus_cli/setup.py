@@ -340,12 +340,12 @@ def print_noninteractive_setup_guidance(reason: str | None = None) -> None:
     print_info("The interactive wizard cannot be used here.")
     print()
     print_info("Configure Morpheus using environment variables or config commands:")
-    print_info("  hermes config set model.provider custom")
-    print_info("  hermes config set model.base_url http://localhost:8080/v1")
-    print_info("  hermes config set model.default your-model-name")
+    print_info("  morpheus config set model.provider custom")
+    print_info("  morpheus config set model.base_url http://localhost:8080/v1")
+    print_info("  morpheus config set model.default your-model-name")
     print()
     print_info("Or set OPENROUTER_API_KEY / OPENAI_API_KEY in your environment.")
-    print_info("Run 'hermes setup' in an interactive terminal to use the full wizard.")
+    print_info("Run 'morpheus setup' in an interactive terminal to use the full wizard.")
     print()
 
 
@@ -555,10 +555,10 @@ def _prompt_api_key(var: dict):
         save_env_value(var["name"], value)
         print_success("  ✓ Saved")
     else:
-        print_warning("  Skipped (configure later with 'hermes setup')")
+        print_warning("  Skipped (configure later with 'morpheus setup')")
 
 
-def _print_setup_summary(config: dict, hermes_home):
+def _print_setup_summary(config: dict, morpheus_home):
     """Print the setup completion summary."""
     # Tool availability summary
     print()
@@ -577,7 +577,7 @@ def _print_setup_summary(config: dict, hermes_home):
     if _vision_backends:
         tool_status.append(("Vision (image analysis)", True, None))
     else:
-        tool_status.append(("Vision (image analysis)", False, "run 'hermes setup' to configure"))
+        tool_status.append(("Vision (image analysis)", False, "run 'morpheus setup' to configure"))
 
     # Mixture of Agents — requires OpenRouter specifically (calls multiple models)
     if get_env_value("OPENROUTER_API_KEY"):
@@ -630,7 +630,7 @@ def _print_setup_summary(config: dict, hermes_home):
         if neutts_ok:
             tool_status.append(("Text-to-Speech (NeuTTS local)", True, None))
         else:
-            tool_status.append(("Text-to-Speech (NeuTTS — not installed)", False, "run 'hermes setup tts'"))
+            tool_status.append(("Text-to-Speech (NeuTTS — not installed)", False, "run 'morpheus setup tts'"))
     else:
         tool_status.append(("Text-to-Speech (Edge TTS)", True, None))
 
@@ -681,7 +681,7 @@ def _print_setup_summary(config: dict, hermes_home):
     disabled_tools = [(name, var) for name, avail, var in tool_status if not avail]
     if disabled_tools:
         print_warning(
-            "Some tools are disabled. Run 'hermes setup tools' to configure them,"
+            "Some tools are disabled. Run 'morpheus setup tools' to configure them,"
         )
         print_warning("or edit ~/.morpheus/.env directly to add the missing API keys.")
         print()
@@ -711,7 +711,7 @@ def _print_setup_summary(config: dict, hermes_home):
     print(f"   {color('Settings:', Colors.YELLOW)}  {get_config_path()}")
     print(f"   {color('API Keys:', Colors.YELLOW)}  {get_env_path()}")
     print(
-        f"   {color('Data:', Colors.YELLOW)}      {hermes_home}/cron/, sessions/, logs/"
+        f"   {color('Data:', Colors.YELLOW)}      {morpheus_home}/cron/, sessions/, logs/"
     )
     print()
 
@@ -719,17 +719,17 @@ def _print_setup_summary(config: dict, hermes_home):
     print()
     print(color("📝 To edit your configuration:", Colors.CYAN, Colors.BOLD))
     print()
-    print(f"   {color('hermes setup', Colors.GREEN)}          Re-run the full wizard")
-    print(f"   {color('hermes setup model', Colors.GREEN)}    Change model/provider")
-    print(f"   {color('hermes setup terminal', Colors.GREEN)} Change terminal backend")
-    print(f"   {color('hermes setup gateway', Colors.GREEN)}  Configure messaging")
-    print(f"   {color('hermes setup tools', Colors.GREEN)}    Configure tool providers")
+    print(f"   {color('morpheus setup', Colors.GREEN)}          Re-run the full wizard")
+    print(f"   {color('morpheus setup model', Colors.GREEN)}    Change model/provider")
+    print(f"   {color('morpheus setup terminal', Colors.GREEN)} Change terminal backend")
+    print(f"   {color('morpheus setup gateway', Colors.GREEN)}  Configure messaging")
+    print(f"   {color('morpheus setup tools', Colors.GREEN)}    Configure tool providers")
     print()
-    print(f"   {color('hermes config', Colors.GREEN)}         View current settings")
+    print(f"   {color('morpheus config', Colors.GREEN)}         View current settings")
     print(
-        f"   {color('hermes config edit', Colors.GREEN)}    Open config in your editor"
+        f"   {color('morpheus config edit', Colors.GREEN)}    Open config in your editor"
     )
-    print(f"   {color('hermes config set <key> <value>', Colors.GREEN)}")
+    print(f"   {color('morpheus config set <key> <value>', Colors.GREEN)}")
     print("                          Set a specific value")
     print()
     print("   Or edit the files directly:")
@@ -742,8 +742,8 @@ def _print_setup_summary(config: dict, hermes_home):
     print(color("🚀 Ready to go!", Colors.CYAN, Colors.BOLD))
     print()
     print(f"   {color('morpheus', Colors.GREEN)}              Start chatting")
-    print(f"   {color('hermes gateway', Colors.GREEN)}      Start messaging gateway")
-    print(f"   {color('hermes doctor', Colors.GREEN)}       Check for issues")
+    print(f"   {color('morpheus gateway', Colors.GREEN)}      Start messaging gateway")
+    print(f"   {color('morpheus doctor', Colors.GREEN)}       Check for issues")
     print()
 
 
@@ -790,7 +790,7 @@ def _prompt_container_resources(config: dict):
 
 
 # Tool categories and provider config are now in tools_config.py (shared
-# between `hermes tools` and `hermes setup tools`).
+# between `morpheus tools` and `morpheus setup tools`).
 
 
 # =============================================================================
@@ -1008,11 +1008,11 @@ def setup_model_provider(config: dict):
 
         except SystemExit:
             print_warning("Nous Portal login was cancelled or failed.")
-            print_info("You can try again later with: hermes model")
+            print_info("You can try again later with: morpheus model")
             selected_provider = None
         except Exception as e:
             print_error(f"Login failed: {e}")
-            print_info("You can try again later with: hermes model")
+            print_info("You can try again later with: morpheus model")
             selected_provider = None
 
     elif provider_idx == 2:  # OpenAI Codex
@@ -1034,11 +1034,11 @@ def setup_model_provider(config: dict):
             _set_model_provider(config, "openai-codex", DEFAULT_CODEX_BASE_URL)
         except SystemExit:
             print_warning("OpenAI Codex login was cancelled or failed.")
-            print_info("You can try again later with: hermes model")
+            print_info("You can try again later with: morpheus model")
             selected_provider = None
         except Exception as e:
             print_error(f"Login failed: {e}")
-            print_info("You can try again later with: hermes model")
+            print_info("You can try again later with: morpheus model")
             selected_provider = None
 
     elif provider_idx == 3:  # Custom endpoint
@@ -1048,7 +1048,7 @@ def setup_model_provider(config: dict):
         print_info("Works with any API that follows OpenAI's chat completions spec")
         print()
 
-        # Reuse the shared custom endpoint flow from `hermes model`.
+        # Reuse the shared custom endpoint flow from `morpheus model`.
         # This handles: URL/key/model/context-length prompts, endpoint probing,
         # env saving, config.yaml updates, and custom_providers persistence.
         from morpheus_cli.main import _model_flow_custom
@@ -1524,7 +1524,7 @@ def setup_model_provider(config: dict):
         print_header("GitHub Copilot ACP")
         pconfig = PROVIDER_REGISTRY["copilot-acp"]
         print_info("Morpheus will start `copilot --acp --stdio` for each request.")
-        print_info("Use HERMES_COPILOT_ACP_COMMAND or COPILOT_CLI_PATH to override the command.")
+        print_info("Use MORPHEUS_COPILOT_ACP_COMMAND or COPILOT_CLI_PATH to override the command.")
         print_info(f"Base marker: {pconfig.inference_base_url}")
         print()
 
@@ -1646,7 +1646,7 @@ def setup_model_provider(config: dict):
             else:
                 print_info("Skipped — vision won't be available")
         else:
-            print_info("Skipped — add later with 'hermes setup' or configure AUXILIARY_VISION_* settings")
+            print_info("Skipped — add later with 'morpheus setup' or configure AUXILIARY_VISION_* settings")
 
     # ── Model Selection (adapts based on provider) ──
     if selected_provider != "custom":  # Custom already prompted for model name
@@ -1955,7 +1955,7 @@ def _setup_tts_provider(config: dict):
 
 
 def setup_tts(config: dict):
-    """Standalone TTS setup (for 'hermes setup tts')."""
+    """Standalone TTS setup (for 'morpheus setup tts')."""
     _setup_tts_provider(config)
 
 
@@ -2276,7 +2276,7 @@ def setup_agent_settings(config: dict):
     # ── Max Iterations ──
     print_header("Agent Settings")
 
-    current_max = get_env_value("HERMES_MAX_ITERATIONS") or str(
+    current_max = get_env_value("MORPHEUS_MAX_ITERATIONS") or str(
         config.get("agent", {}).get("max_turns", 90)
     )
     print_info("Maximum tool-calling iterations per conversation.")
@@ -2287,7 +2287,7 @@ def setup_agent_settings(config: dict):
     try:
         max_iter = int(max_iter_str)
         if max_iter > 0:
-            save_env_value("HERMES_MAX_ITERATIONS", str(max_iter))
+            save_env_value("MORPHEUS_MAX_ITERATIONS", str(max_iter))
             config.setdefault("agent", {})["max_turns"] = max_iter
             config.pop("max_turns", None)
             print_success(f"Max iterations set to {max_iter}")
@@ -2787,12 +2787,12 @@ def setup_gateway(config: dict):
     existing_whatsapp = get_env_value("WHATSAPP_ENABLED")
     if not existing_whatsapp and prompt_yes_no("Set up WhatsApp?", False):
         print_info("WhatsApp connects via a built-in bridge (Baileys).")
-        print_info("Requires Node.js. Run 'hermes whatsapp' for guided setup.")
+        print_info("Requires Node.js. Run 'morpheus whatsapp' for guided setup.")
         print()
         if prompt_yes_no("Enable WhatsApp now?", True):
             save_env_value("WHATSAPP_ENABLED", "true")
             print_success("WhatsApp enabled")
-            print_info("Run 'hermes whatsapp' to choose your mode (separate bot number")
+            print_info("Run 'morpheus whatsapp' to choose your mode (separate bot number")
             print_info("or personal self-chat) and pair via QR code.")
 
     # ── Webhooks ──
@@ -2848,7 +2848,7 @@ def setup_gateway(config: dict):
             "   https://morpheus-agent.nousresearch.com/docs/user-guide/messaging/webhooks/#configuring-routes"
         )
         print()
-        print_info("   Open config in your editor:  hermes config edit")
+        print_info("   Open config in your editor:  morpheus config edit")
 
     # ── Gateway Service Setup ──
     any_messaging = (
@@ -2887,7 +2887,7 @@ def setup_gateway(config: dict):
             print_info("   Set one later with /set-home in your chat, or:")
             for plat in missing_home:
                 print_info(
-                    f"     hermes config set {plat.upper()}_HOME_CHANNEL <channel_id>"
+                    f"     morpheus config set {plat.upper()}_HOME_CHANNEL <channel_id>"
                 )
 
         # Offer to install the gateway as a system service
@@ -2960,15 +2960,15 @@ def setup_gateway(config: dict):
                             print_error(f"  Start failed: {e}")
                 except Exception as e:
                     print_error(f"  Install failed: {e}")
-                    print_info("  You can try manually: hermes gateway install")
+                    print_info("  You can try manually: morpheus gateway install")
             else:
-                print_info("  You can install later: hermes gateway install")
+                print_info("  You can install later: morpheus gateway install")
                 if _is_linux:
-                    print_info("  Or as a boot-time service: sudo hermes gateway install --system")
-                print_info("  Or run in foreground:  hermes gateway")
+                    print_info("  Or as a boot-time service: sudo morpheus gateway install --system")
+                print_info("  Or run in foreground:  morpheus gateway")
         else:
             print_info("Start the gateway to bring your bots online:")
-            print_info("   hermes gateway              # Run in foreground")
+            print_info("   morpheus gateway              # Run in foreground")
 
         print_info("━" * 50)
 
@@ -2981,7 +2981,7 @@ def setup_gateway(config: dict):
 def setup_tools(config: dict, first_install: bool = False):
     """Configure tools — delegates to the unified tools_command() in tools_config.py.
 
-    Both `hermes setup tools` and `hermes tools` use the same flow:
+    Both `morpheus setup tools` and `morpheus tools` use the same flow:
     platform selection → toolset toggles → provider/API key configuration.
 
     Args:
@@ -3093,11 +3093,11 @@ _OPENCLAW_SCRIPT = (
     / "migration"
     / "openclaw-migration"
     / "scripts"
-    / "openclaw_to_hermes.py"
+    / "openclaw_to_morpheus.py"
 )
 
 
-def _offer_openclaw_migration(hermes_home: Path) -> bool:
+def _offer_openclaw_migration(morpheus_home: Path) -> bool:
     """Detect ~/.openclaw and offer to migrate during first-time setup.
 
     Returns True if migration ran successfully, False otherwise.
@@ -3129,7 +3129,7 @@ def _offer_openclaw_migration(hermes_home: Path) -> bool:
     # Dynamically load the migration script
     try:
         spec = importlib.util.spec_from_file_location(
-            "openclaw_to_hermes", _OPENCLAW_SCRIPT
+            "openclaw_to_morpheus", _OPENCLAW_SCRIPT
         )
         if spec is None or spec.loader is None:
             print_warning("Could not load migration script.")
@@ -3150,7 +3150,7 @@ def _offer_openclaw_migration(hermes_home: Path) -> bool:
         selected = mod.resolve_selected_options(None, None, preset="full")
         migrator = mod.Migrator(
             source_root=openclaw_dir.resolve(),
-            target_root=hermes_home.resolve(),
+            target_root=morpheus_home.resolve(),
             execute=True,
             workspace_target=None,
             overwrite=True,
@@ -3208,12 +3208,12 @@ def run_setup_wizard(args):
     """Run the interactive setup wizard.
 
     Supports full, quick, and section-specific setup:
-      hermes setup           — full or quick (auto-detected)
-      hermes setup model     — just model/provider
-      hermes setup terminal  — just terminal backend
-      hermes setup gateway   — just messaging platforms
-      hermes setup tools     — just tool configuration
-      hermes setup agent     — just agent settings
+      morpheus setup           — full or quick (auto-detected)
+      morpheus setup model     — just model/provider
+      morpheus setup terminal  — just terminal backend
+      morpheus setup gateway   — just messaging platforms
+      morpheus setup tools     — just tool configuration
+      morpheus setup agent     — just agent settings
     """
     from morpheus_cli.config import is_managed, managed_error
     if is_managed():
@@ -3222,7 +3222,7 @@ def run_setup_wizard(args):
     ensure_morpheus_home()
 
     config = load_config()
-    hermes_home = get_morpheus_home()
+    morpheus_home = get_morpheus_home()
 
     # Detect non-interactive environments (headless SSH, Docker, CI/CD)
     non_interactive = getattr(args, 'non_interactive', False)
@@ -3337,17 +3337,17 @@ def run_setup_wizard(args):
 
         if choice == 0:
             # Quick setup
-            _run_quick_setup(config, hermes_home)
+            _run_quick_setup(config, morpheus_home)
             return
         elif choice == 1:
             # Full setup — fall through to run all sections
             pass
         elif choice in (2, 8):
             # Separator — treat as exit
-            print_info("Exiting. Run 'hermes setup' again when ready.")
+            print_info("Exiting. Run 'morpheus setup' again when ready.")
             return
         elif choice == 9:
-            print_info("Exiting. Run 'hermes setup' again when ready.")
+            print_info("Exiting. Run 'morpheus setup' again when ready.")
             return
         elif 3 <= choice <= 7:
             # Individual section — map by key, not by position.
@@ -3360,7 +3360,7 @@ def run_setup_wizard(args):
                 _, label, func = section
                 func(config)
                 save_config(config)
-                _print_setup_summary(config, hermes_home)
+                _print_setup_summary(config, morpheus_home)
             return
     else:
         # ── First-Time Setup ──
@@ -3380,7 +3380,7 @@ def run_setup_wizard(args):
             return
 
         # Offer OpenClaw migration before configuration begins
-        migration_ran = _offer_openclaw_migration(hermes_home)
+        migration_ran = _offer_openclaw_migration(morpheus_home)
         if migration_ran:
             # Reload config in case migration wrote to it
             config = load_config()
@@ -3389,10 +3389,10 @@ def run_setup_wizard(args):
     print_header("Configuration Location")
     print_info(f"Config file:  {get_config_path()}")
     print_info(f"Secrets file: {get_env_path()}")
-    print_info(f"Data folder:  {hermes_home}")
+    print_info(f"Data folder:  {morpheus_home}")
     print_info(f"Install dir:  {PROJECT_ROOT}")
     print()
-    print_info("You can edit these files directly or use 'hermes config edit'")
+    print_info("You can edit these files directly or use 'morpheus config edit'")
 
     if migration_ran:
         print()
@@ -3422,10 +3422,10 @@ def run_setup_wizard(args):
 
     # Save and show summary
     save_config(config)
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, morpheus_home)
 
 
-def _run_quick_setup(config: dict, hermes_home):
+def _run_quick_setup(config: dict, morpheus_home):
     """Quick setup — only configure items that are missing."""
     from morpheus_cli.config import (
         get_missing_env_vars,
@@ -3456,7 +3456,7 @@ def _run_quick_setup(config: dict, hermes_home):
     if not has_anything_missing:
         print_success("Everything is configured! Nothing to do.")
         print()
-        print_info("Run 'hermes setup' and choose 'Full Setup' to reconfigure,")
+        print_info("Run 'morpheus setup' and choose 'Full Setup' to reconfigure,")
         print_info("or pick a specific section from the menu.")
         return
 
@@ -3519,7 +3519,7 @@ def _run_quick_setup(config: dict, hermes_home):
         print()
         print_header("Messaging Platforms")
         print_info("Connect Morpheus to messaging apps to chat from anywhere.")
-        print_info("You can configure these later with 'hermes setup gateway'.")
+        print_info("You can configure these later with 'morpheus setup gateway'.")
 
         # Group by platform (preserving order)
         platform_order = []
@@ -3588,4 +3588,4 @@ def _run_quick_setup(config: dict, hermes_home):
         save_config(config)
 
     # Jump to summary
-    _print_setup_summary(config, hermes_home)
+    _print_setup_summary(config, morpheus_home)

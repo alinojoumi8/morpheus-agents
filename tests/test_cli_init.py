@@ -24,7 +24,7 @@ def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
     }
     if config_overrides:
         _clean_config.update(config_overrides)
-    clean_env = {"LLM_MODEL": "", "HERMES_MAX_ITERATIONS": ""}
+    clean_env = {"LLM_MODEL": "", "MORPHEUS_MAX_ITERATIONS": ""}
     if env_overrides:
         clean_env.update(env_overrides)
     prompt_toolkit_stubs = {
@@ -72,7 +72,7 @@ class TestMaxTurnsResolution:
 
     def test_env_var_max_turns(self):
         """Env var is used when config file doesn't set max_turns."""
-        cli_obj = _make_cli(env_overrides={"HERMES_MAX_ITERATIONS": "42"})
+        cli_obj = _make_cli(env_overrides={"MORPHEUS_MAX_ITERATIONS": "42"})
         assert cli_obj.max_turns == 42
 
     def test_legacy_root_max_turns_is_used_when_agent_key_exists_without_value(self):

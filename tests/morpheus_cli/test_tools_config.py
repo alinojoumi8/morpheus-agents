@@ -136,7 +136,7 @@ def test_save_platform_tools_handles_invalid_existing_config():
 
 
 def test_save_platform_tools_does_not_preserve_platform_default_toolsets():
-    """Platform default toolsets (hermes-cli, hermes-telegram, etc.) must NOT
+    """Platform default toolsets (morpheus-cli, morpheus-telegram, etc.) must NOT
     be preserved across saves.
 
     These "super" toolsets resolve to ALL tools, so if they survive in the
@@ -146,14 +146,14 @@ def test_save_platform_tools_does_not_preserve_platform_default_toolsets():
     (like MCP server names), causing them to be kept unconditionally.
 
     Regression test: user unchecks image_gen and homeassistant via
-    ``hermes tools``, but hermes-cli stays in the config and re-enables
+    ``morpheus tools``, but morpheus-cli stays in the config and re-enables
     everything on the next read.
     """
     config = {
         "platform_toolsets": {
             "cli": [
                 "browser", "clarify", "code_execution", "cronjob",
-                "delegation", "file", "hermes-cli",  # <-- the culprit
+                "delegation", "file", "morpheus-cli",  # <-- the culprit
                 "memory", "session_search", "skills", "terminal",
                 "todo", "tts", "vision", "web",
             ]
@@ -172,8 +172,8 @@ def test_save_platform_tools_does_not_preserve_platform_default_toolsets():
 
     saved = config["platform_toolsets"]["cli"]
 
-    # hermes-cli must NOT survive — it's a platform default, not an MCP server
-    assert "hermes-cli" not in saved
+    # morpheus-cli must NOT survive — it's a platform default, not an MCP server
+    assert "morpheus-cli" not in saved
 
     # The individual toolset keys the user selected must be present
     assert "web" in saved
@@ -186,12 +186,12 @@ def test_save_platform_tools_does_not_preserve_platform_default_toolsets():
     assert "moa" not in saved
 
 
-def test_save_platform_tools_does_not_preserve_hermes_telegram():
-    """Same bug for Telegram — hermes-telegram must not be preserved."""
+def test_save_platform_tools_does_not_preserve_morpheus_telegram():
+    """Same bug for Telegram — morpheus-telegram must not be preserved."""
     config = {
         "platform_toolsets": {
             "telegram": [
-                "browser", "file", "hermes-telegram", "terminal", "web",
+                "browser", "file", "morpheus-telegram", "terminal", "web",
             ]
         }
     }
@@ -202,7 +202,7 @@ def test_save_platform_tools_does_not_preserve_hermes_telegram():
         _save_platform_tools(config, "telegram", new_selection)
 
     saved = config["platform_toolsets"]["telegram"]
-    assert "hermes-telegram" not in saved
+    assert "morpheus-telegram" not in saved
     assert "web" in saved
 
 
@@ -212,7 +212,7 @@ def test_save_platform_tools_still_preserves_mcp_with_platform_default_present()
     config = {
         "platform_toolsets": {
             "cli": [
-                "web", "terminal", "hermes-cli", "my-mcp-server", "github-tools",
+                "web", "terminal", "morpheus-cli", "my-mcp-server", "github-tools",
             ]
         }
     }
@@ -229,7 +229,7 @@ def test_save_platform_tools_still_preserves_mcp_with_platform_default_present()
     assert "github-tools" in saved
 
     # Platform default stripped
-    assert "hermes-cli" not in saved
+    assert "morpheus-cli" not in saved
 
     # User selections present
     assert "web" in saved

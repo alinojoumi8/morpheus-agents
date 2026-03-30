@@ -82,7 +82,7 @@ from .browser_tool import (
     BROWSER_TOOL_SCHEMAS
 )
 
-# Cronjob management tools (CLI-only, hermes-cli toolset)
+# Cronjob management tools (CLI-only, morpheus-cli toolset)
 from .cronjob_tools import (
     cronjob,
     schedule_cronjob,

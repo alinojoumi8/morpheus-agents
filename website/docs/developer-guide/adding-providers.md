@@ -10,7 +10,7 @@ Morpheus can already talk to any OpenAI-compatible endpoint through the custom p
 
 - provider-specific auth or token refresh
 - a curated model catalog
-- setup / `hermes model` menu entries
+- setup / `morpheus model` menu entries
 - provider aliases for `provider:model` syntax
 - a non-OpenAI API shape that needs an adapter
 
@@ -207,7 +207,7 @@ Update:
 - any provider-specific explanatory text
 - any place where a provider should be excluded from OpenRouter-only prompts or routing settings
 
-If you only update one of these files, `hermes model` and `hermes setup` will drift.
+If you only update one of these files, `morpheus model` and `morpheus setup` will drift.
 
 ## Step 6: Keep auxiliary calls working
 
@@ -399,7 +399,7 @@ Search for `api_mode` and `self.client.`. Do not assume the obvious request path
 
 Fields like provider routing belong only on the providers that support them.
 
-### 7. Updating `hermes model` but not `hermes setup`
+### 7. Updating `morpheus model` but not `morpheus setup`
 
 Both flows need to know about the provider.
 

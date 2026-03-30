@@ -50,10 +50,10 @@ All fields are optional. Missing values inherit from the ``default`` skin.
 
     # Branding: text strings used throughout the CLI
     branding:
-      agent_name: "Morpheus Agent"          # Banner title, status display
+      agent_name: "Morpheus Agents"         # Banner title, status display
       welcome: "Welcome message"          # Shown at CLI startup
       goodbye: "Goodbye! ⚕"              # Shown on exit
-      response_label: " ⚕ Morpheus "       # Response box header label
+      response_label: " ⚕ Morpheus Agents " # Response box header label
       prompt_symbol: "❯ "                # Input prompt symbol
       help_header: "(^_^)? Commands"      # /help header text
 
@@ -75,7 +75,7 @@ USAGE
 
     skin = get_active_skin()
     print(skin.colors["banner_title"])    # "#FFD700"
-    print(skin.get_branding("agent_name"))  # "Morpheus Agent"
+    print(skin.get_branding("agent_name"))  # "Morpheus Agents"
 
     set_active_skin("ares")               # Switch to built-in ares skin
     set_active_skin("mytheme")            # Switch to user skin from ~/.morpheus/skins/
@@ -120,8 +120,8 @@ class SkinConfig:
     branding: Dict[str, str] = field(default_factory=dict)
     tool_prefix: str = "┊"
     tool_emojis: Dict[str, str] = field(default_factory=dict)  # per-tool emoji overrides
-    banner_logo: str = ""    # Rich-markup ASCII art logo (replaces HERMES_AGENT_LOGO)
-    banner_hero: str = ""    # Rich-markup hero art (replaces HERMES_CADUCEUS)
+    banner_logo: str = ""    # Rich-markup ASCII art logo (replaces MORPHEUS_AGENT_LOGO)
+    banner_hero: str = ""    # Rich-markup hero art (replaces MORPHEUS_CADUCEUS)
 
     def get_color(self, key: str, fallback: str = "") -> str:
         """Get a color value with fallback."""
@@ -174,10 +174,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
             # Empty = use hardcoded defaults in display.py
         },
         "branding": {
-            "agent_name": "Morpheus Agent",
-            "welcome": "Welcome to Morpheus Agent! Type your message or /help for commands.",
+            "agent_name": "Morpheus Agents",
+            "welcome": "Welcome to Morpheus Agents! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Morpheus ",
+            "response_label": " ⚕ Morpheus Agents ",
             "prompt_symbol": "❯ ",
             "help_header": "(^_^)? Available Commands",
         },
@@ -269,10 +269,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Morpheus Agent",
-            "welcome": "Welcome to Morpheus Agent! Type your message or /help for commands.",
+            "agent_name": "Morpheus Agents",
+            "welcome": "Welcome to Morpheus Agents! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Morpheus ",
+            "response_label": " ⚕ Morpheus Agents ",
             "prompt_symbol": "❯ ",
             "help_header": "[?] Available Commands",
         },
@@ -300,10 +300,10 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
         },
         "spinner": {},
         "branding": {
-            "agent_name": "Morpheus Agent",
-            "welcome": "Welcome to Morpheus Agent! Type your message or /help for commands.",
+            "agent_name": "Morpheus Agents",
+            "welcome": "Welcome to Morpheus Agents! Type your message or /help for commands.",
             "goodbye": "Goodbye! ⚕",
-            "response_label": " ⚕ Morpheus ",
+            "response_label": " ⚕ Morpheus Agents ",
             "prompt_symbol": "❯ ",
             "help_header": "(^_^)? Available Commands",
         },

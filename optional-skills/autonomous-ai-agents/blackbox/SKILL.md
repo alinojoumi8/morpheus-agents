@@ -5,7 +5,7 @@ version: 1.0.0
 author: Morpheus Agent (Nous Research)
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Coding-Agent, Blackbox, Multi-Agent, Judge, Multi-Model]
     related_skills: [claude-code, codex, morpheus-agent]
 ---

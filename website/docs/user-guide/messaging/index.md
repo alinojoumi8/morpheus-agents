@@ -8,7 +8,7 @@ description: "Chat with Morpheus from Telegram, Discord, Slack, WhatsApp, Signal
 
 Chat with Morpheus from Telegram, Discord, Slack, WhatsApp, Signal, SMS, Email, Home Assistant, Mattermost, Matrix, DingTalk, or your browser. The gateway is a single background process that connects to all your configured platforms, handles sessions, runs cron jobs, and delivers voice messages.
 
-For the full voice feature set — including CLI microphone mode, spoken replies in messaging, and Discord voice-channel conversations — see [Voice Mode](/docs/user-guide/features/voice-mode) and [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-hermes).
+For the full voice feature set — including CLI microphone mode, spoken replies in messaging, and Discord voice-channel conversations — see [Voice Mode](/docs/user-guide/features/voice-mode) and [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-morpheus).
 
 ## Architecture
 
@@ -60,7 +60,7 @@ Each platform adapter receives messages, routes them through a per-chat session 
 The easiest way to configure messaging platforms is the interactive wizard:
 
 ```bash
-hermes gateway setup        # Interactive setup for all messaging platforms
+morpheus gateway setup        # Interactive setup for all messaging platforms
 ```
 
 This walks you through configuring each platform with arrow-key selection, shows which platforms are already configured, and offers to start/restart the gateway when done.
@@ -68,14 +68,14 @@ This walks you through configuring each platform with arrow-key selection, shows
 ## Gateway Commands
 
 ```bash
-hermes gateway              # Run in foreground
-hermes gateway setup        # Configure messaging platforms interactively
-hermes gateway install      # Install as a user service (Linux) / launchd service (macOS)
-sudo hermes gateway install --system   # Linux only: install a boot-time system service
-hermes gateway start        # Start the default service
-hermes gateway stop         # Stop the default service
-hermes gateway status       # Check default service status
-hermes gateway status --system         # Linux only: inspect the system service explicitly
+morpheus gateway              # Run in foreground
+morpheus gateway setup        # Configure messaging platforms interactively
+morpheus gateway install      # Install as a user service (Linux) / launchd service (macOS)
+sudo morpheus gateway install --system   # Linux only: install a boot-time system service
+morpheus gateway start        # Start the default service
+morpheus gateway stop         # Stop the default service
+morpheus gateway status       # Check default service status
+morpheus gateway status --system         # Linux only: inspect the system service explicitly
 ```
 
 ## Chat Commands (Inside Messaging)
@@ -163,11 +163,11 @@ Instead of manually configuring user IDs, unknown users receive a one-time pairi
 ```bash
 # The user sees: "Pairing code: XKGH5N7P"
 # You approve them with:
-hermes pairing approve telegram XKGH5N7P
+morpheus pairing approve telegram XKGH5N7P
 
 # Other pairing commands:
-hermes pairing list          # View pending + approved users
-hermes pairing revoke telegram 123456789  # Remove access
+morpheus pairing list          # View pending + approved users
+morpheus pairing revoke telegram 123456789  # Remove access
 ```
 
 Pairing codes expire after 1 hour, are rate-limited, and use cryptographic randomness.
@@ -243,7 +243,7 @@ display:
 You can also set this via environment variable:
 
 ```bash
-HERMES_BACKGROUND_NOTIFICATIONS=result
+MORPHEUS_BACKGROUND_NOTIFICATIONS=result
 ```
 
 ### Use Cases
@@ -262,20 +262,20 @@ Background tasks on messaging platforms are fire-and-forget — you don't need t
 ### Linux (systemd)
 
 ```bash
-hermes gateway install               # Install as user service
-hermes gateway start                 # Start the service
-hermes gateway stop                  # Stop the service
-hermes gateway status                # Check status
-journalctl --user -u hermes-gateway -f  # View logs
+morpheus gateway install               # Install as user service
+morpheus gateway start                 # Start the service
+morpheus gateway stop                  # Stop the service
+morpheus gateway status                # Check status
+journalctl --user -u morpheus-gateway -f  # View logs
 
 # Enable lingering (keeps running after logout)
 sudo loginctl enable-linger $USER
 
 # Or install a boot-time system service that still runs as your user
-sudo hermes gateway install --system
-sudo hermes gateway start --system
-sudo hermes gateway status --system
-journalctl -u hermes-gateway -f
+sudo morpheus gateway install --system
+sudo morpheus gateway start --system
+sudo morpheus gateway status --system
+journalctl -u morpheus-gateway -f
 ```
 
 Use the user service on laptops and dev boxes. Use the system service on VPS or headless hosts that should come back at boot without relying on systemd linger.
@@ -283,15 +283,15 @@ Use the user service on laptops and dev boxes. Use the system service on VPS or 
 Avoid keeping both the user and system gateway units installed at once unless you really mean to. Morpheus will warn if it detects both because start/stop/status behavior gets ambiguous.
 
 :::info Multiple installations
-If you run multiple Morpheus installations on the same machine (with different `HERMES_HOME` directories), each gets its own systemd service name. The default `~/.morpheus` uses `hermes-gateway`; other installations use `hermes-gateway-<hash>`. The `hermes gateway` commands automatically target the correct service for your current `HERMES_HOME`.
+If you run multiple Morpheus installations on the same machine (with different `MORPHEUS_HOME` directories), each gets its own systemd service name. The default `~/.morpheus` uses `morpheus-gateway`; other installations use `morpheus-gateway-<hash>`. The `morpheus gateway` commands automatically target the correct service for your current `MORPHEUS_HOME`.
 :::
 
 ### macOS (launchd)
 
 ```bash
-hermes gateway install
-launchctl start ai.hermes.gateway
-launchctl stop ai.hermes.gateway
+morpheus gateway install
+launchctl start ai.morpheus.gateway
+launchctl stop ai.morpheus.gateway
 tail -f ~/.morpheus/logs/gateway.log
 ```
 
@@ -301,20 +301,20 @@ Each platform has its own toolset:
 
 | Platform | Toolset | Capabilities |
 |----------|---------|--------------|
-| CLI | `hermes-cli` | Full access |
-| Telegram | `hermes-telegram` | Full tools including terminal |
-| Discord | `hermes-discord` | Full tools including terminal |
-| WhatsApp | `hermes-whatsapp` | Full tools including terminal |
-| Slack | `hermes-slack` | Full tools including terminal |
-| Signal | `hermes-signal` | Full tools including terminal |
-| SMS | `hermes-sms` | Full tools including terminal |
-| Email | `hermes-email` | Full tools including terminal |
-| Home Assistant | `hermes-homeassistant` | Full tools + HA device control (ha_list_entities, ha_get_state, ha_call_service, ha_list_services) |
-| Mattermost | `hermes-mattermost` | Full tools including terminal |
-| Matrix | `hermes-matrix` | Full tools including terminal |
-| DingTalk | `hermes-dingtalk` | Full tools including terminal |
-| API Server | `hermes` (default) | Full tools including terminal |
-| Webhooks | `hermes-webhook` | Full tools including terminal |
+| CLI | `morpheus-cli` | Full access |
+| Telegram | `morpheus-telegram` | Full tools including terminal |
+| Discord | `morpheus-discord` | Full tools including terminal |
+| WhatsApp | `morpheus-whatsapp` | Full tools including terminal |
+| Slack | `morpheus-slack` | Full tools including terminal |
+| Signal | `morpheus-signal` | Full tools including terminal |
+| SMS | `morpheus-sms` | Full tools including terminal |
+| Email | `morpheus-email` | Full tools including terminal |
+| Home Assistant | `morpheus-homeassistant` | Full tools + HA device control (ha_list_entities, ha_get_state, ha_call_service, ha_list_services) |
+| Mattermost | `morpheus-mattermost` | Full tools including terminal |
+| Matrix | `morpheus-matrix` | Full tools including terminal |
+| DingTalk | `morpheus-dingtalk` | Full tools including terminal |
+| API Server | `morpheus` (default) | Full tools including terminal |
+| Webhooks | `morpheus-webhook` | Full tools including terminal |
 
 ## Next Steps
 

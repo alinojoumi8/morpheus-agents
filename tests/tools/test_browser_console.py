@@ -124,9 +124,9 @@ class TestBrowserConsoleToolsetWiring:
         from toolsets import TOOLSETS
         assert "browser_console" in TOOLSETS["browser"]["tools"]
 
-    def test_in_hermes_core_tools(self):
-        from toolsets import _HERMES_CORE_TOOLS
-        assert "browser_console" in _HERMES_CORE_TOOLS
+    def test_in_morpheus_core_tools(self):
+        from toolsets import _MORPHEUS_CORE_TOOLS
+        assert "browser_console" in _MORPHEUS_CORE_TOOLS
 
     def test_in_legacy_toolset_map(self):
         from model_tools import _LEGACY_TOOLSET_MAP

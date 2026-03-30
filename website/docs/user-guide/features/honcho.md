@@ -29,10 +29,10 @@ Set `memoryMode` to `honcho` to use Honcho exclusively. See [Memory Modes](#memo
 
 Morpheus supports a local Honcho instance (e.g. via Docker) in addition to the hosted API. Point it at your instance using `HONCHO_BASE_URL` — no API key required.
 
-**Via `hermes config`:**
+**Via `morpheus config`:**
 
 ```bash
-hermes config set HONCHO_BASE_URL http://localhost:8000
+morpheus config set HONCHO_BASE_URL http://localhost:8000
 ```
 
 **Via `~/.honcho/config.json`:**
@@ -40,7 +40,7 @@ hermes config set HONCHO_BASE_URL http://localhost:8000
 ```json
 {
   "hosts": {
-    "hermes": {
+    "morpheus": {
       "base_url": "http://localhost:8000",
       "enabled": true
     }
@@ -57,7 +57,7 @@ To run Honcho locally, refer to the [Honcho self-hosting docs](https://docs.honc
 ### Interactive Setup
 
 ```bash
-hermes honcho setup
+morpheus honcho setup
 ```
 
 The setup wizard walks through API key, peer names, workspace, memory mode, write frequency, recall mode, and session strategy. It offers to install `honcho-ai` if missing.
@@ -82,10 +82,10 @@ Honcho reads from `~/.honcho/config.json` (shared across all Honcho-enabled appl
 {
   "apiKey": "your-honcho-api-key",
   "hosts": {
-    "hermes": {
-      "workspace": "hermes",
+    "morpheus": {
+      "workspace": "morpheus",
       "peerName": "your-name",
-      "aiPeer": "hermes",
+      "aiPeer": "morpheus",
       "memoryMode": "hybrid",
       "writeFrequency": "async",
       "recallMode": "hybrid",
@@ -96,12 +96,12 @@ Honcho reads from `~/.honcho/config.json` (shared across all Honcho-enabled appl
 }
 ```
 
-`apiKey` lives at the root because it is a shared credential across all Honcho-enabled tools. All other settings are scoped under `hosts.hermes`. The `hermes honcho setup` wizard writes this structure automatically.
+`apiKey` lives at the root because it is a shared credential across all Honcho-enabled tools. All other settings are scoped under `hosts.morpheus`. The `morpheus honcho setup` wizard writes this structure automatically.
 
 Or set the API key as an environment variable:
 
 ```bash
-hermes config set HONCHO_API_KEY your-key
+morpheus config set HONCHO_API_KEY your-key
 ```
 
 :::info
@@ -112,7 +112,7 @@ When an API key is present (either in `~/.honcho/config.json` or as `HONCHO_API_
 
 ### Global Config (`~/.honcho/config.json`)
 
-Settings are scoped to `hosts.hermes` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- Morpheus only writes to its own host block (except `apiKey`, which is a shared credential at root).
+Settings are scoped to `hosts.morpheus` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- Morpheus only writes to its own host block (except `apiKey`, which is a shared credential at root).
 
 **Root-level (shared)**
 
@@ -121,13 +121,13 @@ Settings are scoped to `hosts.hermes` and fall back to root-level globals when t
 | `apiKey` | — | Honcho API key (required, shared across all hosts) |
 | `sessions` | `{}` | Manual session name overrides per directory (shared) |
 
-**Host-level (`hosts.hermes`)**
+**Host-level (`hosts.morpheus`)**
 
 | Field | Default | Description |
 |-------|---------|-------------|
-| `workspace` | `"hermes"` | Workspace identifier |
+| `workspace` | `"morpheus"` | Workspace identifier |
 | `peerName` | *(derived)* | Your identity name for user modeling |
-| `aiPeer` | `"hermes"` | AI assistant identity name |
+| `aiPeer` | `"morpheus"` | AI assistant identity name |
 | `environment` | `"production"` | Honcho environment |
 | `enabled` | *(auto)* | Auto-enables when API key is present |
 | `saveMessages` | `true` | Whether to sync messages to Honcho |
@@ -141,7 +141,7 @@ Settings are scoped to `hosts.hermes` and fall back to root-level globals when t
 | `dialecticMaxChars` | `600` | Char cap on dialectic results injected into system prompt |
 | `linkedHosts` | `[]` | Other host keys whose workspaces to cross-reference |
 
-All host-level fields fall back to the equivalent root-level key if not set under `hosts.hermes`. Existing configs with settings at root level continue to work.
+All host-level fields fall back to the equivalent root-level key if not set under `hosts.morpheus`. Existing configs with settings at root level continue to work.
 
 ### Memory Modes
 
@@ -156,7 +156,7 @@ Memory mode can be set globally or per-peer (user, agent1, agent2, etc):
 {
   "memoryMode": {
     "default": "hybrid",
-    "hermes": "honcho"
+    "morpheus": "honcho"
   }
 }
 ```
@@ -202,9 +202,9 @@ Multiple Honcho-enabled tools share `~/.honcho/config.json`. Each tool writes on
   "apiKey": "your-key",
   "peerName": "eri",
   "hosts": {
-    "hermes": {
+    "morpheus": {
       "workspace": "my-workspace",
-      "aiPeer": "hermes-assistant",
+      "aiPeer": "morpheus-assistant",
       "memoryMode": "honcho",
       "linkedHosts": ["claude-code"],
       "contextTokens": 2000,
@@ -336,27 +336,27 @@ Parameters:
 ## CLI Commands
 
 ```
-hermes honcho setup                        # Interactive setup wizard
-hermes honcho status                       # Show config and connection status
-hermes honcho sessions                     # List directory → session name mappings
-hermes honcho map <name>                   # Map current directory to a session name
-hermes honcho peer                         # Show peer names and dialectic settings
-hermes honcho peer --user NAME             # Set user peer name
-hermes honcho peer --ai NAME               # Set AI peer name
-hermes honcho peer --reasoning LEVEL       # Set dialectic reasoning level
-hermes honcho mode                         # Show current memory mode
-hermes honcho mode [hybrid|honcho|local]   # Set memory mode
-hermes honcho tokens                       # Show token budget settings
-hermes honcho tokens --context N           # Set context token cap
-hermes honcho tokens --dialectic N         # Set dialectic char cap
-hermes honcho identity                     # Show AI peer identity
-hermes honcho identity <file>              # Seed AI peer identity from file (SOUL.md, etc.)
-hermes honcho migrate                      # Migration guide: OpenClaw → Morpheus + Honcho
+morpheus honcho setup                        # Interactive setup wizard
+morpheus honcho status                       # Show config and connection status
+morpheus honcho sessions                     # List directory → session name mappings
+morpheus honcho map <name>                   # Map current directory to a session name
+morpheus honcho peer                         # Show peer names and dialectic settings
+morpheus honcho peer --user NAME             # Set user peer name
+morpheus honcho peer --ai NAME               # Set AI peer name
+morpheus honcho peer --reasoning LEVEL       # Set dialectic reasoning level
+morpheus honcho mode                         # Show current memory mode
+morpheus honcho mode [hybrid|honcho|local]   # Set memory mode
+morpheus honcho tokens                       # Show token budget settings
+morpheus honcho tokens --context N           # Set context token cap
+morpheus honcho tokens --dialectic N         # Set dialectic char cap
+morpheus honcho identity                     # Show AI peer identity
+morpheus honcho identity <file>              # Seed AI peer identity from file (SOUL.md, etc.)
+morpheus honcho migrate                      # Migration guide: OpenClaw → Morpheus + Honcho
 ```
 
 ### Doctor Integration
 
-`hermes doctor` includes a Honcho section that validates config, API key, and connection status.
+`morpheus doctor` includes a Honcho section that validates config, API key, and connection status.
 
 ## Migration
 
@@ -370,7 +370,7 @@ When Honcho activates on an instance with existing local history, migration runs
 ### From OpenClaw
 
 ```bash
-hermes honcho migrate
+morpheus honcho migrate
 ```
 
 Walks through converting an OpenClaw native Honcho setup to the shared `~/.honcho/config.json` format.
@@ -380,13 +380,13 @@ Walks through converting an OpenClaw native Honcho setup to the shared `~/.honch
 Honcho can build a representation of the AI assistant over time (via `observe_me=True`). You can also seed the AI peer explicitly:
 
 ```bash
-hermes honcho identity ~/.morpheus/SOUL.md
+morpheus honcho identity ~/.morpheus/SOUL.md
 ```
 
 This uploads the file content through Honcho's observation pipeline. The AI peer representation is then injected into the system prompt alongside the user's, giving the agent awareness of its own accumulated identity.
 
 ```bash
-hermes honcho identity --show
+morpheus honcho identity --show
 ```
 
 Shows the current AI peer representation from Honcho.

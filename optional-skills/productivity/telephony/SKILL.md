@@ -5,7 +5,7 @@ version: 1.0.0
 author: Nous Research
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [telephony, phone, sms, mms, voice, twilio, bland.ai, vapi, calling, texting]
     related_skills: [find-nearby, google-workspace, agentmail]
     category: productivity
@@ -139,8 +139,8 @@ If `SCRIPT` is empty, the skill is not installed yet.
 This is an official optional skill, so install it from the Skills Hub:
 
 ```bash
-hermes skills search telephony
-hermes skills install official/productivity/telephony
+morpheus skills search telephony
+morpheus skills install official/productivity/telephony
 ```
 
 ## Provider setup

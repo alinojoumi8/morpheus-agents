@@ -8,18 +8,18 @@ description: "Real-time voice conversations with Morpheus Agent — CLI, Telegra
 
 Morpheus Agent supports full voice interaction across CLI and messaging platforms. Talk to the agent using your microphone, hear spoken replies, and have live voice conversations in Discord voice channels.
 
-If you want a practical setup walkthrough with recommended configurations and real usage patterns, see [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-hermes).
+If you want a practical setup walkthrough with recommended configurations and real usage patterns, see [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-morpheus).
 
 ## Prerequisites
 
 Before using voice features, make sure you have:
 
 1. **Morpheus Agent installed** — `pip install morpheus-agent` (see [Installation](/docs/getting-started/installation))
-2. **An LLM provider configured** — run `hermes model` or set your preferred provider credentials in `~/.morpheus/.env`
-3. **A working base setup** — run `hermes` to verify the agent responds to text before enabling voice
+2. **An LLM provider configured** — run `morpheus model` or set your preferred provider credentials in `~/.morpheus/.env`
+3. **A working base setup** — run `morpheus` to verify the agent responds to text before enabling voice
 
 :::tip
-The `~/.morpheus/` directory and default `config.yaml` are created automatically the first time you run `hermes`. You only need to create `~/.morpheus/.env` manually for API keys.
+The `~/.morpheus/` directory and default `config.yaml` are created automatically the first time you run `morpheus`. You only need to create `~/.morpheus/.env` manually for API keys.
 :::
 
 ## Overview
@@ -110,7 +110,7 @@ If `faster-whisper` is installed, voice mode works with **zero API keys** for ST
 Start the CLI and enable voice mode:
 
 ```bash
-hermes                # Start the interactive CLI
+morpheus                # Start the interactive CLI
 ```
 
 Then use these commands inside the CLI:
@@ -125,7 +125,7 @@ Then use these commands inside the CLI:
 
 ### How It Works
 
-1. Start the CLI with `hermes` and enable voice mode with `/voice on`
+1. Start the CLI with `morpheus` and enable voice mode with `/voice on`
 2. **Press Ctrl+B** — a beep plays (880Hz), recording starts
 3. **Speak** — a live audio level bar shows your input: `● [▁▂▃▅▇▇▅▂] ❯`
 4. **Stop speaking** — after 3 seconds of silence, recording auto-stops
@@ -174,8 +174,8 @@ If you haven't set up your messaging bots yet, see the platform-specific guides:
 Start the gateway to connect to your messaging platforms:
 
 ```bash
-hermes gateway        # Start the gateway (connects to configured platforms)
-hermes gateway setup  # Interactive setup wizard for first-time configuration
+morpheus gateway        # Start the gateway (connects to configured platforms)
+morpheus gateway setup  # Interactive setup wizard for first-time configuration
 ```
 
 ### Discord: Channels vs DMs
@@ -189,7 +189,7 @@ The bot supports two interaction modes on Discord:
 
 **DM (recommended for personal use):** Just open a DM with the bot and type — no @mention needed. Voice replies and all commands work the same as in channels.
 
-**Server channels:** The bot only responds when you @mention it (e.g. `@hermesbyt4 hello`). Make sure you select the **bot user** from the mention popup, not the role with the same name.
+**Server channels:** The bot only responds when you @mention it (e.g. `@morpheusbyt4 hello`). Make sure you select the **bot user** from the mention popup, not the role with the same name.
 
 :::tip
 To disable the mention requirement in server channels, add to `~/.morpheus/.env`:
@@ -320,7 +320,7 @@ DISCORD_ALLOWED_USERS=your-user-id
 ### Start the Gateway
 
 ```bash
-hermes gateway        # Start with existing configuration
+morpheus gateway        # Start with existing configuration
 ```
 
 The bot should come online in Discord within a few seconds.

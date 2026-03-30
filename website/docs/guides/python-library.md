@@ -265,7 +265,7 @@ client = discord.Client(intents=discord.Intents.default())
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.content.startswith("!hermes "):
+    if message.content.startswith("!morpheus "):
         query = message.content[8:]
         agent = AIAgent(
             model="anthropic/claude-sonnet-4",

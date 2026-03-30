@@ -15,14 +15,14 @@ def test_gateway_config_stt_disabled_from_dict_nested():
 
 
 def test_load_gateway_config_bridges_stt_enabled_from_config_yaml(tmp_path, monkeypatch):
-    hermes_home = tmp_path / ".morpheus"
-    hermes_home.mkdir()
-    (hermes_home / "config.yaml").write_text(
+    morpheus_home = tmp_path / ".morpheus"
+    morpheus_home.mkdir()
+    (morpheus_home / "config.yaml").write_text(
         yaml.dump({"stt": {"enabled": False}}),
         encoding="utf-8",
     )
 
-    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(morpheus_home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
 
     config = load_gateway_config()

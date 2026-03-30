@@ -73,7 +73,7 @@ class TestDiscordThreadPersistence:
         adapter = self._make_adapter(tmp_path)
         assert adapter._bot_participated_threads == set()
 
-    def test_missing_hermes_home_does_not_crash(self, tmp_path):
+    def test_missing_morpheus_home_does_not_crash(self, tmp_path):
         """Load/save tolerate missing directories."""
         fake_home = tmp_path / "nonexistent" / "deep"
         with patch.dict(os.environ, {"MORPHEUS_HOME": str(fake_home)}):

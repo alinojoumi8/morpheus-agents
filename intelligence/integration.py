@@ -240,10 +240,15 @@ def get_hot_memories_block(persona: Optional[str] = None) -> str:
         if not memories:
             return ""
 
+        # Security: scan hot memories before injecting into system prompt
+        from intelligence.security import is_safe
+
         parts = ["# Intelligence Memory (long-term recall)"]
         for m in memories:
             content_type = m.get("content_type", "memory")
             content = m["content"]
+            if not is_safe(content):
+                continue  # Skip entries that fail security scan
             if len(content) > 300:
                 content = content[:300] + "..."
             parts.append(f"- [{content_type}] {content}")

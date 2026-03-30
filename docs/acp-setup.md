@@ -9,8 +9,8 @@ natively in the editor UI.
 
 ## Prerequisites
 
-- Morpheus Agent installed and configured (`hermes setup` completed)
-- An API key / provider set up in `~/.morpheus/.env` or via `hermes login`
+- Morpheus Agent installed and configured (`morpheus setup` completed)
+- An API key / provider set up in `~/.morpheus/.env` or via `morpheus login`
 - Python 3.11+
 
 Install the ACP extra:
@@ -55,7 +55,7 @@ Open your VS Code settings (`Ctrl+,` → click the `{}` icon for JSON) and add:
 Replace `/path/to/morpheus-agent` with the actual path to your Morpheus Agent
 installation (e.g. `~/.morpheus/morpheus-agent`).
 
-Alternatively, if `hermes` is on your PATH, the ACP Client can discover it
+Alternatively, if `morpheus` is on your PATH, the ACP Client can discover it
 automatically via the registry directory.
 
 ### 3. Restart VS Code
@@ -153,7 +153,7 @@ Morpheus Agent under ACP uses the **same configuration** as the CLI:
 - **Skills**: `~/.morpheus/skills/`
 - **Sessions**: `~/.morpheus/state.db`
 
-You can run `hermes setup` to configure providers, or edit `~/.morpheus/.env`
+You can run `morpheus setup` to configure providers, or edit `~/.morpheus/.env`
 directly.
 
 ### Changing the model
@@ -161,14 +161,14 @@ directly.
 Edit `~/.morpheus/config.yaml`:
 
 ```yaml
-model: openrouter/nous/hermes-3-llama-3.1-70b
+model: openrouter/nous/morpheus-3-llama-3.1-70b
 ```
 
-Or set the `HERMES_MODEL` environment variable.
+Or set the `MORPHEUS_MODEL` environment variable.
 
 ### Toolsets
 
-ACP sessions use the curated `hermes-acp` toolset by default. It is designed for editor workflows and intentionally excludes things like messaging delivery, cronjob management, and audio-first UX features.
+ACP sessions use the curated `morpheus-acp` toolset by default. It is designed for editor workflows and intentionally excludes things like messaging delivery, cronjob management, and audio-first UX features.
 
 ---
 
@@ -178,15 +178,15 @@ ACP sessions use the curated `hermes-acp` toolset by default. It is designed for
 
 1. **Check the registry path** — make sure the `acp_registry/` directory path
    in your editor settings is correct and contains `agent.json`.
-2. **Check `hermes` is on PATH** — run `which hermes` in a terminal. If not
+2. **Check `morpheus` is on PATH** — run `which morpheus` in a terminal. If not
    found, you may need to activate your virtualenv or add it to PATH.
 3. **Restart the editor** after changing settings.
 
 ### Agent starts but errors immediately
 
-1. Run `hermes doctor` to check your configuration.
-2. Check that you have a valid API key: `hermes status`
-3. Try running `hermes acp` directly in a terminal to see error output.
+1. Run `morpheus doctor` to check your configuration.
+2. Check that you have a valid API key: `morpheus status`
+3. Try running `morpheus acp` directly in a terminal to see error output.
 
 ### "Module not found" errors
 
@@ -217,7 +217,7 @@ Morpheus logs are written to stderr when running in ACP mode. Check:
 You can also enable verbose logging:
 
 ```bash
-HERMES_LOG_LEVEL=DEBUG hermes acp
+MORPHEUS_LOG_LEVEL=DEBUG morpheus acp
 ```
 
 ---
@@ -226,4 +226,4 @@ HERMES_LOG_LEVEL=DEBUG hermes acp
 
 - [ACP Specification](https://github.com/anysphere/acp)
 - [Morpheus Agent Documentation](https://github.com/NousResearch/morpheus-agent)
-- Run `hermes --help` for all CLI options
+- Run `morpheus --help` for all CLI options

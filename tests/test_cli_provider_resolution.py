@@ -5,7 +5,7 @@ from contextlib import nullcontext
 from types import SimpleNamespace
 
 from morpheus_cli.auth import AuthError
-from morpheus_cli import main as hermes_main
+from morpheus_cli import main as morpheus_main
 
 
 def _install_prompt_toolkit_stubs():
@@ -216,7 +216,7 @@ def test_cli_turn_routing_uses_cheap_model_when_simple(monkeypatch):
 def test_cli_prefers_config_provider_over_stale_env_override(monkeypatch):
     cli = _import_cli()
 
-    monkeypatch.setenv("HERMES_INFERENCE_PROVIDER", "openrouter")
+    monkeypatch.setenv("MORPHEUS_INFERENCE_PROVIDER", "openrouter")
     config_copy = dict(cli.CLI_CONFIG)
     model_copy = dict(config_copy.get("model", {}))
     model_copy["provider"] = "custom"
@@ -423,9 +423,9 @@ def test_cmd_model_falls_back_to_auto_on_invalid_provider(monkeypatch, capsys):
         return "openrouter"
 
     monkeypatch.setattr("morpheus_cli.auth.resolve_provider", _resolve_provider)
-    monkeypatch.setattr(hermes_main, "_prompt_provider_choice", lambda choices: len(choices) - 1)
+    monkeypatch.setattr(morpheus_main, "_prompt_provider_choice", lambda choices: len(choices) - 1)
 
-    hermes_main.cmd_model(SimpleNamespace())
+    morpheus_main.cmd_model(SimpleNamespace())
     output = capsys.readouterr().out
 
     assert "Warning:" in output
@@ -462,7 +462,7 @@ def test_model_flow_custom_saves_verified_v1_base_url(monkeypatch, capsys):
     answers = iter(["http://localhost:8000", "local-key", "llm", ""])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(answers))
 
-    hermes_main._model_flow_custom({})
+    morpheus_main._model_flow_custom({})
     output = capsys.readouterr().out
 
     assert "Saving the working base URL instead" in output

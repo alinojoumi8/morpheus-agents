@@ -192,7 +192,7 @@ class ToolContext:
             )
         else:
             # For larger files, write base64 in chunks then decode
-            tmp_b64 = "/tmp/_hermes_upload.b64"
+            tmp_b64 = "/tmp/_morpheus_upload.b64"
             self.terminal(f": > {tmp_b64}", timeout=5)  # truncate
             for i in range(0, len(b64), chunk_size):
                 chunk = b64[i : i + chunk_size]
@@ -461,14 +461,14 @@ class ToolContext:
 
         # Suppress browser_tool's noisy debug prints during cleanup.
         # The cleanup still runs (safe), it just doesn't spam the console.
-        _prev_quiet = os.environ.get("HERMES_QUIET")
-        os.environ["HERMES_QUIET"] = "1"
+        _prev_quiet = os.environ.get("MORPHEUS_QUIET")
+        os.environ["MORPHEUS_QUIET"] = "1"
         try:
             cleanup_browser(self.task_id)
         except Exception as e:
             logger.debug("Browser cleanup for task %s: %s", self.task_id, e)
         finally:
             if _prev_quiet is None:
-                os.environ.pop("HERMES_QUIET", None)
+                os.environ.pop("MORPHEUS_QUIET", None)
             else:
-                os.environ["HERMES_QUIET"] = _prev_quiet
+                os.environ["MORPHEUS_QUIET"] = _prev_quiet

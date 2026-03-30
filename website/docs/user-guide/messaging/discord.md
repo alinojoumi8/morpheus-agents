@@ -223,7 +223,7 @@ Developer Mode also lets you copy **Channel IDs** and **Server IDs** the same wa
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+morpheus gateway setup
 ```
 
 Select **Discord** when prompted, then paste your bot token and user ID when asked.
@@ -264,13 +264,13 @@ group_sessions_per_user: true
 Once configured, start the Discord gateway:
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 The bot should come online in Discord within a few seconds. Send it a message — either a DM or in a channel it can see — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `morpheus gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## Home Channel
@@ -302,7 +302,7 @@ Morpheus Agent supports Discord voice messages:
 
 For the full setup and operational guide, see:
 - [Voice Mode](/docs/user-guide/features/voice-mode)
-- [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-hermes)
+- [Use Voice Mode with Morpheus](/docs/guides/use-voice-mode-with-morpheus)
 
 ## Troubleshooting
 
@@ -334,7 +334,7 @@ For the full setup and operational guide, see:
 
 **Cause**: The Morpheus gateway isn't running, or the token is incorrect.
 
-**Fix**: Check that `hermes gateway` is running. Verify `DISCORD_BOT_TOKEN` in your `.env` file. If you recently reset the token, update it.
+**Fix**: Check that `morpheus gateway` is running. Verify `DISCORD_BOT_TOKEN` in your `.env` file. If you recently reset the token, update it.
 
 ### "User not allowed" / Bot ignores you
 

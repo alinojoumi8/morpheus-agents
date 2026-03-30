@@ -63,7 +63,7 @@ def remove_path_from_shell_configs():
             content = config_path.read_text()
             original_content = content
             
-            # Remove lines containing morpheus-agent or hermes PATH entries
+            # Remove lines containing morpheus-agent or morpheus PATH entries
             new_lines = []
             skip_next = False
             
@@ -77,7 +77,7 @@ def remove_path_from_shell_configs():
                     continue
                 skip_next = False
                 
-                # Remove any PATH line containing hermes
+                # Remove any PATH line containing morpheus
                 if 'morpheus' in line.lower() and ('PATH=' in line or 'path=' in line.lower()):
                     continue
                     
@@ -100,10 +100,10 @@ def remove_path_from_shell_configs():
 
 
 def remove_wrapper_script():
-    """Remove the hermes wrapper script if it exists."""
+    """Remove the morpheus wrapper script if it exists."""
     wrapper_paths = [
         Path.home() / ".local" / "bin" / "morpheus",
-        Path("/usr/local/bin/hermes"),
+        Path("/usr/local/bin/morpheus"),
     ]
     
     removed = []
@@ -132,7 +132,7 @@ def uninstall_gateway_service():
         from morpheus_cli.gateway import get_service_name
         svc_name = get_service_name()
     except Exception:
-        svc_name = "hermes-gateway"
+        svc_name = "morpheus-gateway"
 
     service_file = Path.home() / ".config" / "systemd" / "user" / f"{svc_name}.service"
     
@@ -180,7 +180,7 @@ def run_uninstall(args):
     - Keep data: removes code but keeps ~/.morpheus/ for future reinstall
     """
     project_root = get_project_root()
-    hermes_home = get_morpheus_home()
+    morpheus_home = get_morpheus_home()
     
     print()
     print(color("┌─────────────────────────────────────────────────────────┐", Colors.MAGENTA, Colors.BOLD))
@@ -191,9 +191,9 @@ def run_uninstall(args):
     # Show what will be affected
     print(color("Current Installation:", Colors.CYAN, Colors.BOLD))
     print(f"  Code:    {project_root}")
-    print(f"  Config:  {hermes_home / 'config.yaml'}")
-    print(f"  Secrets: {hermes_home / '.env'}")
-    print(f"  Data:    {hermes_home / 'cron/'}, {hermes_home / 'sessions/'}, {hermes_home / 'logs/'}")
+    print(f"  Config:  {morpheus_home / 'config.yaml'}")
+    print(f"  Secrets: {morpheus_home / '.env'}")
+    print(f"  Data:    {morpheus_home / 'cron/'}, {morpheus_home / 'sessions/'}, {morpheus_home / 'logs/'}")
     print()
     
     # Ask for confirmation
@@ -264,7 +264,7 @@ def run_uninstall(args):
         log_info("No PATH entries found to remove")
     
     # 3. Remove wrapper script
-    log_info("Removing hermes command...")
+    log_info("Removing morpheus command...")
     removed_wrappers = remove_wrapper_script()
     if removed_wrappers:
         for wrapper in removed_wrappers:
@@ -280,7 +280,7 @@ def run_uninstall(args):
     try:
         if project_root.exists():
             # If the install is inside ~/.morpheus/, just remove the morpheus-agent subdir
-            if hermes_home in project_root.parents or project_root.parent == hermes_home:
+            if morpheus_home in project_root.parents or project_root.parent == morpheus_home:
                 shutil.rmtree(project_root)
                 log_success(f"Removed {project_root}")
             else:
@@ -295,14 +295,14 @@ def run_uninstall(args):
     if full_uninstall:
         log_info("Removing configuration and data...")
         try:
-            if hermes_home.exists():
-                shutil.rmtree(hermes_home)
-                log_success(f"Removed {hermes_home}")
+            if morpheus_home.exists():
+                shutil.rmtree(morpheus_home)
+                log_success(f"Removed {morpheus_home}")
         except Exception as e:
-            log_warn(f"Could not fully remove {hermes_home}: {e}")
+            log_warn(f"Could not fully remove {morpheus_home}: {e}")
             log_info("You may need to manually remove it")
     else:
-        log_info(f"Keeping configuration and data in {hermes_home}")
+        log_info(f"Keeping configuration and data in {morpheus_home}")
     
     # Done
     print()
@@ -313,7 +313,7 @@ def run_uninstall(args):
     
     if not full_uninstall:
         print(color("Your configuration and data have been preserved:", Colors.CYAN))
-        print(f"  {hermes_home}/")
+        print(f"  {morpheus_home}/")
         print()
         print("To reinstall later with your existing settings:")
         print(color("  curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash", Colors.DIM))

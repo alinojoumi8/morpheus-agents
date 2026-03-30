@@ -16,7 +16,7 @@ morpheus-agent/
 ├── cli.py                    # interactive terminal UI
 ├── model_tools.py            # tool discovery/orchestration
 ├── toolsets.py               # tool groupings and presets
-├── hermes_state.py           # SQLite session/state database
+├── morpheus_state.py           # SQLite session/state database
 ├── batch_runner.py           # batch trajectory generation
 │
 ├── agent/                    # prompt building, compression, caching, metadata, trajectories

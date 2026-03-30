@@ -86,7 +86,7 @@ class HookRegistry:
 
                 # Dynamically load the handler module
                 spec = importlib.util.spec_from_file_location(
-                    f"hermes_hook_{hook_name}", handler_path
+                    f"morpheus_hook_{hook_name}", handler_path
                 )
                 if spec is None or spec.loader is None:
                     print(f"[hooks] Skipping {hook_name}: could not load handler.py", flush=True)

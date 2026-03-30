@@ -498,8 +498,8 @@ def fetch_endpoint_model_metadata(
 
 def _get_context_cache_path() -> Path:
     """Return path to the persistent context length cache file."""
-    hermes_home = Path(os.environ.get("MORPHEUS_HOME", Path.home() / ".morpheus"))
-    return hermes_home / "context_length_cache.yaml"
+    morpheus_home = Path(os.environ.get("MORPHEUS_HOME", Path.home() / ".morpheus"))
+    return morpheus_home / "context_length_cache.yaml"
 
 
 def _load_context_cache() -> Dict[str, int]:

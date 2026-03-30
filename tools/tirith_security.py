@@ -174,7 +174,7 @@ def _clear_install_failed():
         pass
 
 
-def _hermes_bin_dir() -> str:
+def _morpheus_bin_dir() -> str:
     """Return $MORPHEUS_HOME/bin, creating it if needed."""
     d = os.path.join(_get_morpheus_home(), "bin")
     os.makedirs(d, exist_ok=True)
@@ -359,7 +359,7 @@ def _install_tirith(*, log_failures: bool = True) -> tuple[str | None, str]:
                 return None, "binary_not_in_archive"
 
         src = os.path.join(tmpdir, "tirith")
-        dest = os.path.join(_hermes_bin_dir(), "tirith")
+        dest = os.path.join(_morpheus_bin_dir(), "tirith")
         shutil.move(src, dest)
         os.chmod(dest, os.stat(dest).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
@@ -426,12 +426,12 @@ def _resolve_tirith_path(configured_path: str) -> str:
         _clear_install_failed()
         return found
 
-    hermes_bin = os.path.join(_hermes_bin_dir(), "tirith")
-    if os.path.isfile(hermes_bin) and os.access(hermes_bin, os.X_OK):
-        _resolved_path = hermes_bin
+    morpheus_bin = os.path.join(_morpheus_bin_dir(), "tirith")
+    if os.path.isfile(morpheus_bin) and os.access(morpheus_bin, os.X_OK):
+        _resolved_path = morpheus_bin
         _install_failure_reason = ""
         _clear_install_failed()
-        return hermes_bin
+        return morpheus_bin
 
     # Local checks failed.  If a previous install attempt already failed,
     # skip the network retry — UNLESS the failure was "cosign_missing" and
@@ -490,9 +490,9 @@ def _background_install(*, log_failures: bool = True):
             _install_failure_reason = ""
             return
 
-        hermes_bin = os.path.join(_hermes_bin_dir(), "tirith")
-        if os.path.isfile(hermes_bin) and os.access(hermes_bin, os.X_OK):
-            _resolved_path = hermes_bin
+        morpheus_bin = os.path.join(_morpheus_bin_dir(), "tirith")
+        if os.path.isfile(morpheus_bin) and os.access(morpheus_bin, os.X_OK):
+            _resolved_path = morpheus_bin
             _install_failure_reason = ""
             return
 
@@ -552,12 +552,12 @@ def ensure_installed(*, log_failures: bool = True):
         _clear_install_failed()
         return found
 
-    hermes_bin = os.path.join(_hermes_bin_dir(), "tirith")
-    if os.path.isfile(hermes_bin) and os.access(hermes_bin, os.X_OK):
-        _resolved_path = hermes_bin
+    morpheus_bin = os.path.join(_morpheus_bin_dir(), "tirith")
+    if os.path.isfile(morpheus_bin) and os.access(morpheus_bin, os.X_OK):
+        _resolved_path = morpheus_bin
         _install_failure_reason = ""
         _clear_install_failed()
-        return hermes_bin
+        return morpheus_bin
 
     # If previously failed in-memory, check if the cause is now resolved
     if _resolved_path is _INSTALL_FAILED:

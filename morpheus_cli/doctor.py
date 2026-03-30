@@ -1,5 +1,5 @@
 """
-Doctor command for hermes CLI.
+Doctor command for morpheus CLI.
 
 Diagnoses issues with Morpheus Agent setup.
 """
@@ -128,8 +128,8 @@ def run_doctor(args):
     should_fix = getattr(args, 'fix', False)
 
     # Doctor runs from the interactive CLI, so CLI-gated tool availability
-    # checks (like cronjob management) should see the same context as `hermes`.
-    os.environ.setdefault("HERMES_INTERACTIVE", "1")
+    # checks (like cronjob management) should see the same context as `morpheus`.
+    os.environ.setdefault("MORPHEUS_INTERACTIVE", "1")
     
     issues = []
     manual_issues = []  # issues that can't be auto-fixed
@@ -217,7 +217,7 @@ def run_doctor(args):
             check_ok("API key or custom endpoint configured")
         else:
             check_warn("No API key found in ~/.morpheus/.env")
-            issues.append("Run 'hermes setup' to configure API keys")
+            issues.append("Run 'morpheus setup' to configure API keys")
     else:
         # Also check project root as fallback
         fallback_env = PROJECT_ROOT / '.env'
@@ -229,11 +229,11 @@ def run_doctor(args):
                 env_path.parent.mkdir(parents=True, exist_ok=True)
                 env_path.touch()
                 check_ok("Created empty ~/.morpheus/.env")
-                check_info("Run 'hermes setup' to configure API keys")
+                check_info("Run 'morpheus setup' to configure API keys")
                 fixed_count += 1
             else:
-                check_info("Run 'hermes setup' to create one")
-                issues.append("Run 'hermes setup' to create .env")
+                check_info("Run 'morpheus setup' to create one")
+                issues.append("Run 'morpheus setup' to create .env")
     
     # Check ~/.morpheus/config.yaml (primary) or project cli-config.yaml (fallback)
     config_path = MORPHEUS_HOME / 'config.yaml'
@@ -292,12 +292,12 @@ def run_doctor(args):
     print()
     print(color("◆ Directory Structure", Colors.CYAN, Colors.BOLD))
     
-    hermes_home = MORPHEUS_HOME
-    if hermes_home.exists():
+    morpheus_home = MORPHEUS_HOME
+    if morpheus_home.exists():
         check_ok("~/.morpheus directory exists")
     else:
         if should_fix:
-            hermes_home.mkdir(parents=True, exist_ok=True)
+            morpheus_home.mkdir(parents=True, exist_ok=True)
             check_ok("Created ~/.morpheus directory")
             fixed_count += 1
         else:
@@ -306,7 +306,7 @@ def run_doctor(args):
     # Check expected subdirectories
     expected_subdirs = ["cron", "sessions", "logs", "skills", "memories"]
     for subdir_name in expected_subdirs:
-        subdir_path = hermes_home / subdir_name
+        subdir_path = morpheus_home / subdir_name
         if subdir_path.exists():
             check_ok(f"~/.morpheus/{subdir_name}/ exists")
         else:
@@ -318,7 +318,7 @@ def run_doctor(args):
                 check_warn(f"~/.morpheus/{subdir_name}/ not found", "(will be created on first use)")
     
     # Check for SOUL.md persona file
-    soul_path = hermes_home / "SOUL.md"
+    soul_path = morpheus_home / "SOUL.md"
     if soul_path.exists():
         content = soul_path.read_text(encoding="utf-8").strip()
         # Check if it's just the template comments (no real content)
@@ -341,7 +341,7 @@ def run_doctor(args):
             fixed_count += 1
     
     # Check memory directory
-    memories_dir = hermes_home / "memories"
+    memories_dir = morpheus_home / "memories"
     if memories_dir.exists():
         check_ok("~/.morpheus/memories/ directory exists")
         memory_file = memories_dir / "MEMORY.md"
@@ -364,7 +364,7 @@ def run_doctor(args):
             fixed_count += 1
     
     # Check SQLite session store
-    state_db_path = hermes_home / "state.db"
+    state_db_path = morpheus_home / "state.db"
     if state_db_path.exists():
         try:
             import sqlite3
@@ -657,7 +657,7 @@ def run_doctor(args):
         # Count disabled tools with API key requirements
         api_disabled = [u for u in unavailable if (u.get("missing_vars") or u.get("env_vars"))]
         if api_disabled:
-            issues.append("Run 'hermes setup' to configure missing API keys for full tool access")
+            issues.append("Run 'morpheus setup' to configure missing API keys for full tool access")
     except Exception as e:
         check_warn("Could not check tool availability", f"({e})")
     
@@ -684,7 +684,7 @@ def run_doctor(args):
         if q_count > 0:
             check_warn(f"{q_count} skill(s) in quarantine", "(pending review)")
     else:
-        check_warn("Skills Hub directory not initialized", "(run: hermes skills list)")
+        check_warn("Skills Hub directory not initialized", "(run: morpheus skills list)")
 
     from morpheus_cli.config import get_env_value
     github_token = get_env_value("GITHUB_TOKEN") or get_env_value("GH_TOKEN")
@@ -705,12 +705,12 @@ def run_doctor(args):
         _honcho_cfg_path = resolve_config_path()
 
         if not _honcho_cfg_path.exists():
-            check_warn("Honcho config not found", "run: hermes honcho setup")
+            check_warn("Honcho config not found", "run: morpheus honcho setup")
         elif not hcfg.enabled:
             check_info(f"Honcho disabled (set enabled: true in {_honcho_cfg_path} to activate)")
         elif not hcfg.api_key:
-            check_fail("Honcho API key not set", "run: hermes honcho setup")
-            issues.append("No Honcho API key — run 'hermes honcho setup'")
+            check_fail("Honcho API key not set", "run: morpheus honcho setup")
+            issues.append("No Honcho API key — run 'morpheus honcho setup'")
         else:
             from honcho_integration.client import get_honcho_client, reset_honcho_client
             reset_honcho_client()
@@ -753,7 +753,7 @@ def run_doctor(args):
             print(f"  {i}. {issue}")
         print()
         if not should_fix:
-            print(color("  Tip: run 'hermes doctor --fix' to auto-fix what's possible.", Colors.DIM))
+            print(color("  Tip: run 'morpheus doctor --fix' to auto-fix what's possible.", Colors.DIM))
     else:
         print(color("─" * 60, Colors.GREEN))
         print(color("  All checks passed! 🎉", Colors.GREEN, Colors.BOLD))

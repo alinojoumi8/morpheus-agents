@@ -437,7 +437,7 @@ class EmailAdapter(BasePlatformAdapter):
             msg["In-Reply-To"] = original_msg_id
             msg["References"] = original_msg_id
 
-        msg_id = f"<hermes-{uuid.uuid4().hex[:12]}@{self._address.split('@')[1]}>"
+        msg_id = f"<morpheus-{uuid.uuid4().hex[:12]}@{self._address.split('@')[1]}>"
         msg["Message-ID"] = msg_id
 
         msg.attach(MIMEText(body, "plain", "utf-8"))
@@ -513,7 +513,7 @@ class EmailAdapter(BasePlatformAdapter):
             msg["In-Reply-To"] = original_msg_id
             msg["References"] = original_msg_id
 
-        msg_id = f"<hermes-{uuid.uuid4().hex[:12]}@{self._address.split('@')[1]}>"
+        msg_id = f"<morpheus-{uuid.uuid4().hex[:12]}@{self._address.split('@')[1]}>"
         msg["Message-ID"] = msg_id
 
         if body:

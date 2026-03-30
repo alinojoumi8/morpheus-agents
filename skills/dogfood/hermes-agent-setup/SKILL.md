@@ -3,7 +3,7 @@ name: morpheus-agent-setup
 description: Help users configure Morpheus Agent — CLI usage, setup wizard, model/provider selection, tools, skills, voice/STT/TTS, gateway, and troubleshooting. Use when someone asks to enable features, configure settings, or needs help with Morpheus itself.
 version: 1.1.0
 author: Morpheus Agent
-tags: [setup, configuration, tools, stt, tts, voice, hermes, cli, skills]
+tags: [setup, configuration, tools, stt, tts, voice, morpheus, cli, skills]
 ---
 
 # Morpheus Agent Setup & Configuration
@@ -20,74 +20,74 @@ Use this skill when a user asks about configuring Morpheus, enabling features, s
 
 ## CLI Overview
 
-Morpheus is used via the `hermes` command (or `python -m morpheus_cli.main` from the repo).
+Morpheus is used via the `morpheus` command (or `python -m morpheus_cli.main` from the repo).
 
 ### Core commands:
 
 ```
-hermes                          Interactive chat (default)
-hermes chat -q "question"       Single query, then exit
-hermes chat -m MODEL            Chat with a specific model
-hermes -c                       Resume most recent session
-hermes -c "project name"        Resume session by name
-hermes --resume SESSION_ID      Resume by exact ID
-hermes -w                       Isolated git worktree mode
-hermes -s skill1,skill2         Preload skills for the session
-hermes --yolo                   Skip dangerous command approval
+morpheus                          Interactive chat (default)
+morpheus chat -q "question"       Single query, then exit
+morpheus chat -m MODEL            Chat with a specific model
+morpheus -c                       Resume most recent session
+morpheus -c "project name"        Resume session by name
+morpheus --resume SESSION_ID      Resume by exact ID
+morpheus -w                       Isolated git worktree mode
+morpheus -s skill1,skill2         Preload skills for the session
+morpheus --yolo                   Skip dangerous command approval
 ```
 
 ### Configuration & setup:
 
 ```
-hermes setup                    Interactive setup wizard (provider, API keys, model)
-hermes model                    Interactive model/provider selection
-hermes config                   View current configuration
-hermes config edit              Open config.yaml in $EDITOR
-hermes config set KEY VALUE     Set a config value directly
-hermes login                    Authenticate with a provider
-hermes logout                   Clear stored auth
-hermes doctor                   Check configuration and dependencies
+morpheus setup                    Interactive setup wizard (provider, API keys, model)
+morpheus model                    Interactive model/provider selection
+morpheus config                   View current configuration
+morpheus config edit              Open config.yaml in $EDITOR
+morpheus config set KEY VALUE     Set a config value directly
+morpheus login                    Authenticate with a provider
+morpheus logout                   Clear stored auth
+morpheus doctor                   Check configuration and dependencies
 ```
 
 ### Tools & skills:
 
 ```
-hermes tools                    Interactive tool enable/disable per platform
-hermes skills list              List installed skills
-hermes skills search QUERY      Search the skills hub
-hermes skills install NAME      Install a skill from the hub
-hermes skills config            Enable/disable skills per platform
+morpheus tools                    Interactive tool enable/disable per platform
+morpheus skills list              List installed skills
+morpheus skills search QUERY      Search the skills hub
+morpheus skills install NAME      Install a skill from the hub
+morpheus skills config            Enable/disable skills per platform
 ```
 
 ### Gateway (messaging platforms):
 
 ```
-hermes gateway run              Start the messaging gateway
-hermes gateway install          Install gateway as background service
-hermes gateway status           Check gateway status
+morpheus gateway run              Start the messaging gateway
+morpheus gateway install          Install gateway as background service
+morpheus gateway status           Check gateway status
 ```
 
 ### Session management:
 
 ```
-hermes sessions list            List past sessions
-hermes sessions browse          Interactive session picker
-hermes sessions rename ID TITLE Rename a session
-hermes sessions export ID       Export session as markdown
-hermes sessions prune           Clean up old sessions
+morpheus sessions list            List past sessions
+morpheus sessions browse          Interactive session picker
+morpheus sessions rename ID TITLE Rename a session
+morpheus sessions export ID       Export session as markdown
+morpheus sessions prune           Clean up old sessions
 ```
 
 ### Other:
 
 ```
-hermes status                   Show status of all components
-hermes cron list                List cron jobs
-hermes insights                 Usage analytics
-hermes update                   Update to latest version
-hermes pairing                  Manage DM authorization codes
+morpheus status                   Show status of all components
+morpheus cron list                List cron jobs
+morpheus insights                 Usage analytics
+morpheus update                   Update to latest version
+morpheus pairing                  Manage DM authorization codes
 ```
 
-## Setup Wizard (`hermes setup`)
+## Setup Wizard (`morpheus setup`)
 
 The interactive setup wizard walks through:
 1. **Provider selection** — OpenRouter, Anthropic, OpenAI, Google, DeepSeek, and many more
@@ -102,28 +102,28 @@ source venv/bin/activate
 python -m morpheus_cli.main setup
 ```
 
-To change just the model/provider later: `hermes model`
+To change just the model/provider later: `morpheus model`
 
-## Skills Configuration (`hermes skills`)
+## Skills Configuration (`morpheus skills`)
 
 Skills are reusable instruction sets that extend what Morpheus can do.
 
 ### Managing skills:
 
 ```bash
-hermes skills list              # Show installed skills
-hermes skills search "docker"   # Search the hub
-hermes skills install NAME      # Install from hub
-hermes skills config            # Enable/disable per platform
+morpheus skills list              # Show installed skills
+morpheus skills search "docker"   # Search the hub
+morpheus skills install NAME      # Install from hub
+morpheus skills config            # Enable/disable per platform
 ```
 
 ### Per-platform skill control:
 
-`hermes skills config` opens an interactive UI where you can enable or disable specific skills for each platform (cli, telegram, discord, etc.). Disabled skills won't appear in the agent's available skills list for that platform.
+`morpheus skills config` opens an interactive UI where you can enable or disable specific skills for each platform (cli, telegram, discord, etc.). Disabled skills won't appear in the agent's available skills list for that platform.
 
 ### Loading skills in a session:
 
-- CLI: `hermes -s skill-name` or `hermes -s skill1,skill2`
+- CLI: `morpheus -s skill-name` or `morpheus -s skill1,skill2`
 - Chat: `/skill skill-name`
 - Gateway: type `/skill skill-name` in any chat
 
@@ -163,7 +163,7 @@ Model downloads automatically on first use (~150 MB for base).
 
 ### Verify STT:
 
-After config changes, restart the gateway (send /restart in chat, or restart `hermes gateway run`). Then send a voice message.
+After config changes, restart the gateway (send /restart in chat, or restart `morpheus gateway run`). Then send a voice message.
 
 ## Voice Replies (TTS)
 
@@ -183,7 +183,7 @@ Morpheus can reply with voice when users send voice messages.
 - `/voice tts` — voice reply to all messages
 - `/voice off` — text only (default)
 
-## Enabling/Disabling Tools (`hermes tools`)
+## Enabling/Disabling Tools (`morpheus tools`)
 
 ### Interactive tool config:
 
@@ -253,7 +253,7 @@ display:
   background_process_notifications: all  # all, result, error, off
 ```
 
-Edit with `hermes config edit` or `hermes config set KEY VALUE`.
+Edit with `morpheus config edit` or `morpheus config set KEY VALUE`.
 
 ## Gateway Commands (Messaging Platforms)
 
@@ -281,13 +281,13 @@ Edit with `hermes config edit` or `hermes config set KEY VALUE`.
 3. Restart gateway after config changes (/restart)
 
 ### Tool not available
-1. Run `hermes tools` to check if the toolset is enabled for your platform
+1. Run `morpheus tools` to check if the toolset is enabled for your platform
 2. Some tools need env vars — check the env file
 3. Use /reset after enabling tools
 
 ### Model/provider issues
-1. Run `hermes doctor` to check configuration
-2. Run `hermes login` to re-authenticate
+1. Run `morpheus doctor` to check configuration
+2. Run `morpheus login` to re-authenticate
 3. Check the env file has the right API key
 
 ### Changes not taking effect
@@ -295,6 +295,6 @@ Edit with `hermes config edit` or `hermes config set KEY VALUE`.
 - CLI: start a new session
 
 ### Skills not showing up
-1. Check `hermes skills list` shows the skill
-2. Check `hermes skills config` has it enabled for your platform
-3. Load explicitly with `/skill name` or `hermes -s name`
+1. Check `morpheus skills list` shows the skill
+2. Check `morpheus skills config` has it enabled for your platform
+3. Load explicitly with `/skill name` or `morpheus -s name`

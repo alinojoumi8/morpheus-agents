@@ -94,7 +94,7 @@ class TestFromGlobalConfig:
             "workspace": "my-workspace",
             "environment": "staging",
             "peerName": "alice",
-            "aiPeer": "hermes-custom",
+            "aiPeer": "morpheus-custom",
             "enabled": True,
             "saveMessages": False,
             "contextTokens": 2000,
@@ -299,7 +299,7 @@ class TestResolveSessionName:
 class TestGetLinkedWorkspaces:
     def test_resolves_linked_hosts(self):
         config = HonchoClientConfig(
-            workspace_id="hermes-ws",
+            workspace_id="morpheus-ws",
             linked_hosts=["cursor", "windsurf"],
             raw={
                 "hosts": {
@@ -314,16 +314,16 @@ class TestGetLinkedWorkspaces:
 
     def test_excludes_own_workspace(self):
         config = HonchoClientConfig(
-            workspace_id="hermes-ws",
+            workspace_id="morpheus-ws",
             linked_hosts=["other"],
-            raw={"hosts": {"other": {"workspace": "hermes-ws"}}},
+            raw={"hosts": {"other": {"workspace": "morpheus-ws"}}},
         )
         workspaces = config.get_linked_workspaces()
         assert workspaces == []
 
     def test_uses_host_key_as_fallback(self):
         config = HonchoClientConfig(
-            workspace_id="hermes-ws",
+            workspace_id="morpheus-ws",
             linked_hosts=["cursor"],
             raw={"hosts": {"cursor": {}}},  # no workspace field
         )
@@ -332,41 +332,41 @@ class TestGetLinkedWorkspaces:
 
 
 class TestResolveConfigPath:
-    def test_prefers_hermes_home_when_exists(self, tmp_path):
-        hermes_home = tmp_path / "morpheus"
-        hermes_home.mkdir()
-        local_cfg = hermes_home / "honcho.json"
+    def test_prefers_morpheus_home_when_exists(self, tmp_path):
+        morpheus_home = tmp_path / "morpheus"
+        morpheus_home.mkdir()
+        local_cfg = morpheus_home / "honcho.json"
         local_cfg.write_text('{"apiKey": "local"}')
 
-        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(morpheus_home)}):
             result = resolve_config_path()
         assert result == local_cfg
 
     def test_falls_back_to_global_when_no_local(self, tmp_path):
-        hermes_home = tmp_path / "morpheus"
-        hermes_home.mkdir()
+        morpheus_home = tmp_path / "morpheus"
+        morpheus_home.mkdir()
         # No honcho.json in MORPHEUS_HOME
 
-        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(morpheus_home)}):
             result = resolve_config_path()
         assert result == GLOBAL_CONFIG_PATH
 
-    def test_falls_back_to_global_without_hermes_home_env(self):
+    def test_falls_back_to_global_without_morpheus_home_env(self):
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("MORPHEUS_HOME", None)
             result = resolve_config_path()
         assert result == GLOBAL_CONFIG_PATH
 
     def test_from_global_config_uses_local_path(self, tmp_path):
-        hermes_home = tmp_path / "morpheus"
-        hermes_home.mkdir()
-        local_cfg = hermes_home / "honcho.json"
+        morpheus_home = tmp_path / "morpheus"
+        morpheus_home.mkdir()
+        local_cfg = morpheus_home / "honcho.json"
         local_cfg.write_text(json.dumps({
             "apiKey": "local-key",
             "workspace": "local-ws",
         }))
 
-        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(morpheus_home)}):
             config = HonchoClientConfig.from_global_config()
         assert config.api_key == "local-key"
         assert config.workspace_id == "local-ws"

@@ -11,13 +11,13 @@ description: "How to update Morpheus Agent to the latest version or uninstall it
 Update to the latest version with a single command:
 
 ```bash
-hermes update
+morpheus update
 ```
 
 This pulls the latest code, updates dependencies, and prompts you to configure any new options that were added since your last update.
 
 :::tip
-`hermes update` automatically detects new configuration options and prompts you to add them. If you skipped that prompt, you can manually run `hermes config check` to see missing options, then `hermes config migrate` to interactively add them.
+`morpheus update` automatically detects new configuration options and prompts you to add them. If you skipped that prompt, you can manually run `morpheus config check` to see missing options, then `morpheus config migrate` to interactively add them.
 :::
 
 ### Updating from Messaging Platforms
@@ -47,8 +47,8 @@ uv pip install -e ".[all]"
 uv pip install -e "./tinker-atropos"
 
 # Check for new config options
-hermes config check
-hermes config migrate   # Interactively add any missing options
+morpheus config check
+morpheus config migrate   # Interactively add any missing options
 ```
 
 ---
@@ -56,7 +56,7 @@ hermes config migrate   # Interactively add any missing options
 ## Uninstalling
 
 ```bash
-hermes uninstall
+morpheus uninstall
 ```
 
 The uninstaller gives you the option to keep your configuration files (`~/.morpheus/`) for a future reinstall.
@@ -64,7 +64,7 @@ The uninstaller gives you the option to keep your configuration files (`~/.morph
 ### Manual Uninstall
 
 ```bash
-rm -f ~/.local/bin/hermes
+rm -f ~/.local/bin/morpheus
 rm -rf /path/to/morpheus-agent
 rm -rf ~/.morpheus            # Optional — keep if you plan to reinstall
 ```
@@ -72,8 +72,8 @@ rm -rf ~/.morpheus            # Optional — keep if you plan to reinstall
 :::info
 If you installed the gateway as a system service, stop and disable it first:
 ```bash
-hermes gateway stop
-# Linux: systemctl --user disable hermes-gateway
-# macOS: launchctl remove ai.hermes.gateway
+morpheus gateway stop
+# Linux: systemctl --user disable morpheus-gateway
+# macOS: launchctl remove ai.morpheus.gateway
 ```
 :::

@@ -1,7 +1,7 @@
 """
 Unified tool configuration for Morpheus Agent.
 
-`hermes tools` and `hermes setup tools` both enter this module.
+`morpheus tools` and `morpheus setup tools` both enter this module.
 Select a platform → toggle toolsets on/off → for newly enabled tools
 that need API keys, run through provider-aware configuration.
 
@@ -95,7 +95,7 @@ CONFIGURABLE_TOOLSETS = [
 ]
 
 # Toolsets that are OFF by default for new installs.
-# They're still in _HERMES_CORE_TOOLS (available at runtime if enabled),
+# They're still in _MORPHEUS_CORE_TOOLS (available at runtime if enabled),
 # but the setup checklist won't pre-select them for first-time users.
 _DEFAULT_OFF_TOOLSETS = {"moa", "homeassistant", "rl"}
 
@@ -127,17 +127,17 @@ def _get_plugin_toolset_keys() -> set:
 
 # Platform display config
 PLATFORMS = {
-    "cli":      {"label": "🖥️  CLI",       "default_toolset": "hermes-cli"},
-    "telegram": {"label": "📱 Telegram",   "default_toolset": "hermes-telegram"},
-    "discord":  {"label": "💬 Discord",    "default_toolset": "hermes-discord"},
-    "slack":    {"label": "💼 Slack",      "default_toolset": "hermes-slack"},
-    "whatsapp": {"label": "📱 WhatsApp",   "default_toolset": "hermes-whatsapp"},
-    "signal":   {"label": "📡 Signal",     "default_toolset": "hermes-signal"},
-    "homeassistant": {"label": "🏠 Home Assistant", "default_toolset": "hermes-homeassistant"},
-    "email":    {"label": "📧 Email",      "default_toolset": "hermes-email"},
-    "matrix":   {"label": "💬 Matrix",     "default_toolset": "hermes-matrix"},
-    "dingtalk": {"label": "💬 DingTalk",   "default_toolset": "hermes-dingtalk"},
-    "api_server": {"label": "🌐 API Server", "default_toolset": "hermes-api-server"},
+    "cli":      {"label": "🖥️  CLI",       "default_toolset": "morpheus-cli"},
+    "telegram": {"label": "📱 Telegram",   "default_toolset": "morpheus-telegram"},
+    "discord":  {"label": "💬 Discord",    "default_toolset": "morpheus-discord"},
+    "slack":    {"label": "💼 Slack",      "default_toolset": "morpheus-slack"},
+    "whatsapp": {"label": "📱 WhatsApp",   "default_toolset": "morpheus-whatsapp"},
+    "signal":   {"label": "📡 Signal",     "default_toolset": "morpheus-signal"},
+    "homeassistant": {"label": "🏠 Home Assistant", "default_toolset": "morpheus-homeassistant"},
+    "email":    {"label": "📧 Email",      "default_toolset": "morpheus-email"},
+    "matrix":   {"label": "💬 Matrix",     "default_toolset": "morpheus-matrix"},
+    "dingtalk": {"label": "💬 DingTalk",   "default_toolset": "morpheus-dingtalk"},
+    "api_server": {"label": "🌐 API Server", "default_toolset": "morpheus-api-server"},
 }
 
 
@@ -421,7 +421,7 @@ def _get_platform_tools(
     # If the saved list contains any configurable keys directly, the user
     # has explicitly configured this platform — use direct membership.
     # This avoids the subset-inference bug where composite toolsets like
-    # "hermes-cli" (which include all _HERMES_CORE_TOOLS) cause disabled
+    # "morpheus-cli" (which include all _MORPHEUS_CORE_TOOLS) cause disabled
     # toolsets to re-appear as enabled.
     has_explicit_config = any(ts in configurable_keys for ts in toolset_names)
 
@@ -429,7 +429,7 @@ def _get_platform_tools(
         enabled_toolsets = {ts for ts in toolset_names if ts in configurable_keys}
     else:
         # No explicit config — fall back to resolving composite toolset names
-        # (e.g. "hermes-cli") to individual tool names and reverse-mapping.
+        # (e.g. "morpheus-cli") to individual tool names and reverse-mapping.
         all_tool_names = set()
         for ts_name in toolset_names:
             all_tool_names.update(resolve_toolset(ts_name))
@@ -441,7 +441,7 @@ def _get_platform_tools(
                 enabled_toolsets.add(ts_key)
 
     # Plugin toolsets: enabled by default unless explicitly disabled.
-    # A plugin toolset is "known" for a platform once `hermes tools`
+    # A plugin toolset is "known" for a platform once `morpheus tools`
     # has been saved for that platform (tracked via known_plugin_toolsets).
     # Unknown plugins default to enabled; known-but-absent = disabled.
     plugin_ts_keys = _get_plugin_toolset_keys()
@@ -453,7 +453,7 @@ def _get_platform_tools(
                 # Explicitly listed in config — enabled
                 enabled_toolsets.add(pts)
             elif pts not in known_for_platform:
-                # New plugin not yet seen by hermes tools — default enabled
+                # New plugin not yet seen by morpheus tools — default enabled
                 enabled_toolsets.add(pts)
             # else: known but not in config = user disabled it
 
@@ -504,7 +504,7 @@ def _save_platform_tools(config: dict, platform: str, enabled_toolset_keys: Set[
     plugin_keys = _get_plugin_toolset_keys()
     configurable_keys |= plugin_keys
 
-    # Also exclude platform default toolsets (hermes-cli, hermes-telegram, etc.)
+    # Also exclude platform default toolsets (morpheus-cli, morpheus-telegram, etc.)
     # These are "super" toolsets that resolve to ALL tools, so preserving them
     # would silently override the user's unchecked selections on the next read.
     platform_default_keys = {p["default_toolset"] for p in PLATFORMS.values()}
@@ -1036,7 +1036,7 @@ def _reconfigure_simple_requirements(ts_key: str):
 # ─── Main Entry Point ─────────────────────────────────────────────────────────
 
 def tools_command(args=None, first_install: bool = False, config: dict = None):
-    """Entry point for `hermes tools` and `hermes setup tools`.
+    """Entry point for `morpheus tools` and `morpheus setup tools`.
 
     Args:
         first_install: When True (set by the setup wizard on fresh installs),

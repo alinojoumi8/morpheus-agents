@@ -75,7 +75,7 @@ On messaging platforms, the agent sends the dangerous command details to the cha
 - Reply **yes**, **y**, **approve**, **ok**, or **go** to approve
 - Reply **no**, **n**, **deny**, or **cancel** to deny
 
-The `HERMES_EXEC_ASK=1` environment variable is automatically set when running the gateway.
+The `MORPHEUS_EXEC_ASK=1` environment variable is automatically set when running the gateway.
 
 ### Permanent Allowlist
 
@@ -91,7 +91,7 @@ command_allowlist:
 These patterns are loaded at startup and silently approved in all future sessions.
 
 :::tip
-Use `hermes config edit` to review or remove patterns from your permanent allowlist.
+Use `morpheus config edit` to review or remove patterns from your permanent allowlist.
 :::
 
 ## User Authorization (Gateway)
@@ -148,7 +148,7 @@ For more flexible authorization, Morpheus includes a code-based pairing system. 
 
 1. An unknown user sends a DM to the bot
 2. The bot replies with an 8-character pairing code
-3. The bot owner runs `hermes pairing approve <platform> <code>` on the CLI
+3. The bot owner runs `morpheus pairing approve <platform> <code>` on the CLI
 4. The user is permanently approved for that platform
 
 Control how unauthorized direct messages are handled in `~/.morpheus/config.yaml`:
@@ -181,16 +181,16 @@ whatsapp:
 
 ```bash
 # List pending and approved users
-hermes pairing list
+morpheus pairing list
 
 # Approve a pairing code
-hermes pairing approve telegram ABC12DEF
+morpheus pairing approve telegram ABC12DEF
 
 # Revoke a user's access
-hermes pairing revoke telegram 123456789
+morpheus pairing revoke telegram 123456789
 
 # Clear all pending codes
-hermes pairing clear-pending
+morpheus pairing clear-pending
 ```
 
 **Storage:** Pairing data is stored in `~/.morpheus/pairing/` with per-platform JSON files:
@@ -351,7 +351,7 @@ security:
       - "*.internal.company.com"
       - "admin.example.com"
     shared_files:
-      - "/etc/hermes/blocked-sites.txt"
+      - "/etc/morpheus/blocked-sites.txt"
 ```
 
 When a blocked URL is requested, the tool returns an error explaining the domain is blocked by policy. The blocklist is enforced across `web_search`, `web_extract`, `browser_navigate`, and all URL-capable tools.
@@ -423,7 +423,7 @@ Blocked files show a warning:
 7. **Set `MESSAGING_CWD`** — don't let the agent operate from sensitive directories
 8. **Run as non-root** — never run the gateway as root
 9. **Monitor logs** — check `~/.morpheus/logs/` for unauthorized access attempts
-10. **Keep updated** — run `hermes update` regularly for security patches
+10. **Keep updated** — run `morpheus update` regularly for security patches
 
 ### Securing API Keys
 
@@ -443,8 +443,8 @@ For maximum security, run the gateway on a separate machine or VM:
 terminal:
   backend: ssh
   ssh_host: "agent-worker.local"
-  ssh_user: "hermes"
-  ssh_key: "~/.ssh/hermes_agent_key"
+  ssh_user: "morpheus"
+  ssh_key: "~/.ssh/morpheus_agent_key"
 ```
 
 This keeps the gateway's messaging connections separate from the agent's command execution.

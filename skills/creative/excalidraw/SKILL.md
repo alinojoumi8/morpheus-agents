@@ -6,7 +6,7 @@ author: Morpheus Agent
 license: MIT
 dependencies: []
 metadata:
-  hermes:
+  morpheus:
     tags: [Excalidraw, Diagrams, Flowcharts, Architecture, Visualization, JSON]
     related_skills: []
 

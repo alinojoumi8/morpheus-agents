@@ -206,13 +206,13 @@ def _resolve_stdio_command(command: str, env: dict) -> tuple[str, dict]:
         if which_hit:
             resolved_command = which_hit
         elif resolved_command in {"npx", "npm", "node"}:
-            hermes_home = os.path.expanduser(
+            morpheus_home = os.path.expanduser(
                 os.getenv(
                     "MORPHEUS_HOME", os.path.join(os.path.expanduser("~"), ".morpheus")
                 )
             )
             candidates = [
-                os.path.join(hermes_home, "node", "bin", resolved_command),
+                os.path.join(morpheus_home, "node", "bin", resolved_command),
                 os.path.join(os.path.expanduser("~"), ".local", "bin", resolved_command),
             ]
             for candidate in candidates:
@@ -968,8 +968,8 @@ def _load_mcp_config() -> Dict[str, dict]:
             return {}
         # Ensure .env vars are available for interpolation
         try:
-            from morpheus_cli.env_loader import load_hermes_dotenv
-            load_hermes_dotenv()
+            from morpheus_cli.env_loader import load_morpheus_dotenv
+            load_morpheus_dotenv()
         except Exception:
             pass
         return {name: _interpolate_env_vars(cfg) for name, cfg in servers.items()}
@@ -1287,13 +1287,13 @@ def _convert_mcp_schema(server_name: str, mcp_tool) -> dict:
 
 
 def _sync_mcp_toolsets(server_names: Optional[List[str]] = None) -> None:
-    """Expose each MCP server as a standalone toolset and inject into hermes-* sets.
+    """Expose each MCP server as a standalone toolset and inject into morpheus-* sets.
 
     Creates a real toolset entry in TOOLSETS for each server name (e.g.
     TOOLSETS["github"] = {"tools": ["mcp_github_list_files", ...]}). This
     makes raw server names resolvable in platform_toolsets overrides.
 
-    Also injects all MCP tools into hermes-* umbrella toolsets for the
+    Also injects all MCP tools into morpheus-* umbrella toolsets for the
     default behavior.
 
     Skips server names that collide with built-in toolsets.
@@ -1328,9 +1328,9 @@ def _sync_mcp_toolsets(server_names: Optional[List[str]] = None) -> None:
             "includes": [],
         }
 
-    # Also inject into hermes-* umbrella toolsets for default behavior.
+    # Also inject into morpheus-* umbrella toolsets for default behavior.
     for ts_name, ts in TOOLSETS.items():
-        if not ts_name.startswith("hermes-"):
+        if not ts_name.startswith("morpheus-"):
             continue
         for tool_name in all_mcp_tools:
             if tool_name not in ts["tools"]:
@@ -1741,7 +1741,7 @@ def get_mcp_status() -> List[dict]:
 def probe_mcp_server_tools() -> Dict[str, List[tuple]]:
     """Temporarily connect to configured MCP servers and list their tools.
 
-    Designed for ``hermes tools`` interactive configuration — connects to each
+    Designed for ``morpheus tools`` interactive configuration — connects to each
     enabled server, grabs tool names and descriptions, then disconnects.
     Does NOT register tools in the Morpheus registry.
 

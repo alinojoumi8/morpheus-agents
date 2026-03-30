@@ -12,35 +12,35 @@ Morpheus Agent's CLI is a full terminal user interface (TUI) — not a web UI. I
 
 ```bash
 # Start an interactive session (default)
-hermes
+morpheus
 
 # Single query mode (non-interactive)
-hermes chat -q "Hello"
+morpheus chat -q "Hello"
 
 # With a specific model
-hermes chat --model "anthropic/claude-sonnet-4"
+morpheus chat --model "anthropic/claude-sonnet-4"
 
 # With a specific provider
-hermes chat --provider nous        # Use Nous Portal
-hermes chat --provider openrouter  # Force OpenRouter
+morpheus chat --provider nous        # Use Nous Portal
+morpheus chat --provider openrouter  # Force OpenRouter
 
 # With specific toolsets
-hermes chat --toolsets "web,terminal,skills"
+morpheus chat --toolsets "web,terminal,skills"
 
 # Start with one or more skills preloaded
-hermes -s morpheus-agent-dev,github-auth
-hermes chat -s github-pr-workflow -q "open a draft PR"
+morpheus -s morpheus-agent-dev,github-auth
+morpheus chat -s github-pr-workflow -q "open a draft PR"
 
 # Resume previous sessions
-hermes --continue             # Resume the most recent CLI session (-c)
-hermes --resume <session_id>  # Resume a specific session by ID (-r)
+morpheus --continue             # Resume the most recent CLI session (-c)
+morpheus --resume <session_id>  # Resume a specific session by ID (-r)
 
 # Verbose mode (debug output)
-hermes chat --verbose
+morpheus chat --verbose
 
 # Isolated git worktree (for running multiple agents in parallel)
-hermes -w                         # Interactive mode in worktree
-hermes -w -q "Fix issue #123"     # Single query in worktree
+morpheus -w                         # Interactive mode in worktree
+morpheus -w -q "Fix issue #123"     # Single query in worktree
 ```
 
 ## Interface Layout
@@ -81,7 +81,7 @@ Use `/usage` for a detailed breakdown including per-category costs (input vs out
 
 ### Session Resume Display
 
-When resuming a previous session (`hermes -c` or `hermes --resume <id>`), a "Previous Conversation" panel appears between the banner and the input prompt, showing a compact recap of the conversation history. See [Sessions — Conversation Recap on Resume](sessions.md#conversation-recap-on-resume) for details and configuration.
+When resuming a previous session (`morpheus -c` or `morpheus --resume <id>`), a "Previous Conversation" panel appears between the banner and the input prompt, showing a compact recap of the conversation history. See [Sessions — Conversation Recap on Resume](sessions.md#conversation-recap-on-resume) for details and configuration.
 
 ## Keybindings
 
@@ -145,8 +145,8 @@ Then type `/status` or `/gpu` in any chat. See the [Configuration guide](/docs/u
 If you already know which skills you want active for the session, pass them at launch time:
 
 ```bash
-hermes -s morpheus-agent-dev,github-auth
-hermes chat -s github-pr-workflow -s github-auth
+morpheus -s morpheus-agent-dev,github-auth
+morpheus chat -s github-pr-workflow -s github-auth
 ```
 
 Morpheus loads each named skill into the session prompt before the first turn. The same flag works in interactive mode and single-query mode.
@@ -240,7 +240,7 @@ When you exit a CLI session, a resume command is printed:
 
 ```
 Resume this session with:
-  hermes --resume 20260225_143052_a1b2c3
+  morpheus --resume 20260225_143052_a1b2c3
 
 Session:        20260225_143052_a1b2c3
 Duration:       12m 34s
@@ -250,17 +250,17 @@ Messages:       28 (5 user, 18 tool calls)
 Resume options:
 
 ```bash
-hermes --continue                          # Resume the most recent CLI session
-hermes -c                                  # Short form
-hermes -c "my project"                     # Resume a named session (latest in lineage)
-hermes --resume 20260225_143052_a1b2c3     # Resume a specific session by ID
-hermes --resume "refactoring auth"         # Resume by title
-hermes -r 20260225_143052_a1b2c3           # Short form
+morpheus --continue                          # Resume the most recent CLI session
+morpheus -c                                  # Short form
+morpheus -c "my project"                     # Resume a named session (latest in lineage)
+morpheus --resume 20260225_143052_a1b2c3     # Resume a specific session by ID
+morpheus --resume "refactoring auth"         # Resume by title
+morpheus -r 20260225_143052_a1b2c3           # Short form
 ```
 
 Resuming restores the full conversation history from SQLite. The agent sees all previous messages, tool calls, and responses — just as if you never left.
 
-Use `/title My Session Name` inside a chat to name the current session, or `hermes sessions rename <id> <title>` from the command line. Use `hermes sessions list` to browse past sessions.
+Use `/title My Session Name` inside a chat to name the current session, or `morpheus sessions rename <id> <title>` from the command line. Use `morpheus sessions list` to browse past sessions.
 
 ### Session Storage
 
@@ -345,5 +345,5 @@ By default, the CLI runs in quiet mode which:
 
 For debug output:
 ```bash
-hermes chat --verbose
+morpheus chat --verbose
 ```

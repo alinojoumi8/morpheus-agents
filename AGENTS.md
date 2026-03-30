@@ -14,9 +14,9 @@ source venv/bin/activate  # ALWAYS activate before running Python
 morpheus-agent/
 ├── run_agent.py          # AIAgent class — core conversation loop
 ├── model_tools.py        # Tool orchestration, _discover_tools(), handle_function_call()
-├── toolsets.py           # Toolset definitions, _HERMES_CORE_TOOLS list
+├── toolsets.py           # Toolset definitions, _MORPHEUS_CORE_TOOLS list
 ├── cli.py                # MorpheusCLI class — interactive CLI orchestrator
-├── hermes_state.py       # SessionDB — SQLite session store (FTS5 search)
+├── morpheus_state.py       # SessionDB — SQLite session store (FTS5 search)
 ├── agent/                # Agent internals
 │   ├── prompt_builder.py     # System prompt assembly
 │   ├── context_compressor.py # Auto context compression
@@ -28,14 +28,14 @@ morpheus-agent/
 │   ├── skill_commands.py     # Skill slash commands (shared CLI/gateway)
 │   └── trajectory.py         # Trajectory saving helpers
 ├── morpheus_cli/           # CLI subcommands and setup
-│   ├── main.py           # Entry point — all `hermes` subcommands
+│   ├── main.py           # Entry point — all `morpheus` subcommands
 │   ├── config.py         # DEFAULT_CONFIG, OPTIONAL_ENV_VARS, migration
 │   ├── commands.py       # Slash command definitions + SlashCommandCompleter
 │   ├── callbacks.py      # Terminal callbacks (clarify, sudo, approval)
 │   ├── setup.py          # Interactive setup wizard
 │   ├── skin_engine.py    # Skin/theme engine — CLI visual customization
-│   ├── skills_config.py  # `hermes skills` — enable/disable skills per platform
-│   ├── tools_config.py   # `hermes tools` — enable/disable tools per platform
+│   ├── skills_config.py  # `morpheus skills` — enable/disable skills per platform
+│   ├── tools_config.py   # `morpheus tools` — enable/disable tools per platform
 │   ├── skills_hub.py     # `/skills` slash command (search, browse, install)
 │   ├── models.py         # Model catalog, provider model lists
 │   ├── model_switch.py   # Shared /model switch pipeline (CLI + gateway)
@@ -142,7 +142,7 @@ All slash commands are defined in a central `COMMAND_REGISTRY` list of `CommandD
 - **Gateway** — `GATEWAY_KNOWN_COMMANDS` frozenset for hook emission, `resolve_command()` for dispatch
 - **Gateway help** — `gateway_help_lines()` generates `/help` output
 - **Telegram** — `telegram_bot_commands()` generates the BotCommand menu
-- **Slack** — `slack_subcommand_map()` generates `/hermes` subcommand routing
+- **Slack** — `slack_subcommand_map()` generates `/morpheus` subcommand routing
 - **Autocomplete** — `COMMANDS` flat dict feeds `SlashCommandCompleter`
 - **CLI help** — `COMMANDS_BY_CATEGORY` dict feeds `show_help()`
 
@@ -206,7 +206,7 @@ registry.register(
 
 **2. Add import** in `model_tools.py` `_discover_tools()` list.
 
-**3. Add to `toolsets.py`** — either `_HERMES_CORE_TOOLS` (all platforms) or a new toolset.
+**3. Add to `toolsets.py`** — either `_MORPHEUS_CORE_TOOLS` (all platforms) or a new toolset.
 
 The registry handles schema collection, dispatch, availability checking, and error wrapping. All handlers MUST return a JSON string.
 
@@ -237,7 +237,7 @@ The registry handles schema collection, dispatch, availability checking, and err
 | Loader | Used by | Location |
 |--------|---------|----------|
 | `load_cli_config()` | CLI mode | `cli.py` |
-| `load_config()` | `hermes tools`, `hermes setup` | `morpheus_cli/config.py` |
+| `load_config()` | `morpheus tools`, `morpheus setup` | `morpheus_cli/config.py` |
 | Direct YAML load | Gateway | `gateway/run.py` |
 
 ---
@@ -349,7 +349,7 @@ Cache-breaking forces dramatically higher costs. The ONLY time we alter context 
 
 When `terminal(background=true, check_interval=...)` is used, the gateway runs a watcher that
 pushes status updates to the user's chat. Control verbosity with `display.background_process_notifications`
-in config.yaml (or `HERMES_BACKGROUND_NOTIFICATIONS` env var):
+in config.yaml (or `MORPHEUS_BACKGROUND_NOTIFICATIONS` env var):
 
 - `all` — running-output updates + final message (default)
 - `result` — only the final completion message
@@ -373,7 +373,7 @@ Leaks as literal `?[K` text under `prompt_toolkit`'s `patch_stdout`. Use space-p
 Tool schema descriptions must not mention tools from other toolsets by name (e.g., `browser_navigate` saying "prefer web_search"). Those tools may be unavailable (missing API keys, disabled toolset), causing the model to hallucinate calls to non-existent tools. If a cross-reference is needed, add it dynamically in `get_tool_definitions()` in `model_tools.py` — see the `browser_navigate` / `execute_code` post-processing blocks for the pattern.
 
 ### Tests must not write to `~/.morpheus/`
-The `_isolate_hermes_home` autouse fixture in `tests/conftest.py` redirects `HERMES_HOME` to a temp dir. Never hardcode `~/.morpheus/` paths in tests.
+The `_isolate_morpheus_home` autouse fixture in `tests/conftest.py` redirects `MORPHEUS_HOME` to a temp dir. Never hardcode `~/.morpheus/` paths in tests.
 
 ---
 

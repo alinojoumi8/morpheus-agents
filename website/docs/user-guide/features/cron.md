@@ -36,9 +36,9 @@ Cron-run sessions cannot recursively create more cron jobs. Morpheus disables cr
 ### From the standalone CLI
 
 ```bash
-hermes cron create "every 2h" "Check server status"
-hermes cron create "every 1h" "Summarize new feed items" --skill blogwatcher
-hermes cron create "every 1h" "Use both skills and combine the result" \
+morpheus cron create "every 2h" "Check server status"
+morpheus cron create "every 1h" "Summarize new feed items" --skill blogwatcher
+morpheus cron create "every 1h" "Use both skills and combine the result" \
   --skill blogwatcher \
   --skill find-nearby \
   --name "Skill combo"
@@ -103,12 +103,12 @@ You do not need to delete and recreate jobs just to change them.
 ### Standalone CLI
 
 ```bash
-hermes cron edit <job_id> --schedule "every 4h"
-hermes cron edit <job_id> --prompt "Use the revised task"
-hermes cron edit <job_id> --skill blogwatcher --skill find-nearby
-hermes cron edit <job_id> --add-skill find-nearby
-hermes cron edit <job_id> --remove-skill blogwatcher
-hermes cron edit <job_id> --clear-skills
+morpheus cron edit <job_id> --schedule "every 4h"
+morpheus cron edit <job_id> --prompt "Use the revised task"
+morpheus cron edit <job_id> --skill blogwatcher --skill find-nearby
+morpheus cron edit <job_id> --add-skill find-nearby
+morpheus cron edit <job_id> --remove-skill blogwatcher
+morpheus cron edit <job_id> --clear-skills
 ```
 
 Notes:
@@ -135,13 +135,13 @@ Cron jobs now have a fuller lifecycle than just create/remove.
 ### Standalone CLI
 
 ```bash
-hermes cron list
-hermes cron pause <job_id>
-hermes cron resume <job_id>
-hermes cron run <job_id>
-hermes cron remove <job_id>
-hermes cron status
-hermes cron tick
+morpheus cron list
+morpheus cron pause <job_id>
+morpheus cron resume <job_id>
+morpheus cron run <job_id>
+morpheus cron remove <job_id>
+morpheus cron status
+morpheus cron tick
 ```
 
 What they do:
@@ -156,12 +156,12 @@ What they do:
 **Cron execution is handled by the gateway daemon.** The gateway ticks the scheduler every 60 seconds, running any due jobs in isolated agent sessions.
 
 ```bash
-hermes gateway install     # Install as a user service
-sudo hermes gateway install --system   # Linux: boot-time system service for servers
-hermes gateway             # Or run in foreground
+morpheus gateway install     # Install as a user service
+sudo morpheus gateway install --system   # Linux: boot-time system service for servers
+morpheus gateway             # Or run in foreground
 
-hermes cron list
-hermes cron status
+morpheus cron list
+morpheus cron status
 ```
 
 ### Gateway scheduler behavior

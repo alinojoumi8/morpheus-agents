@@ -115,7 +115,7 @@ npm install
 ```
 
 :::info
-The `browser` toolset must be included in your config's `toolsets` list or enabled via `hermes config set toolsets '["hermes-cli", "browser"]'`.
+The `browser` toolset must be included in your config's `toolsets` list or enabled via `morpheus config set toolsets '["morpheus-cli", "browser"]'`.
 :::
 
 ## Available Tools
@@ -154,7 +154,7 @@ Click @e5 to press the "Sign In" button
 Type text into an input field. Clears the field first, then types the new text.
 
 ```
-Type "hermes agent" into the search field @e3
+Type "morpheus agent" into the search field @e3
 ```
 
 ### `browser_scroll`

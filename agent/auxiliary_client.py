@@ -714,13 +714,13 @@ def _resolve_forced_provider(forced: str) -> Tuple[Optional[OpenAI], Optional[st
     if forced == "nous":
         client, model = _try_nous()
         if client is None:
-            logger.warning("auxiliary.provider=nous but Nous Portal not configured (run: hermes login)")
+            logger.warning("auxiliary.provider=nous but Nous Portal not configured (run: morpheus login)")
         return client, model
 
     if forced == "codex":
         client, model = _try_codex()
         if client is None:
-            logger.warning("auxiliary.provider=codex but no Codex OAuth token found (run: hermes model)")
+            logger.warning("auxiliary.provider=codex but no Codex OAuth token found (run: morpheus model)")
         return client, model
 
     if forced == "main":
@@ -861,7 +861,7 @@ def resolve_provider_client(
         client, default = _try_nous()
         if client is None:
             logger.warning("resolve_provider_client: nous requested "
-                           "but Nous Portal not configured (run: hermes login)")
+                           "but Nous Portal not configured (run: morpheus login)")
             return None, None
         final_model = model or default
         return (_to_async_client(client, final_model) if async_mode
@@ -875,7 +875,7 @@ def resolve_provider_client(
             codex_token = _read_codex_access_token()
             if not codex_token:
                 logger.warning("resolve_provider_client: openai-codex requested "
-                               "but no Codex OAuth token found (run: hermes model)")
+                               "but no Codex OAuth token found (run: morpheus model)")
                 return None, None
             final_model = model or _CODEX_AUX_MODEL
             raw_client = OpenAI(api_key=codex_token, base_url=_CODEX_AUX_BASE_URL)
@@ -884,7 +884,7 @@ def resolve_provider_client(
         client, default = _try_codex()
         if client is None:
             logger.warning("resolve_provider_client: openai-codex requested "
-                           "but no Codex OAuth token found (run: hermes model)")
+                           "but no Codex OAuth token found (run: morpheus model)")
             return None, None
         final_model = model or default
         return (_to_async_client(client, final_model) if async_mode
@@ -1566,7 +1566,7 @@ def call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: morpheus setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -1585,7 +1585,7 @@ def call_llm(
                 raise RuntimeError(
                     f"Provider '{_explicit}' is set in config.yaml but no API key "
                     f"was found. Set the {_explicit.upper()}_API_KEY environment "
-                    f"variable, or switch to a different provider with `hermes model`."
+                    f"variable, or switch to a different provider with `morpheus model`."
                 )
             # For auto/custom, fall back to OpenRouter
             if not resolved_base_url:
@@ -1596,7 +1596,7 @@ def call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: morpheus setup")
 
     kwargs = _build_call_kwargs(
         resolved_provider, final_model, messages,
@@ -1714,7 +1714,7 @@ async def async_call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup"
+                f"Run: morpheus setup"
             )
         resolved_provider = effective_provider or resolved_provider
     else:
@@ -1731,7 +1731,7 @@ async def async_call_llm(
                 raise RuntimeError(
                     f"Provider '{_explicit}' is set in config.yaml but no API key "
                     f"was found. Set the {_explicit.upper()}_API_KEY environment "
-                    f"variable, or switch to a different provider with `hermes model`."
+                    f"variable, or switch to a different provider with `morpheus model`."
                 )
             if not resolved_base_url:
                 logger.warning("Provider %s unavailable, falling back to openrouter",
@@ -1742,7 +1742,7 @@ async def async_call_llm(
         if client is None:
             raise RuntimeError(
                 f"No LLM provider configured for task={task} provider={resolved_provider}. "
-                f"Run: hermes setup")
+                f"Run: morpheus setup")
 
     kwargs = _build_call_kwargs(
         resolved_provider, final_model, messages,

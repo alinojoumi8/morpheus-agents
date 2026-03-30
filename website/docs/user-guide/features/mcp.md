@@ -39,7 +39,7 @@ mcp_servers:
 3. Start Morpheus:
 
 ```bash
-hermes chat
+morpheus chat
 ```
 
 4. Ask Morpheus to use the MCP-backed capability.
@@ -405,7 +405,7 @@ This is intentional and keeps the tool list honest.
 
 ## Related docs
 
-- [Use MCP with Morpheus](/docs/guides/use-mcp-with-hermes)
+- [Use MCP with Morpheus](/docs/guides/use-mcp-with-morpheus)
 - [CLI Commands](/docs/reference/cli-commands)
 - [Slash Commands](/docs/reference/slash-commands)
 - [FAQ](/docs/reference/faq)

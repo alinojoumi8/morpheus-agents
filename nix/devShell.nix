@@ -44,7 +44,7 @@
             echo "$STAMP_VALUE" > "$STAMP_FILE"
           fi
 
-          echo "Ready. Run 'hermes' to start."
+          echo "Ready. Run 'morpheus' to start."
         '';
       };
     };

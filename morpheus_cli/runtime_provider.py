@@ -118,7 +118,7 @@ def resolve_requested_provider(requested: Optional[str] = None) -> str:
 
     # Prefer the persisted config selection over any stale shell/.env
     # provider override so chat uses the endpoint the user last saved.
-    env_provider = os.getenv("HERMES_INFERENCE_PROVIDER", "").strip().lower()
+    env_provider = os.getenv("MORPHEUS_INFERENCE_PROVIDER", "").strip().lower()
     if env_provider:
         return env_provider
 
@@ -324,8 +324,8 @@ def resolve_runtime_provider(
 
     if provider == "nous":
         creds = resolve_nous_runtime_credentials(
-            min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-            timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+            min_key_ttl_seconds=max(60, int(os.getenv("MORPHEUS_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+            timeout_seconds=float(os.getenv("MORPHEUS_NOUS_TIMEOUT_SECONDS", "15")),
         )
         return {
             "provider": "nous",
@@ -344,7 +344,7 @@ def resolve_runtime_provider(
             "api_mode": "codex_responses",
             "base_url": creds.get("base_url", "").rstrip("/"),
             "api_key": creds.get("api_key", ""),
-            "source": creds.get("source", "hermes-auth-store"),
+            "source": creds.get("source", "morpheus-auth-store"),
             "last_refresh": creds.get("last_refresh"),
             "requested_provider": requested_provider,
         }

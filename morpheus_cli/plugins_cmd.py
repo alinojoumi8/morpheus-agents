@@ -1,4 +1,4 @@
-"""``hermes plugins`` CLI subcommand — install, update, remove, and list plugins.
+"""``morpheus plugins`` CLI subcommand — install, update, remove, and list plugins.
 
 Plugins are installed from Git repositories into ``~/.morpheus/plugins/``.
 Supports full URLs and ``owner/repo`` shorthand (resolves to GitHub).
@@ -26,8 +26,8 @@ _SUPPORTED_MANIFEST_VERSION = 1
 
 def _plugins_dir() -> Path:
     """Return the user plugins directory, creating it if needed."""
-    hermes_home = os.environ.get("MORPHEUS_HOME", os.path.expanduser("~/.morpheus"))
-    plugins = Path(hermes_home) / "plugins"
+    morpheus_home = os.environ.get("MORPHEUS_HOME", os.path.expanduser("~/.morpheus"))
+    plugins = Path(morpheus_home) / "plugins"
     plugins.mkdir(parents=True, exist_ok=True)
     return plugins
 
@@ -268,7 +268,7 @@ def cmd_install(identifier: str, force: bool = False) -> None:
                 console.print(
                     f"[red]Error:[/red] Plugin '{plugin_name}' requires manifest_version "
                     f"{mv}, but this installer only supports up to {_SUPPORTED_MANIFEST_VERSION}.\n"
-                    f"Run [bold]hermes update[/bold] to get a newer installer."
+                    f"Run [bold]morpheus update[/bold] to get a newer installer."
                 )
                 sys.exit(1)
 
@@ -277,7 +277,7 @@ def cmd_install(identifier: str, force: bool = False) -> None:
                 console.print(
                     f"[red]Error:[/red] Plugin '{plugin_name}' already exists at {target}.\n"
                     f"Use [bold]--force[/bold] to remove and reinstall, or "
-                    f"[bold]hermes plugins update {plugin_name}[/bold] to pull latest."
+                    f"[bold]morpheus plugins update {plugin_name}[/bold] to pull latest."
                 )
                 sys.exit(1)
             console.print(f"[dim]  Removing existing {plugin_name}...[/dim]")
@@ -299,7 +299,7 @@ def cmd_install(identifier: str, force: bool = False) -> None:
     _display_after_install(target, identifier)
 
     console.print("[dim]Restart the gateway for the plugin to take effect:[/dim]")
-    console.print("[dim]  hermes gateway restart[/dim]")
+    console.print("[dim]  morpheus gateway restart[/dim]")
     console.print()
 
 
@@ -390,7 +390,7 @@ def cmd_list() -> None:
     dirs = sorted(d for d in plugins_dir.iterdir() if d.is_dir())
     if not dirs:
         console.print("[dim]No plugins installed.[/dim]")
-        console.print("[dim]Install with:[/dim] hermes plugins install owner/repo")
+        console.print("[dim]Install with:[/dim] morpheus plugins install owner/repo")
         return
 
     table = Table(title="Installed Plugins", show_lines=False)
@@ -416,7 +416,7 @@ def cmd_list() -> None:
             except Exception:
                 pass
 
-        # Check if it's a git repo (installed via hermes plugins install)
+        # Check if it's a git repo (installed via morpheus plugins install)
         if (d / ".git").exists():
             source = "git"
 
@@ -428,7 +428,7 @@ def cmd_list() -> None:
 
 
 def plugins_command(args) -> None:
-    """Dispatch hermes plugins subcommands."""
+    """Dispatch morpheus plugins subcommands."""
     action = getattr(args, "plugins_action", None)
 
     if action == "install":

@@ -6,15 +6,15 @@ This guide covers how to import your OpenClaw settings, memories, skills, and AP
 
 ### 1. Automatic (during first-time setup)
 
-When you run `hermes setup` for the first time and Morpheus detects `~/.openclaw`, it automatically offers to import your OpenClaw data before configuration begins. Just accept the prompt and everything is handled for you.
+When you run `morpheus setup` for the first time and Morpheus detects `~/.openclaw`, it automatically offers to import your OpenClaw data before configuration begins. Just accept the prompt and everything is handled for you.
 
 ### 2. CLI Command (quick, scriptable)
 
 ```bash
-hermes claw migrate                      # Full migration with confirmation prompt
-hermes claw migrate --dry-run            # Preview what would happen
-hermes claw migrate --preset user-data   # Migrate without API keys/secrets
-hermes claw migrate --yes                # Skip confirmation prompt
+morpheus claw migrate                      # Full migration with confirmation prompt
+morpheus claw migrate --dry-run            # Preview what would happen
+morpheus claw migrate --preset user-data   # Migrate without API keys/secrets
+morpheus claw migrate --yes                # Skip confirmation prompt
 ```
 
 **All options:**
@@ -97,13 +97,13 @@ For execute runs, the full report is saved to `~/.morpheus/migration/openclaw/<t
 ### "OpenClaw directory not found"
 The migration looks for `~/.openclaw` by default. If your OpenClaw is installed elsewhere, use `--source`:
 ```bash
-hermes claw migrate --source /path/to/.openclaw
+morpheus claw migrate --source /path/to/.openclaw
 ```
 
 ### "Migration script not found"
 The migration script ships with Morpheus Agent. If you installed via pip (not git clone), the `optional-skills/` directory may not be present. Install the skill from the Skills Hub:
 ```bash
-hermes skills install openclaw-migration
+morpheus skills install openclaw-migration
 ```
 
 ### Memory overflow

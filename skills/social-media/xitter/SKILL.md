@@ -9,7 +9,7 @@ prerequisites:
   commands: [uv]
   env_vars: [X_API_KEY, X_API_SECRET, X_BEARER_TOKEN, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET]
 metadata:
-  hermes:
+  morpheus:
     tags: [twitter, x, social-media, x-cli]
     homepage: https://github.com/Infatoshi/x-cli
 ---

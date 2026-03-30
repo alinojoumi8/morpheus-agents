@@ -75,14 +75,14 @@ WRITE_DENIED_PREFIXES = [
 
 
 def _get_safe_write_root() -> Optional[str]:
-    """Return the resolved HERMES_WRITE_SAFE_ROOT path, or None if unset.
+    """Return the resolved MORPHEUS_WRITE_SAFE_ROOT path, or None if unset.
 
     When set, all write_file/patch operations are constrained to this
     directory tree.  Writes outside it are denied even if the target is
     not on the static deny list.  Opt-in hardening for gateway/messaging
     deployments that should only touch a workspace checkout.
     """
-    root = os.getenv("HERMES_WRITE_SAFE_ROOT", "")
+    root = os.getenv("MORPHEUS_WRITE_SAFE_ROOT", "")
     if not root:
         return None
     try:

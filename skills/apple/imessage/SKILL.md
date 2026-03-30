@@ -6,7 +6,7 @@ author: Morpheus Agent
 license: MIT
 platforms: [macos]
 metadata:
-  hermes:
+  morpheus:
     tags: [iMessage, SMS, messaging, macOS, Apple]
 prerequisites:
   commands: [imsg]

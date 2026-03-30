@@ -76,7 +76,7 @@ Socket Mode lets the bot connect via WebSocket instead of requiring a public URL
 1. In the sidebar, go to **Settings → Socket Mode**
 2. Toggle **Enable Socket Mode** to ON
 3. You'll be prompted to create an **App-Level Token**:
-   - Name it something like `hermes-socket` (the name doesn't matter)
+   - Name it something like `morpheus-socket` (the name doesn't matter)
    - Add the **`connections:write`** scope
    - Click **Generate**
 4. **Copy the token** — it starts with `xapp-`. This is your `SLACK_APP_TOKEN`
@@ -162,15 +162,15 @@ SLACK_HOME_CHANNEL_NAME=general              # Human-readable name for the home 
 Or run the interactive setup:
 
 ```bash
-hermes gateway setup    # Select Slack when prompted
+morpheus gateway setup    # Select Slack when prompted
 ```
 
 Then start the gateway:
 
 ```bash
-hermes gateway              # Foreground
-hermes gateway install      # Install as a user service
-sudo hermes gateway install --system   # Linux only: boot-time system service
+morpheus gateway              # Foreground
+morpheus gateway install      # Install as a user service
+sudo morpheus gateway install --system   # Linux only: boot-time system service
 ```
 
 ---

@@ -132,7 +132,7 @@ class TestIsSkillDisabled:
         assert _is_skill_disabled("any-skill") is False
 
     @patch("morpheus_cli.config.load_config")
-    @patch.dict("os.environ", {"HERMES_PLATFORM": "discord"})
+    @patch.dict("os.environ", {"MORPHEUS_PLATFORM": "discord"})
     def test_env_var_platform(self, mock_load):
         mock_load.return_value = {"skills": {
             "platform_disabled": {"discord": ["discord-skill"]}

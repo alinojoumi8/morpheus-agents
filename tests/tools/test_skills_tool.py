@@ -72,7 +72,7 @@ class TestParseFrontmatter:
 
     def test_nested_yaml(self):
         content = (
-            "---\nname: test\nmetadata:\n  hermes:\n    tags: [a, b]\n---\n\nBody.\n"
+            "---\nname: test\nmetadata:\n  morpheus:\n    tags: [a, b]\n---\n\nBody.\n"
         )
         fm, body = _parse_frontmatter(content)
         assert fm["metadata"]["morpheus"]["tags"] == ["a", "b"]
@@ -361,7 +361,7 @@ class TestSkillView:
             _make_skill(
                 tmp_path,
                 "tagged",
-                frontmatter_extra="metadata:\n  hermes:\n    tags: [fine-tuning, llm]\n",
+                frontmatter_extra="metadata:\n  morpheus:\n    tags: [fine-tuning, llm]\n",
             )
             raw = skill_view("tagged")
         result = json.loads(raw)
@@ -523,7 +523,7 @@ class TestSkillViewSecureSetupOnLoad:
         )
 
         with patch.dict(
-            os.environ, {"HERMES_SESSION_PLATFORM": "telegram"}, clear=False
+            os.environ, {"MORPHEUS_SESSION_PLATFORM": "telegram"}, clear=False
         ):
             with patch("tools.skills_tool.SKILLS_DIR", tmp_path):
                 _make_skill(
@@ -863,7 +863,7 @@ class TestSkillViewPrerequisites:
         monkeypatch.setenv("TERMINAL_ENV", "docker")
 
         with patch.dict(
-            os.environ, {"HERMES_SESSION_PLATFORM": "telegram"}, clear=False
+            os.environ, {"MORPHEUS_SESSION_PLATFORM": "telegram"}, clear=False
         ):
             with patch("tools.skills_tool.SKILLS_DIR", tmp_path):
                 _make_skill(
@@ -959,7 +959,7 @@ class TestSkillViewPrerequisites:
 name: legacy-flat
 description: Legacy flat skill.
 metadata:
-  hermes:
+  morpheus:
     tags: [legacy, flat]
 required_environment_variables:
   - name: LEGACY_KEY

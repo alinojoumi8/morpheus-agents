@@ -27,9 +27,9 @@ Each tool module calls `registry.register(...)` at import time.
 Toolsets are named bundles of tools. Morpheus resolves them through:
 
 - explicit enabled/disabled toolset lists
-- platform presets (`hermes-cli`, `hermes-telegram`, etc.)
+- platform presets (`morpheus-cli`, `morpheus-telegram`, etc.)
 - dynamic MCP toolsets
-- curated special-purpose sets like `hermes-acp`
+- curated special-purpose sets like `morpheus-acp`
 
 ## Dispatch
 

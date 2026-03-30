@@ -31,18 +31,18 @@ For the authoritative code-derived registry, see [Built-in Tools Reference](/doc
 
 ```bash
 # Use specific toolsets
-hermes chat --toolsets "web,terminal"
+morpheus chat --toolsets "web,terminal"
 
 # See all available tools
-hermes tools
+morpheus tools
 
 # Configure tools per platform (interactive)
-hermes tools
+morpheus tools
 ```
 
 Common toolsets include `web`, `terminal`, `file`, `browser`, `vision`, `image_gen`, `moa`, `skills`, `tts`, `todo`, `memory`, `session_search`, `cronjob`, `code_execution`, `delegation`, `clarify`, `honcho`, `homeassistant`, and `rl`.
 
-See [Toolsets Reference](/docs/reference/toolsets-reference) for the full set, including platform presets such as `hermes-cli`, `hermes-telegram`, and dynamic MCP toolsets like `mcp-<server>`.
+See [Toolsets Reference](/docs/reference/toolsets-reference) for the full set, including platform presets such as `morpheus-cli`, `morpheus-telegram`, and dynamic MCP toolsets like `mcp-<server>`.
 
 ## Terminal Backends
 
@@ -97,8 +97,8 @@ TERMINAL_SSH_KEY=~/.ssh/id_rsa
 apptainer build ~/python.sif docker://python:3.11-slim
 
 # Configure
-hermes config set terminal.backend singularity
-hermes config set terminal.singularity_image ~/python.sif
+morpheus config set terminal.backend singularity
+morpheus config set terminal.singularity_image ~/python.sif
 ```
 
 ### Modal (Serverless Cloud)
@@ -106,7 +106,7 @@ hermes config set terminal.singularity_image ~/python.sif
 ```bash
 uv pip install "swe-rex[modal]"
 modal setup
-hermes config set terminal.backend modal
+morpheus config set terminal.backend modal
 ```
 
 ### Container Resources

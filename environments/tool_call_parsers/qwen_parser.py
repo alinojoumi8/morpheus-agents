@@ -6,7 +6,7 @@ Registered as a separate parser name for clarity when using --tool-parser=qwen.
 """
 
 from environments.tool_call_parsers import register_parser
-from environments.tool_call_parsers.hermes_parser import MorpheusToolCallParser
+from environments.tool_call_parsers.morpheus_parser import MorpheusToolCallParser
 
 
 @register_parser("qwen")

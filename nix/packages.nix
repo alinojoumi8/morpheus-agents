@@ -2,7 +2,7 @@
 { inputs, ... }: {
   perSystem = { pkgs, system, ... }:
     let
-      hermesVenv = pkgs.callPackage ./python.nix {
+      morpheusVenv = pkgs.callPackage ./python.nix {
         inherit (inputs) uv2nix pyproject-nix pyproject-build-systems;
       };
 
@@ -34,10 +34,10 @@
           cp -r ${bundledSkills} $out/share/morpheus-agent/skills
 
           ${pkgs.lib.concatMapStringsSep "\n" (name: ''
-            makeWrapper ${hermesVenv}/bin/${name} $out/bin/${name} \
+            makeWrapper ${morpheusVenv}/bin/${name} $out/bin/${name} \
               --suffix PATH : "${runtimePath}" \
-              --set HERMES_BUNDLED_SKILLS $out/share/morpheus-agent/skills
-          '') [ "hermes" "morpheus-agent" "hermes-acp" ]}
+              --set MORPHEUS_BUNDLED_SKILLS $out/share/morpheus-agent/skills
+          '') [ "morpheus" "morpheus-agent" "morpheus-acp" ]}
 
           runHook postInstall
         '';
@@ -45,7 +45,7 @@
         meta = with pkgs.lib; {
           description = "AI agent with advanced tool-calling capabilities";
           homepage = "https://github.com/NousResearch/morpheus-agent";
-          mainProgram = "hermes";
+          mainProgram = "morpheus";
           license = licenses.mit;
           platforms = platforms.unix;
         };

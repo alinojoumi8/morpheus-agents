@@ -36,7 +36,7 @@ API_SERVER_KEY=your-secret-key
 ### 2. Start Morpheus Agent gateway
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 You should see:

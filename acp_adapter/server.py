@@ -411,7 +411,7 @@ class MorpheusACPAgent(acp.Agent):
     def _cmd_tools(self, args: str, state: SessionState) -> str:
         try:
             from model_tools import get_tool_definitions
-            toolsets = getattr(state.agent, "enabled_toolsets", None) or ["hermes-acp"]
+            toolsets = getattr(state.agent, "enabled_toolsets", None) or ["morpheus-acp"]
             tools = get_tool_definitions(enabled_toolsets=toolsets, quiet_mode=True)
             if not tools:
                 return "No tools available."

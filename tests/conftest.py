@@ -17,9 +17,9 @@ if str(PROJECT_ROOT) not in sys.path:
 
 
 @pytest.fixture(autouse=True)
-def _isolate_hermes_home(tmp_path, monkeypatch):
+def _isolate_morpheus_home(tmp_path, monkeypatch):
     """Redirect MORPHEUS_HOME to a temp dir so tests never write to ~/.morpheus/."""
-    fake_home = tmp_path / "hermes_test"
+    fake_home = tmp_path / "morpheus_test"
     fake_home.mkdir()
     (fake_home / "sessions").mkdir()
     (fake_home / "cron").mkdir()
@@ -34,10 +34,10 @@ def _isolate_hermes_home(tmp_path, monkeypatch):
         pass
     # Tests should not inherit the agent's current gateway/messaging surface.
     # Individual tests that need gateway behavior set these explicitly.
-    monkeypatch.delenv("HERMES_SESSION_PLATFORM", raising=False)
-    monkeypatch.delenv("HERMES_SESSION_CHAT_ID", raising=False)
-    monkeypatch.delenv("HERMES_SESSION_CHAT_NAME", raising=False)
-    monkeypatch.delenv("HERMES_GATEWAY_SESSION", raising=False)
+    monkeypatch.delenv("MORPHEUS_SESSION_PLATFORM", raising=False)
+    monkeypatch.delenv("MORPHEUS_SESSION_CHAT_ID", raising=False)
+    monkeypatch.delenv("MORPHEUS_SESSION_CHAT_NAME", raising=False)
+    monkeypatch.delenv("MORPHEUS_GATEWAY_SESSION", raising=False)
 
 
 @pytest.fixture()
@@ -48,7 +48,7 @@ def tmp_dir(tmp_path):
 
 @pytest.fixture()
 def mock_config():
-    """Return a minimal hermes config dict suitable for unit tests."""
+    """Return a minimal morpheus config dict suitable for unit tests."""
     return {
         "model": "test/mock-model",
         "toolsets": ["terminal", "file"],

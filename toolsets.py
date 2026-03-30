@@ -28,7 +28,7 @@ from typing import List, Dict, Any, Set, Optional
 
 # Shared tool list for CLI and all messaging platform toolsets.
 # Edit this once to update all platforms simultaneously.
-_HERMES_CORE_TOOLS = [
+_MORPHEUS_CORE_TOOLS = [
     # Web
     "web_search", "web_extract",
     # Terminal + process management
@@ -58,6 +58,8 @@ _HERMES_CORE_TOOLS = [
     "execute_code", "delegate_task",
     # Cronjob management
     "cronjob",
+    # Intelligence (long-term memory, knowledge graph, consolidation)
+    "vector_search", "vector_remember", "knowledge_query", "run_consolidation",
     # Cross-platform messaging (gated on gateway running via check_fn)
     "send_message",
     # Honcho memory tools (gated on honcho being active via check_fn)
@@ -104,6 +106,12 @@ TOOLSETS = {
     "moa": {
         "description": "Advanced reasoning and problem-solving tools",
         "tools": ["mixture_of_agents"],
+        "includes": []
+    },
+
+    "intelligence": {
+        "description": "Long-term memory, knowledge graph, and memory consolidation tools",
+        "tools": ["vector_search", "vector_remember", "knowledge_query", "run_consolidation"],
         "includes": []
     },
     
@@ -230,7 +238,7 @@ TOOLSETS = {
     # which is gated on gateway running via its check_fn).
     # ==========================================================================
 
-    "hermes-acp": {
+    "morpheus-acp": {
         "description": "Editor integration (VS Code, Zed, JetBrains) — coding-focused tools without messaging, audio, or clarify UI",
         "tools": [
             "web_search", "web_extract",
@@ -249,7 +257,7 @@ TOOLSETS = {
         "includes": []
     },
 
-    "hermes-api-server": {
+    "morpheus-api-server": {
         "description": "OpenAI-compatible API server — full agent tools accessible via HTTP (no interactive UI tools like clarify or send_message)",
         "tools": [
             # Web
@@ -285,64 +293,64 @@ TOOLSETS = {
         "includes": []
     },
     
-    "hermes-cli": {
+    "morpheus-cli": {
         "description": "Full interactive CLI toolset - all default tools plus cronjob management",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-telegram": {
+    "morpheus-telegram": {
         "description": "Telegram bot toolset - full access for personal use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-discord": {
+    "morpheus-discord": {
         "description": "Discord bot toolset - full access (terminal has safety checks via dangerous command approval)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-whatsapp": {
+    "morpheus-whatsapp": {
         "description": "WhatsApp bot toolset - similar to Telegram (personal messaging, more trusted)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-slack": {
+    "morpheus-slack": {
         "description": "Slack bot toolset - full access for workspace use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
     
-    "hermes-signal": {
+    "morpheus-signal": {
         "description": "Signal bot toolset - encrypted messaging platform (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-homeassistant": {
+    "morpheus-homeassistant": {
         "description": "Home Assistant bot toolset - smart home event monitoring and control",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-email": {
+    "morpheus-email": {
         "description": "Email bot toolset - interact with Morpheus via email (IMAP/SMTP)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-sms": {
+    "morpheus-sms": {
         "description": "SMS bot toolset - interact with Morpheus via SMS (Twilio)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _MORPHEUS_CORE_TOOLS,
         "includes": []
     },
 
-    "hermes-gateway": {
+    "morpheus-gateway": {
         "description": "Gateway toolset - union of all messaging platform tools",
         "tools": [],
-        "includes": ["hermes-telegram", "hermes-discord", "hermes-whatsapp", "hermes-slack", "hermes-signal", "hermes-homeassistant", "hermes-email", "hermes-sms"]
+        "includes": ["morpheus-telegram", "morpheus-discord", "morpheus-whatsapp", "morpheus-slack", "morpheus-signal", "morpheus-homeassistant", "morpheus-email", "morpheus-sms"]
     }
 }
 

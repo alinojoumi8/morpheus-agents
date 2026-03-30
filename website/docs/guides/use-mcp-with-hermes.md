@@ -66,7 +66,7 @@ mcp_servers:
 Then start Morpheus:
 
 ```bash
-hermes chat
+morpheus chat
 ```
 
 Now ask something concrete:

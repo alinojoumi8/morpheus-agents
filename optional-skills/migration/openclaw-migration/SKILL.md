@@ -5,7 +5,7 @@ version: 1.0.0
 author: Morpheus Agent (Nous Research)
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Migration, OpenClaw, Morpheus, Memory, Persona, Import]
     related_skills: [morpheus-agent]
 ---
@@ -19,20 +19,20 @@ Use this skill when a user wants to move their OpenClaw setup into Morpheus Agen
 For a quick, non-interactive migration, use the built-in CLI command:
 
 ```bash
-hermes claw migrate              # Full interactive migration
-hermes claw migrate --dry-run    # Preview what would be migrated
-hermes claw migrate --preset user-data   # Migrate without secrets
-hermes claw migrate --overwrite  # Overwrite existing conflicts
-hermes claw migrate --source /custom/path/.openclaw  # Custom source
+morpheus claw migrate              # Full interactive migration
+morpheus claw migrate --dry-run    # Preview what would be migrated
+morpheus claw migrate --preset user-data   # Migrate without secrets
+morpheus claw migrate --overwrite  # Overwrite existing conflicts
+morpheus claw migrate --source /custom/path/.openclaw  # Custom source
 ```
 
 The CLI command runs the same migration script described below. Use this skill (via the agent) when you want an interactive, guided migration with dry-run previews and per-item conflict resolution.
 
-**First-time setup:** The `hermes setup` wizard automatically detects `~/.openclaw` and offers migration before configuration begins.
+**First-time setup:** The `morpheus setup` wizard automatically detects `~/.openclaw` and offers migration before configuration begins.
 
 ## What this skill does
 
-It uses `scripts/openclaw_to_hermes.py` to:
+It uses `scripts/openclaw_to_morpheus.py` to:
 
 - import `SOUL.md` into the Morpheus home directory as `SOUL.md`
 - transform OpenClaw `MEMORY.md` and `USER.md` into Morpheus memory entries
@@ -48,11 +48,11 @@ It uses `scripts/openclaw_to_hermes.py` to:
 
 The helper script lives in this skill directory at:
 
-- `scripts/openclaw_to_hermes.py`
+- `scripts/openclaw_to_morpheus.py`
 
 When this skill is installed from the Skills Hub, the normal location is:
 
-- `~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py`
+- `~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py`
 
 Do not guess a shorter path like `~/.morpheus/skills/openclaw-migration/...`.
 
@@ -228,37 +228,37 @@ The helper script still supports category-level `--include` / `--exclude`, but t
 Dry run with full discovery:
 
 ```bash
-python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py
+python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py
 ```
 
 When using the terminal tool, prefer an absolute invocation pattern such as:
 
 ```json
-{"command":"python3 /home/USER/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py","workdir":"/home/USER"}
+{"command":"python3 /home/USER/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py","workdir":"/home/USER"}
 ```
 
 Dry run with the user-data preset:
 
 ```bash
-python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --preset user-data
+python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py --preset user-data
 ```
 
 Execute a user-data migration:
 
 ```bash
-python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset user-data --skill-conflict skip
+python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py --execute --preset user-data --skill-conflict skip
 ```
 
 Execute a full compatible migration:
 
 ```bash
-python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset full --migrate-secrets --skill-conflict skip
+python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py --execute --preset full --migrate-secrets --skill-conflict skip
 ```
 
 Execute with workspace instructions included:
 
 ```bash
-python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset user-data --skill-conflict rename --workspace-target "/absolute/workspace/path"
+python3 ~/.morpheus/skills/migration/openclaw-migration/scripts/openclaw_to_morpheus.py --execute --preset user-data --skill-conflict rename --workspace-target "/absolute/workspace/path"
 ```
 
 Do not use `$PWD` or the home directory as the workspace target by default. Ask for an explicit workspace path first.

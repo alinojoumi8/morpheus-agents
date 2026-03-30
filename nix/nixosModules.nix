@@ -4,13 +4,13 @@
 #   container.enable = false (default) → native systemd service
 #   container.enable = true            → OCI container (persistent writable layer)
 #
-# Container mode: hermes runs from /nix/store bind-mounted read-only into a
+# Container mode: morpheus runs from /nix/store bind-mounted read-only into a
 # plain Ubuntu container. The writable layer (apt/pip/npm installs) persists
 # across restarts and agent updates. Only image/volume/options changes trigger
-# container recreation. Environment variables are written to $HERMES_HOME/.env
-# and read by hermes at startup — no container recreation needed for env changes.
+# container recreation. Environment variables are written to $MORPHEUS_HOME/.env
+# and read by morpheus at startup — no container recreation needed for env changes.
 #
-# Tool resolution: the hermes wrapper uses --suffix PATH for nix store tools,
+# Tool resolution: the morpheus wrapper uses --suffix PATH for nix store tools,
 # so apt/uv-installed versions take priority. The container entrypoint provisions
 # extensible tools on first boot: nodejs/npm via apt, uv via curl, and a Python
 # 3.11 venv (bootstrapped entirely by uv) at ~/.venv with pip seeded. Agents get
@@ -20,7 +20,7 @@
 #   services.morpheus-agent = {
 #     enable = true;
 #     settings.model = "anthropic/claude-sonnet-4";
-#     environmentFiles = [ config.sops.secrets."hermes/env".path ];
+#     environmentFiles = [ config.sops.secrets."morpheus/env".path ];
 #   };
 #
 { inputs, ... }: {
@@ -32,7 +32,7 @@
 
     # Deep-merge config type (from 0xrsydn/nix-morpheus-agent)
     deepConfigType = lib.types.mkOptionType {
-      name = "hermes-config-attrs";
+      name = "morpheus-config-attrs";
       description = "Morpheus YAML config (attrset), merged deeply via lib.recursiveUpdate.";
       check = builtins.isAttrs;
       merge = _loc: defs: lib.foldl' lib.recursiveUpdate { } (map (d: d.value) defs);
@@ -40,7 +40,7 @@
 
     # Generate config.yaml from Nix attrset (YAML is a superset of JSON)
     configJson = builtins.toJSON cfg.settings;
-    generatedConfigFile = pkgs.writeText "hermes-config.yaml" configJson;
+    generatedConfigFile = pkgs.writeText "morpheus-config.yaml" configJson;
     configFile = if cfg.configFile != null then cfg.configFile else generatedConfigFile;
 
     configMergeScript = pkgs.callPackage ./configMergeScript.nix { };
@@ -50,21 +50,21 @@
       lib.mapAttrsToList (k: v: "${k}=${v}") cfg.environment
     );
     # Build documents derivation (from 0xrsydn)
-    documentDerivation = pkgs.runCommand "hermes-documents" { } (
+    documentDerivation = pkgs.runCommand "morpheus-documents" { } (
       ''
         mkdir -p $out
       '' + lib.concatStringsSep "\n" (
         lib.mapAttrsToList (name: value:
           if builtins.isPath value || lib.isStorePath value
           then "cp ${value} $out/${name}"
-          else "cat > $out/${name} <<'HERMES_DOC_EOF'\n${value}\nHERMES_DOC_EOF"
+          else "cat > $out/${name} <<'MORPHEUS_DOC_EOF'\n${value}\nMORPHEUS_DOC_EOF"
         ) cfg.documents
       )
     );
 
     containerName = "morpheus-agent";
     containerDataDir = "/data";     # stateDir mount point inside container
-    containerHomeDir = "/home/hermes";
+    containerHomeDir = "/home/morpheus";
 
     # ── Container mode helpers ──────────────────────────────────────────
     containerBin = if cfg.container.backend == "docker"
@@ -72,66 +72,66 @@
       else "${pkgs.podman}/bin/podman";
 
     # Runs as root inside the container on every start. Provisions the
-    # hermes user + sudo on first boot (writable layer persists), then
+    # morpheus user + sudo on first boot (writable layer persists), then
     # drops privileges. Supports arbitrary base images (Debian, Alpine, etc).
-    containerEntrypoint = pkgs.writeShellScript "hermes-container-entrypoint" ''
+    containerEntrypoint = pkgs.writeShellScript "morpheus-container-entrypoint" ''
       set -eu
 
-      HERMES_UID="''${HERMES_UID:?HERMES_UID must be set}"
-      HERMES_GID="''${HERMES_GID:?HERMES_GID must be set}"
+      MORPHEUS_UID="''${MORPHEUS_UID:?MORPHEUS_UID must be set}"
+      MORPHEUS_GID="''${MORPHEUS_GID:?MORPHEUS_GID must be set}"
 
-      # ── Group: ensure a group with GID=$HERMES_GID exists ──
+      # ── Group: ensure a group with GID=$MORPHEUS_GID exists ──
       # Check by GID (not name) to avoid collisions with pre-existing groups
       # (e.g. GID 100 = "users" on Ubuntu)
-      EXISTING_GROUP=$(getent group "$HERMES_GID" 2>/dev/null | cut -d: -f1 || true)
+      EXISTING_GROUP=$(getent group "$MORPHEUS_GID" 2>/dev/null | cut -d: -f1 || true)
       if [ -n "$EXISTING_GROUP" ]; then
         GROUP_NAME="$EXISTING_GROUP"
       else
-        GROUP_NAME="hermes"
+        GROUP_NAME="morpheus"
         if command -v groupadd >/dev/null 2>&1; then
-          groupadd -g "$HERMES_GID" "$GROUP_NAME"
+          groupadd -g "$MORPHEUS_GID" "$GROUP_NAME"
         elif command -v addgroup >/dev/null 2>&1; then
-          addgroup -g "$HERMES_GID" "$GROUP_NAME" 2>/dev/null || true
+          addgroup -g "$MORPHEUS_GID" "$GROUP_NAME" 2>/dev/null || true
         fi
       fi
 
-      # ── User: ensure a user with UID=$HERMES_UID exists ──
-      PASSWD_ENTRY=$(getent passwd "$HERMES_UID" 2>/dev/null || true)
+      # ── User: ensure a user with UID=$MORPHEUS_UID exists ──
+      PASSWD_ENTRY=$(getent passwd "$MORPHEUS_UID" 2>/dev/null || true)
       if [ -n "$PASSWD_ENTRY" ]; then
         TARGET_USER=$(echo "$PASSWD_ENTRY" | cut -d: -f1)
         TARGET_HOME=$(echo "$PASSWD_ENTRY" | cut -d: -f6)
       else
-        TARGET_USER="hermes"
-        TARGET_HOME="/home/hermes"
+        TARGET_USER="morpheus"
+        TARGET_HOME="/home/morpheus"
         if command -v useradd >/dev/null 2>&1; then
-          useradd -u "$HERMES_UID" -g "$HERMES_GID" -m -d "$TARGET_HOME" -s /bin/bash "$TARGET_USER"
+          useradd -u "$MORPHEUS_UID" -g "$MORPHEUS_GID" -m -d "$TARGET_HOME" -s /bin/bash "$TARGET_USER"
         elif command -v adduser >/dev/null 2>&1; then
-          adduser -u "$HERMES_UID" -D -h "$TARGET_HOME" -s /bin/sh -G "$GROUP_NAME" "$TARGET_USER" 2>/dev/null || true
+          adduser -u "$MORPHEUS_UID" -D -h "$TARGET_HOME" -s /bin/sh -G "$GROUP_NAME" "$TARGET_USER" 2>/dev/null || true
         fi
       fi
       mkdir -p "$TARGET_HOME"
-      chown "$HERMES_UID:$HERMES_GID" "$TARGET_HOME"
+      chown "$MORPHEUS_UID:$MORPHEUS_GID" "$TARGET_HOME"
 
-      # Ensure HERMES_HOME is owned by the target user
-      if [ -n "''${HERMES_HOME:-}" ] && [ -d "$HERMES_HOME" ]; then
-        chown -R "$HERMES_UID:$HERMES_GID" "$HERMES_HOME"
+      # Ensure MORPHEUS_HOME is owned by the target user
+      if [ -n "''${MORPHEUS_HOME:-}" ] && [ -d "$MORPHEUS_HOME" ]; then
+        chown -R "$MORPHEUS_UID:$MORPHEUS_GID" "$MORPHEUS_HOME"
       fi
 
       # ── Provision apt packages (first boot only, cached in writable layer) ──
       # sudo: agent self-modification
       # nodejs/npm: writable node so npm i -g works (nix store copies are read-only)
       # curl: needed for uv installer
-      if [ ! -f /var/lib/hermes-tools-provisioned ] && command -v apt-get >/dev/null 2>&1; then
+      if [ ! -f /var/lib/morpheus-tools-provisioned ] && command -v apt-get >/dev/null 2>&1; then
         echo "First boot: provisioning agent tools..."
         apt-get update -qq
         apt-get install -y -qq sudo nodejs npm curl
-        touch /var/lib/hermes-tools-provisioned
+        touch /var/lib/morpheus-tools-provisioned
       fi
 
-      if command -v sudo >/dev/null 2>&1 && [ ! -f /etc/sudoers.d/hermes ]; then
+      if command -v sudo >/dev/null 2>&1 && [ ! -f /etc/sudoers.d/morpheus ]; then
         mkdir -p /etc/sudoers.d
-        echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/hermes
-        chmod 0440 /etc/sudoers.d/hermes
+        echo "$TARGET_USER ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/morpheus
+        chmod 0440 /etc/sudoers.d/morpheus
       fi
 
       # uv (Python manager) — not in Ubuntu repos, retry-safe outside the sentinel
@@ -157,7 +157,7 @@
       fi
 
       if command -v setpriv >/dev/null 2>&1; then
-        exec setpriv --reuid="$HERMES_UID" --regid="$HERMES_GID" --init-groups "$@"
+        exec setpriv --reuid="$MORPHEUS_UID" --regid="$MORPHEUS_GID" --init-groups "$@"
       elif command -v su >/dev/null 2>&1; then
         exec su -s /bin/sh "$TARGET_USER" -c 'exec "$0" "$@"' -- "$@"
       else
@@ -168,7 +168,7 @@
 
     # Identity hash — only recreate container when structural config changes.
     # Package and entrypoint use stable symlinks (current-package, current-entrypoint)
-    # so they can update without recreation. Env vars go through $HERMES_HOME/.env.
+    # so they can update without recreation. Env vars go through $MORPHEUS_HOME/.env.
     containerIdentity = builtins.hashString "sha256" (builtins.toJSON {
       schema = 3; # bump when identity inputs change
       image = cfg.container.image;
@@ -178,7 +178,7 @@
 
     identityFile = "${cfg.stateDir}/.container-identity";
 
-    # Default: /var/lib/hermes/workspace → /data/workspace.
+    # Default: /var/lib/morpheus/workspace → /data/workspace.
     # Custom paths outside stateDir pass through unchanged (user must add extraVolumes).
     containerWorkDir =
       if lib.hasPrefix "${cfg.stateDir}/" cfg.workingDirectory
@@ -199,13 +199,13 @@
       # ── Service identity ─────────────────────────────────────────────────
       user = mkOption {
         type = types.str;
-        default = "hermes";
+        default = "morpheus";
         description = "System user running the gateway.";
       };
 
       group = mkOption {
         type = types.str;
-        default = "hermes";
+        default = "morpheus";
         description = "System group running the gateway.";
       };
 
@@ -218,8 +218,8 @@
       # ── Directories ──────────────────────────────────────────────────────
       stateDir = mkOption {
         type = types.str;
-        default = "/var/lib/hermes";
-        description = "State directory. Contains .hermes/ subdir (HERMES_HOME).";
+        default = "/var/lib/morpheus";
+        description = "State directory. Contains .morpheus/ subdir (MORPHEUS_HOME).";
       };
 
       workingDirectory = mkOption {
@@ -262,8 +262,8 @@
         default = [ ];
         description = ''
           Paths to environment files containing secrets (API keys, tokens).
-          Contents are merged into $HERMES_HOME/.env at activation time.
-          Morpheus reads this file on every startup via load_hermes_dotenv().
+          Contents are merged into $MORPHEUS_HOME/.env at activation time.
+          Morpheus reads this file on every startup via load_morpheus_dotenv().
         '';
       };
 
@@ -271,7 +271,7 @@
         type = types.attrsOf types.str;
         default = { };
         description = ''
-          Non-secret environment variables. Merged into $HERMES_HOME/.env
+          Non-secret environment variables. Merged into $MORPHEUS_HOME/.env
           at activation time. Do NOT put secrets here — use environmentFiles.
         '';
       };
@@ -346,7 +346,7 @@
               default = null;
               description = ''
                 Authentication method. Set to "oauth" for OAuth 2.1 PKCE flow
-                (remote MCP servers). Tokens are stored in $HERMES_HOME/mcp-tokens/.
+                (remote MCP servers). Tokens are stored in $MORPHEUS_HOME/mcp-tokens/.
               '';
             };
 
@@ -439,7 +439,7 @@
       extraArgs = mkOption {
         type = types.listOf types.str;
         default = [ ];
-        description = "Extra command-line arguments for `hermes gateway`.";
+        description = "Extra command-line arguments for `morpheus gateway`.";
       };
 
       extraPackages = mkOption {
@@ -463,7 +463,7 @@
       addToSystemPackages = mkOption {
         type = types.bool;
         default = false;
-        description = "Add hermes CLI to environment.systemPackages.";
+        description = "Add morpheus CLI to environment.systemPackages.";
       };
 
       # ── OCI Container (opt-in) ──────────────────────────────────────────
@@ -552,7 +552,7 @@
       {
         systemd.tmpfiles.rules = [
           "d ${cfg.stateDir}                0755 ${cfg.user} ${cfg.group} - -"
-          "d ${cfg.stateDir}/.hermes        0755 ${cfg.user} ${cfg.group} - -"
+          "d ${cfg.stateDir}/.morpheus        0755 ${cfg.user} ${cfg.group} - -"
           "d ${cfg.stateDir}/home           0750 ${cfg.user} ${cfg.group} - -"
           "d ${cfg.workingDirectory}         0750 ${cfg.user} ${cfg.group} - -"
         ];
@@ -562,46 +562,46 @@
       {
         system.activationScripts."morpheus-agent-setup" = lib.stringAfter [ "users" ] ''
           # Ensure directories exist (activation runs before tmpfiles)
-          mkdir -p ${cfg.stateDir}/.hermes
+          mkdir -p ${cfg.stateDir}/.morpheus
           mkdir -p ${cfg.stateDir}/home
           mkdir -p ${cfg.workingDirectory}
-          chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${cfg.stateDir}/.hermes ${cfg.stateDir}/home ${cfg.workingDirectory}
+          chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${cfg.stateDir}/.morpheus ${cfg.stateDir}/home ${cfg.workingDirectory}
 
           # Merge Nix settings into existing config.yaml.
           # Preserves user-added keys (skills, streaming, etc.); Nix keys win.
           # If configFile is user-provided (not generated), overwrite instead of merge.
           ${if cfg.configFile != null then ''
-            install -o ${cfg.user} -g ${cfg.group} -m 0644 -D ${configFile} ${cfg.stateDir}/.hermes/config.yaml
+            install -o ${cfg.user} -g ${cfg.group} -m 0644 -D ${configFile} ${cfg.stateDir}/.morpheus/config.yaml
           '' else ''
-            ${configMergeScript} ${generatedConfigFile} ${cfg.stateDir}/.hermes/config.yaml
-            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.hermes/config.yaml
-            chmod 0644 ${cfg.stateDir}/.hermes/config.yaml
+            ${configMergeScript} ${generatedConfigFile} ${cfg.stateDir}/.morpheus/config.yaml
+            chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.morpheus/config.yaml
+            chmod 0644 ${cfg.stateDir}/.morpheus/config.yaml
           ''}
 
           # Managed mode marker (so interactive shells also detect NixOS management)
-          touch ${cfg.stateDir}/.hermes/.managed
-          chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.hermes/.managed
+          touch ${cfg.stateDir}/.morpheus/.managed
+          chown ${cfg.user}:${cfg.group} ${cfg.stateDir}/.morpheus/.managed
 
           # Seed auth file if provided
           ${lib.optionalString (cfg.authFile != null) ''
             ${if cfg.authFileForceOverwrite then ''
-              install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.hermes/auth.json
+              install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.morpheus/auth.json
             '' else ''
-              if [ ! -f ${cfg.stateDir}/.hermes/auth.json ]; then
-                install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.hermes/auth.json
+              if [ ! -f ${cfg.stateDir}/.morpheus/auth.json ]; then
+                install -o ${cfg.user} -g ${cfg.group} -m 0600 ${cfg.authFile} ${cfg.stateDir}/.morpheus/auth.json
               fi
             ''}
           ''}
 
           # Seed .env from Nix-declared environment + environmentFiles.
-          # Morpheus reads $HERMES_HOME/.env at startup via load_hermes_dotenv(),
+          # Morpheus reads $MORPHEUS_HOME/.env at startup via load_morpheus_dotenv(),
           # so this is the single source of truth for both native and container mode.
           ${lib.optionalString (cfg.environment != {} || cfg.environmentFiles != []) ''
-            ENV_FILE="${cfg.stateDir}/.hermes/.env"
+            ENV_FILE="${cfg.stateDir}/.morpheus/.env"
             install -o ${cfg.user} -g ${cfg.group} -m 0600 /dev/null "$ENV_FILE"
-            cat > "$ENV_FILE" <<'HERMES_NIX_ENV_EOF'
+            cat > "$ENV_FILE" <<'MORPHEUS_NIX_ENV_EOF'
 ${envFileContent}
-HERMES_NIX_ENV_EOF
+MORPHEUS_NIX_ENV_EOF
             ${lib.concatStringsSep "\n" (map (f: ''
               if [ -f "${f}" ]; then
                 echo "" >> "$ENV_FILE"
@@ -629,8 +629,8 @@ HERMES_NIX_ENV_EOF
 
           environment = {
             HOME = cfg.stateDir;
-            HERMES_HOME = "${cfg.stateDir}/.hermes";
-            HERMES_MANAGED = "true";
+            MORPHEUS_HOME = "${cfg.stateDir}/.morpheus";
+            MORPHEUS_MANAGED = "true";
             MESSAGING_CWD = cfg.workingDirectory;
           };
 
@@ -640,11 +640,11 @@ HERMES_NIX_ENV_EOF
             WorkingDirectory = cfg.workingDirectory;
 
             # cfg.environment and cfg.environmentFiles are written to
-            # $HERMES_HOME/.env by the activation script. load_hermes_dotenv()
+            # $MORPHEUS_HOME/.env by the activation script. load_morpheus_dotenv()
             # reads them at Python startup — no systemd EnvironmentFile needed.
 
             ExecStart = lib.concatStringsSep " " ([
-              "${cfg.package}/bin/hermes"
+              "${cfg.package}/bin/morpheus"
               "gateway"
             ] ++ cfg.extraArgs);
 
@@ -704,8 +704,8 @@ HERMES_NIX_ENV_EOF
 
             if [ "$NEED_CREATE" = "true" ]; then
               # Resolve numeric UID/GID — passed to entrypoint for in-container user setup
-              HERMES_UID=$(${pkgs.coreutils}/bin/id -u ${cfg.user})
-              HERMES_GID=$(${pkgs.coreutils}/bin/id -g ${cfg.user})
+              MORPHEUS_UID=$(${pkgs.coreutils}/bin/id -u ${cfg.user})
+              MORPHEUS_GID=$(${pkgs.coreutils}/bin/id -g ${cfg.user})
 
               echo "Creating container..."
               ${containerBin} create \
@@ -716,15 +716,15 @@ HERMES_NIX_ENV_EOF
                 --volume ${cfg.stateDir}:${containerDataDir} \
                 --volume ${cfg.stateDir}/home:${containerHomeDir} \
                 ${lib.concatStringsSep " " (map (v: "--volume ${v}") cfg.container.extraVolumes)} \
-                --env HERMES_UID="$HERMES_UID" \
-                --env HERMES_GID="$HERMES_GID" \
-                --env HERMES_HOME=${containerDataDir}/.hermes \
-                --env HERMES_MANAGED=true \
+                --env MORPHEUS_UID="$MORPHEUS_UID" \
+                --env MORPHEUS_GID="$MORPHEUS_GID" \
+                --env MORPHEUS_HOME=${containerDataDir}/.morpheus \
+                --env MORPHEUS_MANAGED=true \
                 --env HOME=${containerHomeDir} \
                 --env MESSAGING_CWD=${containerWorkDir} \
                 ${lib.concatStringsSep " " cfg.container.extraOptions} \
                 ${cfg.container.image} \
-                ${containerDataDir}/current-package/bin/hermes gateway run --replace ${lib.concatStringsSep " " cfg.extraArgs}
+                ${containerDataDir}/current-package/bin/morpheus gateway run --replace ${lib.concatStringsSep " " cfg.extraArgs}
 
               echo "${containerIdentity}" > ${identityFile}
             fi

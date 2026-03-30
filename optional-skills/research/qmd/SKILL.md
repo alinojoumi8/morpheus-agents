@@ -6,7 +6,7 @@ author: Morpheus Agent + Teknium
 license: MIT
 platforms: [macos, linux]
 metadata:
-  hermes:
+  morpheus:
     tags: [Search, Knowledge-Base, RAG, Notes, MCP, Local-AI]
     related_skills: [obsidian, native-mcp, arxiv]
 ---

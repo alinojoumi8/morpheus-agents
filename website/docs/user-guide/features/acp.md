@@ -19,7 +19,7 @@ ACP is a good fit when you want Morpheus to behave like an editor-native coding 
 
 ## What Morpheus exposes in ACP mode
 
-Morpheus runs with a curated `hermes-acp` toolset designed for editor workflows. It includes:
+Morpheus runs with a curated `morpheus-acp` toolset designed for editor workflows. It includes:
 
 - file tools: `read_file`, `write_file`, `patch`, `search_files`
 - terminal tools: `terminal`, `process`
@@ -41,8 +41,8 @@ pip install -e '.[acp]'
 
 This installs the `agent-client-protocol` dependency and enables:
 
-- `hermes acp`
-- `hermes-acp`
+- `morpheus acp`
+- `morpheus-acp`
 - `python -m acp_adapter`
 
 ## Launching the ACP server
@@ -50,11 +50,11 @@ This installs the `agent-client-protocol` dependency and enables:
 Any of the following starts Morpheus in ACP mode:
 
 ```bash
-hermes acp
+morpheus acp
 ```
 
 ```bash
-hermes-acp
+morpheus-acp
 ```
 
 ```bash
@@ -118,7 +118,7 @@ acp_registry/agent.json
 It advertises a command-based agent whose launch command is:
 
 ```text
-hermes acp
+morpheus acp
 ```
 
 ## Configuration and credentials
@@ -175,9 +175,9 @@ Check:
 Try these checks:
 
 ```bash
-hermes doctor
-hermes status
-hermes acp
+morpheus doctor
+morpheus status
+morpheus acp
 ```
 
 ### Missing credentials
@@ -185,7 +185,7 @@ hermes acp
 ACP mode does not have its own login flow. It uses Morpheus' existing provider setup. Configure credentials with:
 
 ```bash
-hermes model
+morpheus model
 ```
 
 or by editing `~/.morpheus/.env`.

@@ -63,7 +63,7 @@ from atroposlib.envs.base import EvalHandlingEnum
 from atroposlib.envs.server_handling.server_manager import APIServerConfig
 
 from environments.agent_loop import MorpheusAgentLoop
-from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 
 logger = logging.getLogger(__name__)
 

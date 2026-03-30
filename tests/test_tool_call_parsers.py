@@ -32,7 +32,7 @@ class TestParserRegistry:
         parsers = list_parsers()
         assert len(parsers) > 0
 
-    def test_hermes_parser_registered(self):
+    def test_morpheus_parser_registered(self):
         parsers = list_parsers()
         assert "morpheus" in parsers
 
@@ -145,7 +145,7 @@ class TestParseResultContract:
 
     def test_tool_calls_are_proper_objects(self, parser):
         """When tool calls are found, they should be ChatCompletionMessageToolCall objects."""
-        # Use hermes format since that's universal
+        # Use morpheus format since that's universal
         text = '<tool_call>{"name": "terminal", "arguments": {"command": "echo hi"}}</tool_call>'
         content, tool_calls = parser.parse(text)
         if tool_calls is not None:

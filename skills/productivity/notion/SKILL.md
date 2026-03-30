@@ -5,7 +5,7 @@ version: 1.0.0
 author: community
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [Notion, Productivity, Notes, Database, API]
     homepage: https://developers.notion.com
 prerequisites:

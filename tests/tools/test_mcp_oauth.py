@@ -54,7 +54,7 @@ class TestMorpheusTokenStorage:
 
         mock_client = MagicMock()
         mock_client.model_dump.return_value = {
-            "client_id": "hermes-123",
+            "client_id": "morpheus-123",
             "client_secret": "secret",
         }
         asyncio.run(storage.set_client_info(mock_client))

@@ -77,18 +77,18 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Resolve Morpheus home directory (respects MORPHEUS_HOME override)
 from morpheus_constants import get_morpheus_home
-_hermes_home = get_morpheus_home()
+_morpheus_home = get_morpheus_home()
 
 # Load environment variables from ~/.morpheus/.env first.
 # User-managed env files should override stale shell exports on restart.
 from dotenv import load_dotenv  # backward-compat for tests that monkeypatch this symbol
-from morpheus_cli.env_loader import load_hermes_dotenv
-_env_path = _hermes_home / '.env'
-load_hermes_dotenv(hermes_home=_hermes_home, project_env=Path(__file__).resolve().parents[1] / '.env')
+from morpheus_cli.env_loader import load_morpheus_dotenv
+_env_path = _morpheus_home / '.env'
+load_morpheus_dotenv(morpheus_home=_morpheus_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
 # Bridge config.yaml values into the environment so os.getenv() picks them up.
 # config.yaml is authoritative for terminal settings — overrides .env.
-_config_path = _hermes_home / 'config.yaml'
+_config_path = _morpheus_home / 'config.yaml'
 if _config_path.exists():
     try:
         import yaml as _yaml
@@ -179,26 +179,26 @@ if _config_path.exists():
         _agent_cfg = _cfg.get("agent", {})
         if _agent_cfg and isinstance(_agent_cfg, dict):
             if "max_turns" in _agent_cfg:
-                os.environ["HERMES_MAX_ITERATIONS"] = str(_agent_cfg["max_turns"])
-        # Timezone: bridge config.yaml → HERMES_TIMEZONE env var.
-        # HERMES_TIMEZONE from .env takes precedence (already in os.environ).
+                os.environ["MORPHEUS_MAX_ITERATIONS"] = str(_agent_cfg["max_turns"])
+        # Timezone: bridge config.yaml → MORPHEUS_TIMEZONE env var.
+        # MORPHEUS_TIMEZONE from .env takes precedence (already in os.environ).
         _tz_cfg = _cfg.get("timezone", "")
-        if _tz_cfg and isinstance(_tz_cfg, str) and "HERMES_TIMEZONE" not in os.environ:
-            os.environ["HERMES_TIMEZONE"] = _tz_cfg.strip()
+        if _tz_cfg and isinstance(_tz_cfg, str) and "MORPHEUS_TIMEZONE" not in os.environ:
+            os.environ["MORPHEUS_TIMEZONE"] = _tz_cfg.strip()
         # Security settings
         _security_cfg = _cfg.get("security", {})
         if isinstance(_security_cfg, dict):
             _redact = _security_cfg.get("redact_secrets")
             if _redact is not None:
-                os.environ["HERMES_REDACT_SECRETS"] = str(_redact).lower()
+                os.environ["MORPHEUS_REDACT_SECRETS"] = str(_redact).lower()
     except Exception:
         pass  # Non-fatal; gateway can still run with .env values
 
 # Gateway runs in quiet mode - suppress debug output and use cwd directly (no temp dirs)
-os.environ["HERMES_QUIET"] = "1"
+os.environ["MORPHEUS_QUIET"] = "1"
 
 # Enable interactive exec approval for dangerous commands on messaging platforms
-os.environ["HERMES_EXEC_ASK"] = "1"
+os.environ["MORPHEUS_EXEC_ASK"] = "1"
 
 # Set terminal working directory for messaging platforms.
 # If the user set an explicit path in config.yaml (not "." or "auto"),
@@ -242,7 +242,7 @@ def _resolve_runtime_agent_kwargs() -> dict:
 
     try:
         runtime = resolve_runtime_provider(
-            requested=os.getenv("HERMES_INFERENCE_PROVIDER"),
+            requested=os.getenv("MORPHEUS_INFERENCE_PROVIDER"),
         )
     except Exception as exc:
         raise RuntimeError(format_runtime_provider_error(exc)) from exc
@@ -265,13 +265,13 @@ def _platform_config_key(platform: "Platform") -> str:
 def _load_gateway_config() -> dict:
     """Load and parse ~/.morpheus/config.yaml, returning {} on any error."""
     try:
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _morpheus_home / 'config.yaml'
         if config_path.exists():
             import yaml
             with open(config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f) or {}
     except Exception:
-        logger.debug("Could not load gateway config from %s", _hermes_home / 'config.yaml')
+        logger.debug("Could not load gateway config from %s", _morpheus_home / 'config.yaml')
     return {}
 
 
@@ -282,7 +282,7 @@ def _resolve_gateway_model(config: dict | None = None) -> str:
     back to the hardcoded default ("anthropic/claude-opus-4.6") which fails
     when the active provider is openai-codex.
     """
-    model = os.getenv("HERMES_MODEL") or os.getenv("LLM_MODEL") or "anthropic/claude-opus-4.6"
+    model = os.getenv("MORPHEUS_MODEL") or os.getenv("LLM_MODEL") or "anthropic/claude-opus-4.6"
     cfg = config if config is not None else _load_gateway_config()
     model_cfg = cfg.get("model", {})
     if isinstance(model_cfg, str):
@@ -292,21 +292,21 @@ def _resolve_gateway_model(config: dict | None = None) -> str:
     return model
 
 
-def _resolve_hermes_bin() -> Optional[list[str]]:
+def _resolve_morpheus_bin() -> Optional[list[str]]:
     """Resolve the Morpheus update command as argv parts.
 
     Tries in order:
     1. ``shutil.which("morpheus")`` — standard PATH lookup
     2. ``sys.executable -m morpheus_cli.main`` — fallback when Morpheus is running
-       from a venv/module invocation and the ``hermes`` shim is not on PATH
+       from a venv/module invocation and the ``morpheus`` shim is not on PATH
 
     Returns argv parts ready for quoting/joining, or ``None`` if neither works.
     """
     import shutil
 
-    hermes_bin = shutil.which("morpheus")
-    if hermes_bin:
-        return [hermes_bin]
+    morpheus_bin = shutil.which("morpheus")
+    if morpheus_bin:
+        return [morpheus_bin]
 
     try:
         import importlib.util
@@ -484,7 +484,7 @@ class GatewayRunner:
 
     # -- Voice mode persistence ------------------------------------------
 
-    _VOICE_MODE_PATH = _hermes_home / "gateway_voice_mode.json"
+    _VOICE_MODE_PATH = _morpheus_home / "gateway_voice_mode.json"
 
     def _load_voice_modes(self) -> Dict[str, str]:
         try:
@@ -759,16 +759,16 @@ class GatewayRunner:
     def _load_prefill_messages() -> List[Dict[str, Any]]:
         """Load ephemeral prefill messages from config or env var.
         
-        Checks HERMES_PREFILL_MESSAGES_FILE env var first, then falls back to
+        Checks MORPHEUS_PREFILL_MESSAGES_FILE env var first, then falls back to
         the prefill_messages_file key in ~/.morpheus/config.yaml.
         Relative paths are resolved from ~/.morpheus/.
         """
         import json as _json
-        file_path = os.getenv("HERMES_PREFILL_MESSAGES_FILE", "")
+        file_path = os.getenv("MORPHEUS_PREFILL_MESSAGES_FILE", "")
         if not file_path:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _morpheus_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -779,7 +779,7 @@ class GatewayRunner:
             return []
         path = Path(file_path).expanduser()
         if not path.is_absolute():
-            path = _hermes_home / path
+            path = _morpheus_home / path
         if not path.exists():
             logger.warning("Prefill messages file not found: %s", path)
             return []
@@ -798,15 +798,15 @@ class GatewayRunner:
     def _load_ephemeral_system_prompt() -> str:
         """Load ephemeral system prompt from config or env var.
         
-        Checks HERMES_EPHEMERAL_SYSTEM_PROMPT env var first, then falls back to
+        Checks MORPHEUS_EPHEMERAL_SYSTEM_PROMPT env var first, then falls back to
         agent.system_prompt in ~/.morpheus/config.yaml.
         """
-        prompt = os.getenv("HERMES_EPHEMERAL_SYSTEM_PROMPT", "")
+        prompt = os.getenv("MORPHEUS_EPHEMERAL_SYSTEM_PROMPT", "")
         if prompt:
             return prompt
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -820,7 +820,7 @@ class GatewayRunner:
         """Load reasoning effort from config with env fallback.
 
         Checks agent.reasoning_effort in config.yaml first, then
-        HERMES_REASONING_EFFORT as a fallback. Valid: "xhigh", "high",
+        MORPHEUS_REASONING_EFFORT as a fallback. Valid: "xhigh", "high",
         "medium", "low", "minimal", "none". Returns None to use default
         (medium).
         """
@@ -828,7 +828,7 @@ class GatewayRunner:
         effort = ""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -836,7 +836,7 @@ class GatewayRunner:
         except Exception:
             pass
         if not effort:
-            effort = os.getenv("HERMES_REASONING_EFFORT", "")
+            effort = os.getenv("MORPHEUS_REASONING_EFFORT", "")
         result = parse_reasoning_effort(effort)
         if effort and effort.strip() and result is None:
             logger.warning("Unknown reasoning_effort '%s', using default (medium)", effort)
@@ -847,7 +847,7 @@ class GatewayRunner:
         """Load show_reasoning toggle from config.yaml display section."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -866,11 +866,11 @@ class GatewayRunner:
           - ``error``  — only the final message when exit code is non-zero
           - ``off``    — no watcher messages at all
         """
-        mode = os.getenv("HERMES_BACKGROUND_NOTIFICATIONS", "")
+        mode = os.getenv("MORPHEUS_BACKGROUND_NOTIFICATIONS", "")
         if not mode:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _morpheus_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -896,7 +896,7 @@ class GatewayRunner:
         """Load OpenRouter provider routing preferences from config.yaml."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -914,7 +914,7 @@ class GatewayRunner:
         """
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -930,7 +930,7 @@ class GatewayRunner:
         """Load optional smart cheap-vs-strong model routing config."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1117,8 +1117,8 @@ class GatewayRunner:
         if not notified and any(
             path.exists()
             for path in (
-                _hermes_home / ".update_pending.json",
-                _hermes_home / ".update_pending.claimed.json",
+                _morpheus_home / ".update_pending.json",
+                _morpheus_home / ".update_pending.claimed.json",
             )
         ):
             self._schedule_update_notification_watch()
@@ -1563,7 +1563,7 @@ class GatewayRunner:
                             f"Hi~ I don't recognize you yet!\n\n"
                             f"Here's your pairing code: `{code}`\n\n"
                             f"Ask the bot owner to run:\n"
-                            f"`hermes pairing approve {platform_name} {code}`"
+                            f"`morpheus pairing approve {platform_name} {code}`"
                         )
                 else:
                     adapter = self.adapters.get(source.platform)
@@ -2070,7 +2070,7 @@ class GatewayRunner:
             _hyg_base_url = None
             _hyg_api_key = None
             try:
-                _hyg_cfg_path = _hermes_home / "config.yaml"
+                _hyg_cfg_path = _morpheus_home / "config.yaml"
                 if _hyg_cfg_path.exists():
                     import yaml as _hyg_yaml
                     with open(_hyg_cfg_path, encoding="utf-8") as _hyg_f:
@@ -2616,7 +2616,7 @@ class GatewayRunner:
                     {
                         "role": "session_meta",
                         "tools": tool_defs or [],
-                        "model": os.getenv("HERMES_MODEL", ""),
+                        "model": os.getenv("MORPHEUS_MODEL", ""),
                         "platform": source.platform.value if source.platform else "",
                         "timestamp": ts,
                     }
@@ -2771,7 +2771,7 @@ class GatewayRunner:
         api_key = None
 
         try:
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _morpheus_home / "config.yaml"
             if cfg_path.exists():
                 import yaml as _info_yaml
                 with open(cfg_path, encoding="utf-8") as f:
@@ -2975,7 +2975,7 @@ class GatewayRunner:
 
         # Resolve current provider from config
         current_provider = "openrouter"
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _morpheus_home / 'config.yaml'
         try:
             if config_path.exists():
                 with open(config_path, encoding="utf-8") as f:
@@ -3015,7 +3015,7 @@ class GatewayRunner:
 
         lines.append("")
         lines.append("Switch: `/model provider:model-name`")
-        lines.append("Setup: `hermes setup`")
+        lines.append("Setup: `morpheus setup`")
         return "\n".join(lines)
     
     async def _handle_personality_command(self, event: MessageEvent) -> str:
@@ -3023,7 +3023,7 @@ class GatewayRunner:
         import yaml
 
         args = event.get_command_args().strip().lower()
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _morpheus_home / 'config.yaml'
 
         try:
             if config_path.exists():
@@ -3166,7 +3166,7 @@ class GatewayRunner:
         # Save to config.yaml
         try:
             import yaml
-            config_path = _hermes_home / 'config.yaml'
+            config_path = _morpheus_home / 'config.yaml'
             user_config = {}
             if config_path.exists():
                 with open(config_path, encoding="utf-8") as f:
@@ -3475,7 +3475,7 @@ class GatewayRunner:
             # Use .mp3 extension so edge-tts conversion to opus works correctly.
             # The TTS tool may convert to .ogg — use file_path from result.
             audio_path = os.path.join(
-                tempfile.gettempdir(), "hermes_voice",
+                tempfile.gettempdir(), "morpheus_voice",
                 f"tts_reply_{_uuid.uuid4().hex[:12]}.mp3",
             )
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
@@ -3602,7 +3602,7 @@ class GatewayRunner:
         cp_cfg = {}
         try:
             import yaml as _y
-            _cfg_path = _hermes_home / "config.yaml"
+            _cfg_path = _morpheus_home / "config.yaml"
             if _cfg_path.exists():
                 with open(_cfg_path, encoding="utf-8") as _f:
                     _data = _y.safe_load(_f) or {}
@@ -3713,7 +3713,7 @@ class GatewayRunner:
             enabled_toolsets = sorted(_get_platform_tools(user_config, platform_key))
 
             pr = self._provider_routing
-            max_iterations = int(os.getenv("HERMES_MAX_ITERATIONS", "90"))
+            max_iterations = int(os.getenv("MORPHEUS_MAX_ITERATIONS", "90"))
             reasoning_config = self._load_reasoning_config()
             self._reasoning_config = reasoning_config
             turn_route = self._resolve_turn_agent_config(prompt, model, runtime_kwargs)
@@ -3823,7 +3823,7 @@ class GatewayRunner:
         import yaml
 
         args = event.get_command_args().strip().lower()
-        config_path = _hermes_home / "config.yaml"
+        config_path = _morpheus_home / "config.yaml"
         self._reasoning_config = self._load_reasoning_config()
         self._show_reasoning = self._load_show_reasoning()
 
@@ -3904,7 +3904,7 @@ class GatewayRunner:
         """
         import yaml
 
-        config_path = _hermes_home / "config.yaml"
+        config_path = _morpheus_home / "config.yaml"
 
         # --- check config gate ------------------------------------------------
         try:
@@ -4373,8 +4373,8 @@ class GatewayRunner:
     async def _handle_update_command(self, event: MessageEvent) -> str:
         """Handle /update command — update Morpheus Agent to the latest version.
 
-        Spawns ``hermes update`` in a separate systemd scope so it survives the
-        gateway restart that ``hermes update`` may trigger at the end. Marker
+        Spawns ``morpheus update`` in a separate systemd scope so it survives the
+        gateway restart that ``morpheus update`` may trigger at the end. Marker
         files are written so either the current gateway process or the next one
         can notify the user when the update finishes.
         """
@@ -4389,18 +4389,18 @@ class GatewayRunner:
         if not git_dir.exists():
             return "✗ Not a git repository — cannot update."
 
-        hermes_cmd = _resolve_hermes_bin()
-        if not hermes_cmd:
+        morpheus_cmd = _resolve_morpheus_bin()
+        if not morpheus_cmd:
             return (
-                "✗ Could not locate the `hermes` command. "
+                "✗ Could not locate the `morpheus` command. "
                 "Morpheus is running, but the update command could not find the "
                 "executable on PATH or via the current Python interpreter. "
-                "Try running `hermes update` manually in your terminal."
+                "Try running `morpheus update` manually in your terminal."
             )
 
-        pending_path = _hermes_home / ".update_pending.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _morpheus_home / ".update_pending.json"
+        output_path = _morpheus_home / ".update_output.txt"
+        exit_code_path = _morpheus_home / ".update_exit_code"
         pending = {
             "platform": event.source.platform.value,
             "chat_id": event.source.chat_id,
@@ -4410,11 +4410,11 @@ class GatewayRunner:
         pending_path.write_text(json.dumps(pending))
         exit_code_path.unlink(missing_ok=True)
 
-        # Spawn `hermes update` in a separate cgroup so it survives gateway
+        # Spawn `morpheus update` in a separate cgroup so it survives gateway
         # restart. systemd-run --user --scope creates a transient scope unit.
-        hermes_cmd_str = " ".join(shlex.quote(part) for part in hermes_cmd)
+        morpheus_cmd_str = " ".join(shlex.quote(part) for part in morpheus_cmd)
         update_cmd = (
-            f"{hermes_cmd_str} update > {shlex.quote(str(output_path))} 2>&1; "
+            f"{morpheus_cmd_str} update > {shlex.quote(str(output_path))} 2>&1; "
             f"status=$?; printf '%s' \"$status\" > {shlex.quote(str(exit_code_path))}"
         )
         try:
@@ -4422,7 +4422,7 @@ class GatewayRunner:
             if systemd_run:
                 subprocess.Popen(
                     [systemd_run, "--user", "--scope",
-                     "--unit=hermes-update", "--",
+                     "--unit=morpheus-update", "--",
                      "bash", "-c", update_cmd],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
@@ -4462,10 +4462,10 @@ class GatewayRunner:
         poll_interval: float = 2.0,
         timeout: float = 1800.0,
     ) -> None:
-        """Wait for ``hermes update`` to finish, then send its notification."""
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        """Wait for ``morpheus update`` to finish, then send its notification."""
+        pending_path = _morpheus_home / ".update_pending.json"
+        claimed_path = _morpheus_home / ".update_pending.claimed.json"
+        exit_code_path = _morpheus_home / ".update_exit_code"
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
 
@@ -4489,10 +4489,10 @@ class GatewayRunner:
         import json
         import re as _re
 
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _morpheus_home / ".update_pending.json"
+        claimed_path = _morpheus_home / ".update_pending.claimed.json"
+        output_path = _morpheus_home / ".update_output.txt"
+        exit_code_path = _morpheus_home / ".update_exit_code"
 
         if not pending_path.exists() and not claimed_path.exists():
             return False
@@ -4546,7 +4546,7 @@ class GatewayRunner:
                     if exit_code == 0:
                         msg = "✅ Morpheus update finished successfully."
                     else:
-                        msg = "❌ Morpheus update failed. Check the gateway logs or run `hermes update` manually for details."
+                        msg = "❌ Morpheus update failed. Check the gateway logs or run `morpheus update` manually for details."
                 await adapter.send(chat_id, msg)
                 logger.info(
                     "Sent post-update notification to %s:%s (exit=%s)",
@@ -4567,16 +4567,16 @@ class GatewayRunner:
 
     def _set_session_env(self, context: SessionContext) -> None:
         """Set environment variables for the current session."""
-        os.environ["HERMES_SESSION_PLATFORM"] = context.source.platform.value
-        os.environ["HERMES_SESSION_CHAT_ID"] = context.source.chat_id
+        os.environ["MORPHEUS_SESSION_PLATFORM"] = context.source.platform.value
+        os.environ["MORPHEUS_SESSION_CHAT_ID"] = context.source.chat_id
         if context.source.chat_name:
-            os.environ["HERMES_SESSION_CHAT_NAME"] = context.source.chat_name
+            os.environ["MORPHEUS_SESSION_CHAT_NAME"] = context.source.chat_name
         if context.source.thread_id:
-            os.environ["HERMES_SESSION_THREAD_ID"] = str(context.source.thread_id)
+            os.environ["MORPHEUS_SESSION_THREAD_ID"] = str(context.source.thread_id)
     
     def _clear_session_env(self) -> None:
         """Clear session environment variables."""
-        for var in ["HERMES_SESSION_PLATFORM", "HERMES_SESSION_CHAT_ID", "HERMES_SESSION_CHAT_NAME", "HERMES_SESSION_THREAD_ID"]:
+        for var in ["MORPHEUS_SESSION_PLATFORM", "MORPHEUS_SESSION_CHAT_ID", "MORPHEUS_SESSION_CHAT_NAME", "MORPHEUS_SESSION_THREAD_ID"]:
             if var in os.environ:
                 del os.environ[var]
     
@@ -4916,7 +4916,7 @@ class GatewayRunner:
             _raw_tp = "off"
         progress_mode = (
             _raw_tp
-            or os.getenv("HERMES_TOOL_PROGRESS_MODE")
+            or os.getenv("MORPHEUS_TOOL_PROGRESS_MODE")
             or "all"
         )
         tool_progress_enabled = progress_mode != "off"
@@ -5115,10 +5115,10 @@ class GatewayRunner:
         def run_sync():
             # Pass session_key to process registry via env var so background
             # processes can be mapped back to this gateway session
-            os.environ["HERMES_SESSION_KEY"] = session_key or ""
+            os.environ["MORPHEUS_SESSION_KEY"] = session_key or ""
 
             # Read from env var or use default (same as CLI)
-            max_iterations = int(os.getenv("HERMES_MAX_ITERATIONS", "90"))
+            max_iterations = int(os.getenv("MORPHEUS_MAX_ITERATIONS", "90"))
             
             # Map platform enum to the platform hint key the agent understands.
             # Platform.LOCAL ("local") maps to "cli"; others pass through as-is.
@@ -5642,7 +5642,7 @@ def _start_cron_ticker(stop_event: threading.Event, adapters=None, interval: int
     Background thread that ticks the cron scheduler at a regular interval.
     
     Runs inside the gateway process so cronjobs fire automatically without
-    needing a separate `hermes cron daemon` or system cron entry.
+    needing a separate `morpheus cron daemon` or system cron entry.
 
     Also refreshes the channel directory every 5 minutes and prunes the
     image/audio/document cache once per hour.
@@ -5756,17 +5756,17 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             except Exception:
                 pass
         else:
-            hermes_home = str(get_morpheus_home())
+            morpheus_home = str(get_morpheus_home())
             logger.error(
                 "Another gateway instance is already running (PID %d, MORPHEUS_HOME=%s). "
-                "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",
-                existing_pid, hermes_home,
+                "Use 'morpheus gateway restart' to replace it, or 'morpheus gateway stop' first.",
+                existing_pid, morpheus_home,
             )
             print(
                 f"\n❌ Gateway already running (PID {existing_pid}).\n"
-                f"   Use 'hermes gateway restart' to replace it,\n"
-                f"   or 'hermes gateway stop' to kill it first.\n"
-                f"   Or use 'hermes gateway run --replace' to auto-replace.\n"
+                f"   Use 'morpheus gateway restart' to replace it,\n"
+                f"   or 'morpheus gateway stop' to kill it first.\n"
+                f"   Or use 'morpheus gateway run --replace' to auto-replace.\n"
             )
             return False
 
@@ -5778,7 +5778,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
         pass
 
     # Configure rotating file log so gateway output is persisted for debugging
-    log_dir = _hermes_home / 'logs'
+    log_dir = _morpheus_home / 'logs'
     log_dir.mkdir(parents=True, exist_ok=True)
     file_handler = RotatingFileHandler(
         log_dir / 'gateway.log',

@@ -52,9 +52,9 @@ class TestPluginDiscovery:
 
     def test_discover_user_plugins(self, tmp_path, monkeypatch):
         """Plugins in ~/.morpheus/plugins/ are discovered."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(plugins_dir, "hello_plugin")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -67,7 +67,7 @@ class TestPluginDiscovery:
         project_dir = tmp_path / "project"
         project_dir.mkdir()
         monkeypatch.chdir(project_dir)
-        monkeypatch.setenv("HERMES_ENABLE_PROJECT_PLUGINS", "true")
+        monkeypatch.setenv("MORPHEUS_ENABLE_PROJECT_PLUGINS", "true")
         plugins_dir = project_dir / ".morpheus" / "plugins"
         _make_plugin_dir(plugins_dir, "proj_plugin")
 
@@ -92,9 +92,9 @@ class TestPluginDiscovery:
 
     def test_discover_is_idempotent(self, tmp_path, monkeypatch):
         """Calling discover_and_load() twice does not duplicate plugins."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(plugins_dir, "once_plugin")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -104,9 +104,9 @@ class TestPluginDiscovery:
 
     def test_discover_skips_dir_without_manifest(self, tmp_path, monkeypatch):
         """Directories without plugin.yaml are silently skipped."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         (plugins_dir / "no_manifest").mkdir(parents=True)
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -115,7 +115,7 @@ class TestPluginDiscovery:
 
     def test_entry_points_scanned(self, tmp_path, monkeypatch):
         """Entry-point based plugins are discovered (mocked)."""
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         fake_module = types.ModuleType("fake_ep_plugin")
         fake_module.register = lambda ctx: None  # type: ignore[attr-defined]
@@ -146,11 +146,11 @@ class TestPluginLoading:
 
     def test_load_missing_init(self, tmp_path, monkeypatch):
         """Plugin dir without __init__.py records an error."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         plugin_dir = plugins_dir / "bad_plugin"
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "plugin.yaml").write_text(yaml.dump({"name": "bad_plugin"}))
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -161,12 +161,12 @@ class TestPluginLoading:
 
     def test_load_missing_register_fn(self, tmp_path, monkeypatch):
         """Plugin without register() function records an error."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         plugin_dir = plugins_dir / "no_reg"
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "plugin.yaml").write_text(yaml.dump({"name": "no_reg"}))
         (plugin_dir / "__init__.py").write_text("# no register function\n")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -176,18 +176,18 @@ class TestPluginLoading:
         assert "no register()" in mgr._plugins["no_reg"].error
 
     def test_load_registers_namespace_module(self, tmp_path, monkeypatch):
-        """Directory plugins are importable under hermes_plugins.<name>."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        """Directory plugins are importable under morpheus_plugins.<name>."""
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(plugins_dir, "ns_plugin")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         # Clean up any prior namespace module
-        sys.modules.pop("hermes_plugins.ns_plugin", None)
+        sys.modules.pop("morpheus_plugins.ns_plugin", None)
 
         mgr = PluginManager()
         mgr.discover_and_load()
 
-        assert "hermes_plugins.ns_plugin" in sys.modules
+        assert "morpheus_plugins.ns_plugin" in sys.modules
 
 
 # ── TestPluginHooks ────────────────────────────────────────────────────────
@@ -198,12 +198,12 @@ class TestPluginHooks:
 
     def test_register_and_invoke_hook(self, tmp_path, monkeypatch):
         """Registered hooks are called on invoke_hook()."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(
             plugins_dir, "hook_plugin",
             register_body='ctx.register_hook("pre_tool_call", lambda **kw: None)',
         )
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -213,12 +213,12 @@ class TestPluginHooks:
 
     def test_hook_exception_does_not_propagate(self, tmp_path, monkeypatch):
         """A hook callback that raises does NOT crash the caller."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(
             plugins_dir, "bad_hook",
             register_body='ctx.register_hook("post_tool_call", lambda **kw: 1/0)',
         )
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -228,12 +228,12 @@ class TestPluginHooks:
 
     def test_invalid_hook_name_warns(self, tmp_path, monkeypatch, caplog):
         """Registering an unknown hook name logs a warning."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(
             plugins_dir, "warn_plugin",
             register_body='ctx.register_hook("on_banana", lambda **kw: None)',
         )
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         with caplog.at_level(logging.WARNING, logger="morpheus_cli.plugins"):
             mgr = PluginManager()
@@ -250,7 +250,7 @@ class TestPluginContext:
 
     def test_register_tool_adds_to_registry(self, tmp_path, monkeypatch):
         """PluginContext.register_tool() puts the tool in the global registry."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         plugin_dir = plugins_dir / "tool_plugin"
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "plugin.yaml").write_text(yaml.dump({"name": "tool_plugin"}))
@@ -263,7 +263,7 @@ class TestPluginContext:
             '        handler=lambda args, **kw: "echo",\n'
             '    )\n'
         )
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -284,7 +284,7 @@ class TestPluginToolVisibility:
         """Plugin tools are included when their toolset is in enabled_toolsets."""
         import morpheus_cli.plugins as plugins_mod
 
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         plugin_dir = plugins_dir / "vis_plugin"
         plugin_dir.mkdir(parents=True)
         (plugin_dir / "plugin.yaml").write_text(yaml.dump({"name": "vis_plugin"}))
@@ -297,7 +297,7 @@ class TestPluginToolVisibility:
             '        handler=lambda args, **kw: "ok",\n'
             '    )\n'
         )
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -334,10 +334,10 @@ class TestPluginManagerList:
 
     def test_list_returns_sorted(self, tmp_path, monkeypatch):
         """list_plugins() returns results sorted by name."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(plugins_dir, "zulu")
         _make_plugin_dir(plugins_dir, "alpha")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()
@@ -348,10 +348,10 @@ class TestPluginManagerList:
 
     def test_list_with_plugins(self, tmp_path, monkeypatch):
         """list_plugins() returns info dicts for each discovered plugin."""
-        plugins_dir = tmp_path / "hermes_test" / "plugins"
+        plugins_dir = tmp_path / "morpheus_test" / "plugins"
         _make_plugin_dir(plugins_dir, "alpha")
         _make_plugin_dir(plugins_dir, "beta")
-        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "hermes_test"))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path / "morpheus_test"))
 
         mgr = PluginManager()
         mgr.discover_and_load()

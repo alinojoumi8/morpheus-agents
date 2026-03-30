@@ -370,10 +370,10 @@ def telegram_bot_commands() -> list[tuple[str, str]]:
 
 
 def slack_subcommand_map() -> dict[str, str]:
-    """Return subcommand -> /command mapping for Slack /hermes handler.
+    """Return subcommand -> /command mapping for Slack /morpheus handler.
 
-    Maps both canonical names and aliases so /hermes bg do stuff works
-    the same as /hermes background do stuff.
+    Maps both canonical names and aliases so /morpheus bg do stuff works
+    the same as /morpheus background do stuff.
     """
     overrides = _resolve_config_gates()
     mapping: dict[str, str] = {}

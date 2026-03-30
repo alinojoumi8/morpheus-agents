@@ -155,7 +155,7 @@ def _handle_send(args):
             return json.dumps({
                 "error": f"No home channel set for {platform_name} to determine where to send the message. "
                 f"Either specify a channel directly with '{platform_name}:CHANNEL_NAME', "
-                f"or set a home channel via: hermes config set {platform_name.upper()}_HOME_CHANNEL <channel_id>"
+                f"or set a home channel via: morpheus config set {platform_name.upper()}_HOME_CHANNEL <channel_id>"
             })
 
     duplicate_skip = _maybe_skip_cron_duplicate_send(platform_name, chat_id, thread_id)
@@ -181,7 +181,7 @@ def _handle_send(args):
         if isinstance(result, dict) and result.get("success") and mirror_text:
             try:
                 from gateway.mirror import mirror_to_session
-                source_label = os.getenv("HERMES_SESSION_PLATFORM", "cli")
+                source_label = os.getenv("MORPHEUS_SESSION_PLATFORM", "cli")
                 if mirror_to_session(platform_name, chat_id, mirror_text, source_label=source_label, thread_id=thread_id):
                     result["mirrored"] = True
             except Exception:
@@ -224,11 +224,11 @@ def _describe_media_for_mirror(media_files):
 
 def _get_cron_auto_delivery_target():
     """Return the cron scheduler's auto-delivery target for the current run, if any."""
-    platform = os.getenv("HERMES_CRON_AUTO_DELIVER_PLATFORM", "").strip().lower()
-    chat_id = os.getenv("HERMES_CRON_AUTO_DELIVER_CHAT_ID", "").strip()
+    platform = os.getenv("MORPHEUS_CRON_AUTO_DELIVER_PLATFORM", "").strip().lower()
+    chat_id = os.getenv("MORPHEUS_CRON_AUTO_DELIVER_CHAT_ID", "").strip()
     if not platform or not chat_id:
         return None
-    thread_id = os.getenv("HERMES_CRON_AUTO_DELIVER_THREAD_ID", "").strip() or None
+    thread_id = os.getenv("MORPHEUS_CRON_AUTO_DELIVER_THREAD_ID", "").strip() or None
     return {
         "platform": platform,
         "chat_id": chat_id,
@@ -668,7 +668,7 @@ async def _send_sms(auth_token, chat_id, message):
 
 def _check_send_message():
     """Gate send_message on gateway running (always available on messaging platforms)."""
-    platform = os.getenv("HERMES_SESSION_PLATFORM", "")
+    platform = os.getenv("MORPHEUS_SESSION_PLATFORM", "")
     if platform and platform != "local":
         return True
     try:

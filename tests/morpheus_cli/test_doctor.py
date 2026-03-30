@@ -78,18 +78,18 @@ class TestHonchoDoctorConfigDetection:
 def test_run_doctor_sets_interactive_env_for_tool_checks(monkeypatch, tmp_path):
     """Doctor should present CLI-gated tools as available in CLI context."""
     project_root = tmp_path / "project"
-    hermes_home = tmp_path / ".morpheus"
+    morpheus_home = tmp_path / ".morpheus"
     project_root.mkdir()
-    hermes_home.mkdir()
+    morpheus_home.mkdir()
 
     monkeypatch.setattr(doctor_mod, "PROJECT_ROOT", project_root)
-    monkeypatch.setattr(doctor_mod, "MORPHEUS_HOME", hermes_home)
-    monkeypatch.delenv("HERMES_INTERACTIVE", raising=False)
+    monkeypatch.setattr(doctor_mod, "MORPHEUS_HOME", morpheus_home)
+    monkeypatch.delenv("MORPHEUS_INTERACTIVE", raising=False)
 
     seen = {}
 
     def fake_check_tool_availability(*args, **kwargs):
-        seen["interactive"] = os.getenv("HERMES_INTERACTIVE")
+        seen["interactive"] = os.getenv("MORPHEUS_INTERACTIVE")
         raise SystemExit(0)
 
     fake_model_tools = types.SimpleNamespace(
@@ -105,7 +105,7 @@ def test_run_doctor_sets_interactive_env_for_tool_checks(monkeypatch, tmp_path):
 
 
 def test_check_gateway_service_linger_warns_when_disabled(monkeypatch, tmp_path, capsys):
-    unit_path = tmp_path / "hermes-gateway.service"
+    unit_path = tmp_path / "morpheus-gateway.service"
     unit_path.write_text("[Unit]\n")
 
     monkeypatch.setattr(gateway_cli, "is_linux", lambda: True)

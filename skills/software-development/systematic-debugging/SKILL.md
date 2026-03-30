@@ -5,7 +5,7 @@ version: 1.1.0
 author: Morpheus Agent (adapted from obra/superpowers)
 license: MIT
 metadata:
-  hermes:
+  morpheus:
     tags: [debugging, troubleshooting, problem-solving, root-cause, investigation]
     related_skills: [test-driven-development, writing-plans, subagent-driven-development]
 ---

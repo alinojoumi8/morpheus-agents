@@ -15,7 +15,7 @@ Every Telegram bot requires an API token issued by [@BotFather](https://t.me/Bot
 1. Open Telegram and search for **@BotFather**, or visit [t.me/BotFather](https://t.me/BotFather)
 2. Send `/newbot`
 3. Choose a **display name** (e.g., "Morpheus Agent") — this can be anything
-4. Choose a **username** — this must be unique and end in `bot` (e.g., `my_hermes_bot`)
+4. Choose a **username** — this must be unique and end in `bot` (e.g., `my_morpheus_bot`)
 5. BotFather replies with your **API token**. It looks like this:
 
 ```
@@ -90,7 +90,7 @@ Save this number; you'll need it for the next step.
 ### Option A: Interactive Setup (Recommended)
 
 ```bash
-hermes gateway setup
+morpheus gateway setup
 ```
 
 Select **Telegram** when prompted. The wizard asks for your bot token and allowed user IDs, then writes the configuration for you.
@@ -107,7 +107,7 @@ TELEGRAM_ALLOWED_USERS=123456789    # Comma-separated for multiple users
 ### Start the Gateway
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 The bot should come online within seconds. Send it a message on Telegram to verify.
@@ -161,7 +161,7 @@ Configure the TTS provider in your `config.yaml` under the `tts.provider` key.
 Morpheus Agent works in Telegram group chats with a few considerations:
 
 - **Privacy mode** determines what messages the bot can see (see [Step 3](#step-3-privacy-mode-critical-for-groups))
-- When privacy mode is on, **@mention the bot** (e.g., `@my_hermes_bot what's the weather?`) or **reply to its messages** to interact
+- When privacy mode is on, **@mention the bot** (e.g., `@my_morpheus_bot what's the weather?`) or **reply to its messages** to interact
 - When privacy mode is off (or bot is admin), the bot sees all messages and can participate naturally
 - `TELEGRAM_ALLOWED_USERS` still applies — only authorized users can trigger the bot, even in groups
 
@@ -236,7 +236,7 @@ Topics created outside of the config (e.g., by manually calling the Telegram API
 
 | Problem | Solution |
 |---------|----------|
-| Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `hermes gateway` logs for errors. |
+| Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `morpheus gateway` logs for errors. |
 | Bot responds with "unauthorized" | Your user ID is not in `TELEGRAM_ALLOWED_USERS`. Double-check with @userinfobot. |
 | Bot ignores group messages | Privacy mode is likely on. Disable it (Step 3) or make the bot a group admin. **Remember to remove and re-add the bot after changing privacy.** |
 | Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.morpheus/.env`. |

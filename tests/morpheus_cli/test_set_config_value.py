@@ -10,7 +10,7 @@ from morpheus_cli.config import set_config_value
 
 
 @pytest.fixture(autouse=True)
-def _isolated_hermes_home(tmp_path):
+def _isolated_morpheus_home(tmp_path):
     """Point MORPHEUS_HOME at a temp dir so tests never touch real config."""
     env_file = tmp_path / ".env"
     env_file.touch()
@@ -51,12 +51,12 @@ class TestExplicitAllowlist:
         "SLACK_BOT_TOKEN",
         "SLACK_APP_TOKEN",
     ])
-    def test_explicit_key_routes_to_env(self, key, _isolated_hermes_home):
+    def test_explicit_key_routes_to_env(self, key, _isolated_morpheus_home):
         set_config_value(key, "test-value-123")
-        env_content = _read_env(_isolated_hermes_home)
+        env_content = _read_env(_isolated_morpheus_home)
         assert f"{key}=test-value-123" in env_content
         # Must NOT appear in config.yaml
-        assert key not in _read_config(_isolated_hermes_home)
+        assert key not in _read_config(_isolated_morpheus_home)
 
 
 # ---------------------------------------------------------------------------
@@ -73,21 +73,21 @@ class TestCatchAllPatterns:
         "MY_CUSTOM_TOKEN",
         "WHATSAPP_BOT_TOKEN",
     ])
-    def test_api_key_suffix_routes_to_env(self, key, _isolated_hermes_home):
+    def test_api_key_suffix_routes_to_env(self, key, _isolated_morpheus_home):
         set_config_value(key, "secret-456")
-        env_content = _read_env(_isolated_hermes_home)
+        env_content = _read_env(_isolated_morpheus_home)
         assert f"{key}=secret-456" in env_content
-        assert key not in _read_config(_isolated_hermes_home)
+        assert key not in _read_config(_isolated_morpheus_home)
 
-    def test_case_insensitive(self, _isolated_hermes_home):
+    def test_case_insensitive(self, _isolated_morpheus_home):
         """Keys should be uppercased regardless of input casing."""
         set_config_value("openai_api_key", "sk-test")
-        env_content = _read_env(_isolated_hermes_home)
+        env_content = _read_env(_isolated_morpheus_home)
         assert "OPENAI_API_KEY=sk-test" in env_content
 
-    def test_terminal_ssh_prefix_routes_to_env(self, _isolated_hermes_home):
+    def test_terminal_ssh_prefix_routes_to_env(self, _isolated_morpheus_home):
         set_config_value("TERMINAL_SSH_PORT", "2222")
-        env_content = _read_env(_isolated_hermes_home)
+        env_content = _read_env(_isolated_morpheus_home)
         assert "TERMINAL_SSH_PORT=2222" in env_content
 
 
@@ -98,28 +98,28 @@ class TestCatchAllPatterns:
 class TestConfigYamlRouting:
     """Regular config keys should go to config.yaml, NOT .env."""
 
-    def test_simple_key(self, _isolated_hermes_home):
+    def test_simple_key(self, _isolated_morpheus_home):
         set_config_value("model", "gpt-4o")
-        config = _read_config(_isolated_hermes_home)
+        config = _read_config(_isolated_morpheus_home)
         assert "gpt-4o" in config
-        assert "model" not in _read_env(_isolated_hermes_home)
+        assert "model" not in _read_env(_isolated_morpheus_home)
 
-    def test_nested_key(self, _isolated_hermes_home):
+    def test_nested_key(self, _isolated_morpheus_home):
         set_config_value("terminal.backend", "docker")
-        config = _read_config(_isolated_hermes_home)
+        config = _read_config(_isolated_morpheus_home)
         assert "docker" in config
-        assert "terminal" not in _read_env(_isolated_hermes_home)
+        assert "terminal" not in _read_env(_isolated_morpheus_home)
 
-    def test_terminal_image_goes_to_config(self, _isolated_hermes_home):
+    def test_terminal_image_goes_to_config(self, _isolated_morpheus_home):
         """TERMINAL_DOCKER_IMAGE doesn't match _API_KEY or _TOKEN, so config.yaml."""
         set_config_value("terminal.docker_image", "python:3.12")
-        config = _read_config(_isolated_hermes_home)
+        config = _read_config(_isolated_morpheus_home)
         assert "python:3.12" in config
 
-    def test_terminal_docker_cwd_mount_flag_goes_to_config_and_env(self, _isolated_hermes_home):
+    def test_terminal_docker_cwd_mount_flag_goes_to_config_and_env(self, _isolated_morpheus_home):
         set_config_value("terminal.docker_mount_cwd_to_workspace", "true")
-        config = _read_config(_isolated_hermes_home)
-        env_content = _read_env(_isolated_hermes_home)
+        config = _read_config(_isolated_morpheus_home)
+        env_content = _read_env(_isolated_morpheus_home)
         assert "docker_mount_cwd_to_workspace: 'true'" in config or "docker_mount_cwd_to_workspace: true" in config
         assert (
             "TERMINAL_DOCKER_MOUNT_CWD_TO_WORKSPACE=true" in env_content

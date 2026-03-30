@@ -367,7 +367,7 @@ Cache pricing entries locally with:
 
 - startup warm cache
 - background refresh every 6 to 24 hours depending on source
-- manual `hermes pricing sync`
+- manual `morpheus pricing sync`
 
 ## Reconciliation Architecture
 

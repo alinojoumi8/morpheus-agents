@@ -40,7 +40,7 @@ SKILL.md Format (YAML Frontmatter, agentskills.io compatible):
       commands: [curl, jq]        #   Command checks remain advisory only.
     compatibility: Requires X     # Optional (agentskills.io)
     metadata:                     # Optional, arbitrary key-value (agentskills.io)
-      hermes:
+      morpheus:
         tags: [fine-tuning, llm]
         related_skills: [peft, lora]
     ---
@@ -331,9 +331,9 @@ def _capture_required_environment_variables(
 
 
 def _is_gateway_surface() -> bool:
-    if os.getenv("HERMES_GATEWAY_SESSION"):
+    if os.getenv("MORPHEUS_GATEWAY_SESSION"):
         return True
-    return bool(os.getenv("HERMES_SESSION_PLATFORM"))
+    return bool(os.getenv("MORPHEUS_SESSION_PLATFORM"))
 
 
 def _get_terminal_backend_name() -> str:
@@ -488,7 +488,7 @@ def _is_skill_disabled(name: str, platform: str = None) -> bool:
         from morpheus_cli.config import load_config
         config = load_config()
         skills_cfg = config.get("skills", {})
-        resolved_platform = platform or os.getenv("HERMES_PLATFORM")
+        resolved_platform = platform or os.getenv("MORPHEUS_PLATFORM")
         if resolved_platform:
             platform_disabled = skills_cfg.get("platform_disabled", {}).get(resolved_platform)
             if platform_disabled is not None:
@@ -503,7 +503,7 @@ def _find_all_skills(*, skip_disabled: bool = False) -> List[Dict[str, Any]]:
 
     Args:
         skip_disabled: If True, return ALL skills regardless of disabled
-            state (used by ``hermes skills`` config UI). Default False
+            state (used by ``morpheus skills`` config UI). Default False
             filters out disabled skills.
 
     Returns:
@@ -875,7 +875,7 @@ def skill_view(name: str, file_path: str = None, task_id: str = None) -> str:
                     "success": False,
                     "error": (
                         f"Skill '{resolved_name}' is disabled. "
-                        "Enable it with `hermes skills` or inspect the files directly on disk."
+                        "Enable it with `morpheus skills` or inspect the files directly on disk."
                     ),
                 },
                 ensure_ascii=False,
@@ -1041,15 +1041,15 @@ def skill_view(name: str, file_path: str = None, task_id: str = None) -> str:
                     )
 
         # Read tags/related_skills with backward compat:
-        # Check metadata.hermes.* first (agentskills.io convention), fall back to top-level
-        hermes_meta = {}
+        # Check metadata.morpheus.* first (agentskills.io convention), fall back to top-level
+        morpheus_meta = {}
         metadata = frontmatter.get("metadata")
         if isinstance(metadata, dict):
-            hermes_meta = metadata.get("morpheus", {}) or {}
+            morpheus_meta = metadata.get("morpheus", {}) or {}
 
-        tags = _parse_tags(hermes_meta.get("tags") or frontmatter.get("tags", ""))
+        tags = _parse_tags(morpheus_meta.get("tags") or frontmatter.get("tags", ""))
         related_skills = _parse_tags(
-            hermes_meta.get("related_skills") or frontmatter.get("related_skills", "")
+            morpheus_meta.get("related_skills") or frontmatter.get("related_skills", "")
         )
 
         # Build linked files structure for clear discovery

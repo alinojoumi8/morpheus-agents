@@ -97,7 +97,7 @@ AUTHOR_MAP = {
     "johnsonblake1@gmail.com": "blakejohnson",
     "bryan@intertwinesys.com": "bryanyoung",
     "christo.mitov@gmail.com": "christomitov",
-    "hermes@nousresearch.com": "NousResearch",
+    "morpheus@nousresearch.com": "NousResearch",
     "openclaw@sparklab.ai": "openclaw",
     "semihcvlk53@gmail.com": "Himess",
     "erenkar950@gmail.com": "erenkarakus",

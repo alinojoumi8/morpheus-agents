@@ -3,7 +3,7 @@
 Standalone Web Tools Module
 
 This module provides generic web tools that work with multiple backend providers.
-Backend is selected during ``hermes tools`` setup (web.backend in config.yaml).
+Backend is selected during ``morpheus tools`` setup (web.backend in config.yaml).
 
 Available tools:
 - web_search_tool: Search the web for information
@@ -69,7 +69,7 @@ def _load_web_config() -> dict:
 def _get_backend() -> str:
     """Determine which web backend to use.
 
-    Reads ``web.backend`` from config.yaml (set by ``hermes tools``).
+    Reads ``web.backend`` from config.yaml (set by ``morpheus tools``).
     Falls back to whichever API key is present for users who configured
     keys manually without running setup.
     """

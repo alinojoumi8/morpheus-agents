@@ -145,18 +145,18 @@ inappropriate formatting (e.g., markdown on platforms that don't render it).
 Add a named toolset for your platform:
 
 ```python
-"hermes-your-platform": {
+"morpheus-your-platform": {
     "description": "Your Platform bot toolset",
-    "tools": _HERMES_CORE_TOOLS,
+    "tools": _MORPHEUS_CORE_TOOLS,
     "includes": []
 },
 ```
 
-And add it to the `hermes-gateway` composite:
+And add it to the `morpheus-gateway` composite:
 
 ```python
-"hermes-gateway": {
-    "includes": [..., "hermes-your-platform"]
+"morpheus-gateway": {
+    "includes": [..., "morpheus-your-platform"]
 }
 ```
 

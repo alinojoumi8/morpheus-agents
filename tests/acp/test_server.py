@@ -22,7 +22,7 @@ from acp.schema import (
     TextContentBlock,
     Usage,
 )
-from acp_adapter.server import MorpheusACPAgent, HERMES_VERSION
+from acp_adapter.server import MorpheusACPAgent, MORPHEUS_VERSION
 from acp_adapter.session import SessionManager
 from morpheus_state import SessionDB
 
@@ -57,7 +57,7 @@ class TestInitialize:
         assert resp.agent_info is not None
         assert isinstance(resp.agent_info, Implementation)
         assert resp.agent_info.name == "morpheus-agent"
-        assert resp.agent_info.version == HERMES_VERSION
+        assert resp.agent_info.version == MORPHEUS_VERSION
 
     @pytest.mark.asyncio
     async def test_initialize_returns_capabilities(self, agent):
@@ -354,7 +354,7 @@ class TestSlashCommands:
     def test_version(self, agent, mock_manager):
         state = self._make_state(mock_manager)
         result = agent._handle_slash_command("/version", state)
-        assert HERMES_VERSION in result
+        assert MORPHEUS_VERSION in result
 
     def test_unknown_command_returns_none(self, agent, mock_manager):
         state = self._make_state(mock_manager)

@@ -83,7 +83,7 @@ The foundation from `atroposlib`. Provides:
 
 ### MorpheusAgentBaseEnv
 
-The morpheus-agent layer (`environments/hermes_base_env.py`). Adds:
+The morpheus-agent layer (`environments/morpheus_base_env.py`). Adds:
 - **Terminal backend configuration** — sets `TERMINAL_ENV` for sandboxed execution (local, Docker, Modal, Daytona, SSH, Singularity)
 - **Tool resolution** — `_resolve_tools_for_group()` calls morpheus-agent's `get_tool_definitions()` to get the right tool schemas based on enabled/disabled toolsets
 - **Agent loop integration** — `collect_trajectory()` runs `MorpheusAgentLoop` and scores the result
@@ -168,11 +168,11 @@ For **Phase 2** (VLLM ManagedServer), the server returns raw text without struct
 ```python
 from environments.tool_call_parsers import get_parser
 
-parser = get_parser("hermes")  # or "mistral", "llama3_json", "qwen", "deepseek_v3", etc.
+parser = get_parser("morpheus")  # or "mistral", "llama3_json", "qwen", "deepseek_v3", etc.
 content, tool_calls = parser.parse(raw_model_output)
 ```
 
-Available parsers: `hermes`, `mistral`, `llama3_json`, `qwen`, `qwen3_coder`, `deepseek_v3`, `deepseek_v3_1`, `kimi_k2`, `longcat`, `glm45`, `glm47`.
+Available parsers: `morpheus`, `mistral`, `llama3_json`, `qwen`, `qwen3_coder`, `deepseek_v3`, `deepseek_v3_1`, `kimi_k2`, `longcat`, `glm45`, `glm47`.
 
 In Phase 1 (OpenAI server type), parsers are not needed — the server handles tool call parsing natively.
 
@@ -278,7 +278,7 @@ python environments/terminal_test_env/terminal_test_env.py serve
 SWE-bench style training environment. The model gets a coding task, uses terminal + file + web tools to solve it, and the reward function runs tests in the same Modal sandbox.
 
 ```bash
-python environments/hermes_swe_env/hermes_swe_env.py serve \
+python environments/morpheus_swe_env/morpheus_swe_env.py serve \
     --openai.model_name YourModel \
     --env.dataset_name bigcode/humanevalpack \
     --env.terminal_backend modal
@@ -321,7 +321,7 @@ Connects the environment to a running Atropos API server (`run-api`). Used durin
 run-api
 
 # Terminal 2: Start the environment
-python environments/hermes_swe_env/hermes_swe_env.py serve \
+python environments/morpheus_swe_env/morpheus_swe_env.py serve \
     --openai.model_name YourModel
 ```
 
@@ -342,14 +342,14 @@ Uses ManagedServer for exact token IDs + logprobs via `/generate`. A client-side
 
 - **Use for**: full RL training with GRPO/PPO
 - **Real tokens**, masks, and logprobs flow through the pipeline
-- Set `tool_call_parser` in config to match your model's format (e.g., `"hermes"`, `"qwen"`, `"mistral"`)
+- Set `tool_call_parser` in config to match your model's format (e.g., `"morpheus"`, `"qwen"`, `"mistral"`)
 
 ## Creating Environments
 
 ### Training Environment
 
 ```python
-from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
+from environments.morpheus_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 from atroposlib.envs.server_handling.server_manager import APIServerConfig
 
 class MyEnvConfig(MorpheusAgentEnvConfig):
@@ -420,7 +420,7 @@ See `environments/benchmarks/yc_bench/yc_bench_env.py` for a clean, well-documen
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `enabled_toolsets` | `List[str]` | `None` (all) | Which hermes toolsets to enable |
+| `enabled_toolsets` | `List[str]` | `None` (all) | Which morpheus toolsets to enable |
 | `disabled_toolsets` | `List[str]` | `None` | Toolsets to filter out |
 | `distribution` | `str` | `None` | Probabilistic toolset distribution name |
 | `max_agent_turns` | `int` | `30` | Max LLM calls per rollout |
@@ -431,7 +431,7 @@ See `environments/benchmarks/yc_bench/yc_bench_env.py` for a clean, well-documen
 | `terminal_lifetime` | `int` | `3600` | Max sandbox lifetime |
 | `dataset_name` | `str` | `None` | HuggingFace dataset identifier |
 | `tool_pool_size` | `int` | `128` | Thread pool size for tool execution |
-| `tool_call_parser` | `str` | `"hermes"` | Parser for Phase 2 raw output |
+| `tool_call_parser` | `str` | `"morpheus"` | Parser for Phase 2 raw output |
 | `extra_body` | `Dict` | `None` | Extra params for OpenAI API (e.g., OpenRouter provider prefs) |
 | `eval_handling` | `Enum` | `STOP_TRAIN` | `STOP_TRAIN`, `LIMIT_TRAIN`, `NONE` |
 
@@ -497,13 +497,13 @@ See [RL Training](/user-guide/features/rl-training) for the agent-driven RL work
 
 ```
 environments/
-├── hermes_base_env.py          # Abstract base class (MorpheusAgentBaseEnv)
+├── morpheus_base_env.py          # Abstract base class (MorpheusAgentBaseEnv)
 ├── agent_loop.py               # Multi-turn agent engine (MorpheusAgentLoop)
 ├── tool_context.py             # Per-rollout tool access for reward functions
 ├── patches.py                  # Async-safety patches for Modal backend
 │
 ├── tool_call_parsers/          # Phase 2 client-side parsers
-│   ├── hermes_parser.py        # Morpheus/ChatML <tool_call> format
+│   ├── morpheus_parser.py        # Morpheus/ChatML <tool_call> format
 │   ├── mistral_parser.py       # Mistral [TOOL_CALLS] format
 │   ├── llama_parser.py         # Llama 3 JSON tool calling
 │   ├── qwen_parser.py          # Qwen format
@@ -511,7 +511,7 @@ environments/
 │   └── ...                     # + kimi_k2, longcat, glm45/47, etc.
 │
 ├── terminal_test_env/          # Stack validation (inline tasks)
-├── hermes_swe_env/             # SWE-bench training environment
+├── morpheus_swe_env/             # SWE-bench training environment
 │
 └── benchmarks/                 # Evaluation benchmarks
     ├── terminalbench_2/        # 89 terminal tasks, Modal sandboxes

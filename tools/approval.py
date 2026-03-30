@@ -51,8 +51,8 @@ DANGEROUS_PATTERNS = [
     (r'\bfind\b.*-exec\s+(/\S*/)?rm\b', "find -exec rm"),
     (r'\bfind\b.*-delete\b', "find -delete"),
     # Gateway protection: never start gateway outside systemd management
-    (r'gateway\s+run\b.*(&\s*$|&\s*;|\bdisown\b|\bsetsid\b)', "start gateway outside systemd (use 'systemctl --user restart hermes-gateway')"),
-    (r'\bnohup\b.*gateway\s+run\b', "start gateway outside systemd (use 'systemctl --user restart hermes-gateway')"),
+    (r'gateway\s+run\b.*(&\s*$|&\s*;|\bdisown\b|\bsetsid\b)', "start gateway outside systemd (use 'systemctl --user restart morpheus-gateway')"),
+    (r'\bnohup\b.*gateway\s+run\b', "start gateway outside systemd (use 'systemctl --user restart morpheus-gateway')"),
 ]
 
 
@@ -241,7 +241,7 @@ def prompt_dangerous_approval(command: str, description: str,
         except Exception:
             return "deny"
 
-    os.environ["HERMES_SPINNER_PAUSE"] = "1"
+    os.environ["MORPHEUS_SPINNER_PAUSE"] = "1"
     try:
         while True:
             print()
@@ -293,8 +293,8 @@ def prompt_dangerous_approval(command: str, description: str,
         print("\n      ✗ Cancelled")
         return "deny"
     finally:
-        if "HERMES_SPINNER_PAUSE" in os.environ:
-            del os.environ["HERMES_SPINNER_PAUSE"]
+        if "MORPHEUS_SPINNER_PAUSE" in os.environ:
+            del os.environ["MORPHEUS_SPINNER_PAUSE"]
         print()
         sys.stdout.flush()
 
@@ -396,24 +396,24 @@ def check_dangerous_command(command: str, env_type: str,
         return {"approved": True, "message": None}
 
     # --yolo: bypass all approval prompts
-    if os.getenv("HERMES_YOLO_MODE"):
+    if os.getenv("MORPHEUS_YOLO_MODE"):
         return {"approved": True, "message": None}
 
     is_dangerous, pattern_key, description = detect_dangerous_command(command)
     if not is_dangerous:
         return {"approved": True, "message": None}
 
-    session_key = os.getenv("HERMES_SESSION_KEY", "default")
+    session_key = os.getenv("MORPHEUS_SESSION_KEY", "default")
     if is_approved(session_key, pattern_key):
         return {"approved": True, "message": None}
 
-    is_cli = os.getenv("HERMES_INTERACTIVE")
-    is_gateway = os.getenv("HERMES_GATEWAY_SESSION")
+    is_cli = os.getenv("MORPHEUS_INTERACTIVE")
+    is_gateway = os.getenv("MORPHEUS_GATEWAY_SESSION")
 
     if not is_cli and not is_gateway:
         return {"approved": True, "message": None}
 
-    if is_gateway or os.getenv("HERMES_EXEC_ASK"):
+    if is_gateway or os.getenv("MORPHEUS_EXEC_ASK"):
         submit_pending(session_key, {
             "command": command,
             "pattern_key": pattern_key,
@@ -498,12 +498,12 @@ def check_all_command_guards(command: str, env_type: str,
 
     # --yolo or approvals.mode=off: bypass all approval prompts
     approval_mode = _get_approval_mode()
-    if os.getenv("HERMES_YOLO_MODE") or approval_mode == "off":
+    if os.getenv("MORPHEUS_YOLO_MODE") or approval_mode == "off":
         return {"approved": True, "message": None}
 
-    is_cli = os.getenv("HERMES_INTERACTIVE")
-    is_gateway = os.getenv("HERMES_GATEWAY_SESSION")
-    is_ask = os.getenv("HERMES_EXEC_ASK")
+    is_cli = os.getenv("MORPHEUS_INTERACTIVE")
+    is_gateway = os.getenv("MORPHEUS_GATEWAY_SESSION")
+    is_ask = os.getenv("MORPHEUS_EXEC_ASK")
 
     # Preserve the existing non-interactive behavior: outside CLI/gateway/ask
     # flows, we do not block on approvals and we skip external guard work.
@@ -529,7 +529,7 @@ def check_all_command_guards(command: str, env_type: str,
     # Collect warnings that need approval
     warnings = []  # list of (pattern_key, description, is_tirith)
 
-    session_key = os.getenv("HERMES_SESSION_KEY", "default")
+    session_key = os.getenv("MORPHEUS_SESSION_KEY", "default")
 
     # Tirith block/warn → approvable warning with rich findings.
     # Previously, tirith "block" was a hard block with no approval prompt.

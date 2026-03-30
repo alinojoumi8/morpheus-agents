@@ -14,7 +14,7 @@ Solution:
     This module is kept for backward compatibility — apply_patches() is now a no-op.
 
 Usage:
-    Call apply_patches() once at import time (done automatically by hermes_base_env.py).
+    Call apply_patches() once at import time (done automatically by morpheus_base_env.py).
     This is idempotent — calling it multiple times is safe.
 """
 

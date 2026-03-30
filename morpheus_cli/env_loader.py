@@ -15,9 +15,9 @@ def _load_dotenv_with_fallback(path: Path, *, override: bool) -> None:
         load_dotenv(dotenv_path=path, override=override, encoding="latin-1")
 
 
-def load_hermes_dotenv(
+def load_morpheus_dotenv(
     *,
-    hermes_home: str | os.PathLike | None = None,
+    morpheus_home: str | os.PathLike | None = None,
     project_env: str | os.PathLike | None = None,
 ) -> list[Path]:
     """Load Morpheus environment files with user config taking precedence.
@@ -30,7 +30,7 @@ def load_hermes_dotenv(
     """
     loaded: list[Path] = []
 
-    home_path = Path(hermes_home or os.getenv("MORPHEUS_HOME", Path.home() / ".morpheus"))
+    home_path = Path(morpheus_home or os.getenv("MORPHEUS_HOME", Path.home() / ".morpheus"))
     user_env = home_path / ".env"
     project_env_path = Path(project_env) if project_env else None
 

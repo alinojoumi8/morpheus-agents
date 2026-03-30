@@ -42,7 +42,7 @@ Every Telegram bot starts with **@BotFather** — Telegram's official bot for cr
 
 2. **Send `/newbot`** — BotFather will ask you two things:
    - **Display name** — what users see (e.g., `Team Morpheus Assistant`)
-   - **Username** — must end in `bot` (e.g., `myteam_hermes_bot`)
+   - **Username** — must end in `bot` (e.g., `myteam_morpheus_bot`)
 
 3. **Copy the bot token** — BotFather replies with something like:
    ```
@@ -86,7 +86,7 @@ You have two options: the interactive setup wizard (recommended) or manual confi
 ### Option A: Interactive Setup (Recommended)
 
 ```bash
-hermes gateway setup
+morpheus gateway setup
 ```
 
 This walks you through everything with arrow-key selection. Pick **Telegram**, paste your bot token, and enter your user ID when prompted.
@@ -124,7 +124,7 @@ Telegram user IDs are permanent numbers like `123456789`. They're different from
 Run the gateway in the foreground first to make sure everything works:
 
 ```bash
-hermes gateway
+morpheus gateway
 ```
 
 You should see output like:
@@ -142,41 +142,41 @@ Open Telegram, find your bot, and send it a message. If it replies, you're in bu
 For a persistent deployment that survives reboots:
 
 ```bash
-hermes gateway install
-sudo hermes gateway install --system   # Linux only: boot-time system service
+morpheus gateway install
+sudo morpheus gateway install --system   # Linux only: boot-time system service
 ```
 
 This creates a background service: a user-level **systemd** service on Linux by default, a **launchd** service on macOS, or a boot-time Linux system service if you pass `--system`.
 
 ```bash
 # Linux — manage the default user service
-hermes gateway start
-hermes gateway stop
-hermes gateway status
+morpheus gateway start
+morpheus gateway stop
+morpheus gateway status
 
 # View live logs
-journalctl --user -u hermes-gateway -f
+journalctl --user -u morpheus-gateway -f
 
 # Keep running after SSH logout
 sudo loginctl enable-linger $USER
 
 # Linux servers — explicit system-service commands
-sudo hermes gateway start --system
-sudo hermes gateway status --system
-journalctl -u hermes-gateway -f
+sudo morpheus gateway start --system
+sudo morpheus gateway status --system
+journalctl -u morpheus-gateway -f
 ```
 
 ```bash
 # macOS — manage the service
-launchctl start ai.hermes.gateway
-launchctl stop ai.hermes.gateway
+launchctl start ai.morpheus.gateway
+launchctl stop ai.morpheus.gateway
 tail -f ~/.morpheus/logs/gateway.log
 ```
 
 ### Verify It's Running
 
 ```bash
-hermes gateway status
+morpheus gateway status
 ```
 
 Then send a test message to your bot on Telegram. You should get a response within a few seconds.
@@ -199,7 +199,7 @@ TELEGRAM_ALLOWED_USERS=123456789,987654321,555555555
 Restart the gateway after changes:
 
 ```bash
-hermes gateway stop && hermes gateway start
+morpheus gateway stop && morpheus gateway start
 ```
 
 ### Approach B: DM Pairing (Recommended for Teams)
@@ -216,7 +216,7 @@ DM pairing is more flexible — you don't need to collect user IDs upfront. Here
 
 3. **You approve it** on the server:
    ```bash
-   hermes pairing approve telegram XKGH5N7P
+   morpheus pairing approve telegram XKGH5N7P
    ```
 
 4. **They're in** — the bot immediately starts responding to their messages
@@ -225,13 +225,13 @@ DM pairing is more flexible — you don't need to collect user IDs upfront. Here
 
 ```bash
 # See all pending and approved users
-hermes pairing list
+morpheus pairing list
 
 # Revoke someone's access
-hermes pairing revoke telegram 987654321
+morpheus pairing revoke telegram 987654321
 
 # Clear expired pending codes
-hermes pairing clear-pending
+morpheus pairing clear-pending
 ```
 
 :::tip
@@ -287,7 +287,7 @@ Users can also change this per-session with the `/verbose` command in chat.
 
 Customize how the bot communicates by editing `~/.morpheus/SOUL.md`:
 
-For a full guide, see [Use SOUL.md with Morpheus](/docs/guides/use-soul-with-hermes).
+For a full guide, see [Use SOUL.md with Morpheus](/docs/guides/use-soul-with-morpheus).
 
 ```markdown
 # Soul
@@ -348,8 +348,8 @@ partitions above 80%, containers that have restarted, or high memory usage.
 
 ```bash
 # From the CLI
-hermes cron list          # View all scheduled jobs
-hermes cron status        # Check if scheduler is running
+morpheus cron list          # View all scheduled jobs
+morpheus cron status        # Check if scheduler is running
 
 # From Telegram chat
 /cron list                # View jobs
@@ -390,10 +390,10 @@ This way, even if someone asks the bot to run something destructive, your host s
 
 ```bash
 # Check if the gateway is running
-hermes gateway status
+morpheus gateway status
 
 # Watch live logs (Linux)
-journalctl --user -u hermes-gateway -f
+journalctl --user -u morpheus-gateway -f
 
 # Watch live logs (macOS)
 tail -f ~/.morpheus/logs/gateway.log
@@ -404,15 +404,15 @@ tail -f ~/.morpheus/logs/gateway.log
 From Telegram, send `/update` to the bot — it will pull the latest version and restart. Or from the server:
 
 ```bash
-hermes update
-hermes gateway stop && hermes gateway start
+morpheus update
+morpheus gateway stop && morpheus gateway start
 ```
 
 ### Log Locations
 
 | What | Location |
 |------|----------|
-| Gateway logs | `journalctl --user -u hermes-gateway` (Linux) or `~/.morpheus/logs/gateway.log` (macOS) |
+| Gateway logs | `journalctl --user -u morpheus-gateway` (Linux) or `~/.morpheus/logs/gateway.log` (macOS) |
 | Cron job output | `~/.morpheus/cron/output/{job_id}/{timestamp}.md` |
 | Cron job definitions | `~/.morpheus/cron/jobs.json` |
 | Pairing data | `~/.morpheus/pairing/` |
