@@ -129,6 +129,14 @@ COMMAND_REGISTRY: list[CommandDef] = [
     CommandDef("update", "Update Hermes Agent to the latest version", "Info",
                gateway_only=True),
 
+    # Intelligence
+    CommandDef("intel", "Intelligence module: memory, skills, knowledge graph, digest",
+               "Tools & Skills", aliases=("intelligence",),
+               args_hint="[status|digest|skills|entities|expertise|synthesis|consolidate|preferences|suggestions|patterns|sentiment|help]",
+               subcommands=("status", "digest", "skills", "entities", "expertise",
+                            "synthesis", "consolidate", "preferences", "suggestions",
+                            "patterns", "sentiment", "help")),
+
     # Exit
     CommandDef("quit", "Exit the CLI", "Exit",
                cli_only=True, aliases=("exit", "q")),

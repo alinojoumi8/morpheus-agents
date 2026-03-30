@@ -3797,6 +3797,14 @@ class HermesCLI:
             self._show_usage()
         elif canonical == "insights":
             self._show_insights(cmd_original)
+        elif canonical == "intel":
+            try:
+                from intelligence.cli_commands import handle_intelligence_command
+                handle_intelligence_command(cmd_original)
+            except ImportError:
+                print("  Intelligence module not installed. Install with: pip install hermes-agent[intelligence]")
+            except Exception as e:
+                print(f"  Intelligence command error: {e}")
         elif canonical == "paste":
             self._handle_paste_command()
         elif canonical == "reload-mcp":

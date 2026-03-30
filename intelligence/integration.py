@@ -195,7 +195,21 @@ def _session_end_worker(
             except Exception as exc:
                 logger.warning("Knowledge graph update failed: %s", exc)
 
-        # Step 5: Store workflow patterns
+        # Step 5: Persist substantial reasoning chains
+        try:
+            for msg in messages:
+                if msg.get("role") == "assistant":
+                    reasoning = msg.get("reasoning", "")
+                    if reasoning and len(reasoning.strip()) >= 100:
+                        persist_reasoning(
+                            reasoning_text=reasoning,
+                            session_id=session_id,
+                            context=msg.get("content", "")[:200] if msg.get("content") else None,
+                        )
+        except Exception as exc:
+            logger.debug("Reasoning persistence failed: %s", exc)
+
+        # Step 6: Store workflow patterns
         if _workflow_tracker and _config.get("personalization", {}).get("workflow_learning", True):
             try:
                 _workflow_tracker.store_patterns(_db, trigger=f"session:{session_id[:8]}")
@@ -376,3 +390,117 @@ def on_skill_invocation(
         )
     except Exception as exc:
         logger.debug("Failed to score skill: %s", exc)
+
+
+# ══════════════════════════════════════════════════════════════════
+# Auto-Bookmarking
+# ══════════════════════════════════════════════════════════════════
+
+def on_tool_result(
+    tool_name: str,
+    tool_args: Dict,
+    result: str,
+    session_id: Optional[str] = None,
+):
+    """Called after successful tool execution for auto-bookmarking.
+
+    Auto-captures URLs from web_search and web_extract results.
+    """
+    if not _db or tool_name not in ("web_search", "web_extract"):
+        return
+
+    try:
+        import re
+        # Extract URLs from tool args and results
+        urls_to_bookmark = []
+
+        if tool_name == "web_extract":
+            # web_extract has explicit URLs in args
+            raw_urls = tool_args.get("urls") or tool_args.get("url", "")
+            if isinstance(raw_urls, list):
+                urls_to_bookmark.extend(raw_urls)
+            elif isinstance(raw_urls, str) and raw_urls:
+                urls_to_bookmark.append(raw_urls)
+
+        elif tool_name == "web_search":
+            # Extract URLs from search results
+            url_pattern = re.compile(r'https?://[^\s\]\)\"\'<>]+')
+            found = url_pattern.findall(result[:5000])
+            urls_to_bookmark.extend(found[:5])  # Cap at 5
+
+        query = tool_args.get("query", "") or tool_args.get("prompt", "")
+
+        for url in urls_to_bookmark:
+            url = url.rstrip(".,;:")
+            if len(url) < 10:
+                continue
+            try:
+                _db.store_bookmark(
+                    url=url,
+                    title=query[:100] if query else url[:100],
+                    resource_type="url",
+                    tags=["auto-captured", tool_name],
+                    context=f"Found via {tool_name}: {query[:200]}" if query else None,
+                    session_id=session_id,
+                )
+            except Exception:
+                pass
+
+    except Exception as exc:
+        logger.debug("Auto-bookmarking failed: %s", exc)
+
+
+# ══════════════════════════════════════════════════════════════════
+# Chain-of-Thought Persistence
+# ══════════════════════════════════════════════════════════════════
+
+def persist_reasoning(
+    reasoning_text: str,
+    session_id: Optional[str] = None,
+    context: Optional[str] = None,
+):
+    """Store a reasoning chain in intelligence.db for later recall.
+
+    Called when the agent produces reasoning (Claude's thinking blocks).
+    """
+    if not _db or not _embedding_provider or not reasoning_text:
+        return
+
+    # Only store substantial reasoning (skip trivial ones)
+    if len(reasoning_text.strip()) < 100:
+        return
+
+    try:
+        # Truncate very long reasoning to avoid embedding overhead
+        text_to_embed = reasoning_text[:2000]
+        emb = _embedding_provider.embed(text_to_embed)
+
+        _db.store_embedding(
+            content=reasoning_text[:5000],  # Cap storage at 5K chars
+            content_type="reasoning",
+            embedding=emb,
+            metadata={
+                "context": context[:200] if context else None,
+            },
+            session_id=session_id,
+            tier="warm",
+        )
+    except Exception as exc:
+        logger.debug("Failed to persist reasoning: %s", exc)
+
+
+# ══════════════════════════════════════════════════════════════════
+# Consolidation Execution (for cron jobs)
+# ══════════════════════════════════════════════════════════════════
+
+def run_consolidation_now(sync_llm_call=None) -> Dict:
+    """Execute memory consolidation immediately. Used by cron and /intel command."""
+    if not _db:
+        return {"error": "Intelligence module not initialized"}
+
+    from intelligence.consolidation import run_consolidation
+    return run_consolidation(
+        intelligence_db=_db,
+        embedding_provider=_embedding_provider,
+        aux_llm_call=sync_llm_call,
+    )

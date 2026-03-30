@@ -371,6 +371,100 @@ def knowledge_query(
 
 
 # ══════════════════════════════════════════════════════════════════
+# run_consolidation tool
+# ══════════════════════════════════════════════════════════════════
+
+RUN_CONSOLIDATION_SCHEMA = {
+    "name": "run_consolidation",
+    "description": (
+        "Run memory consolidation: decay old memories, promote frequently-accessed "
+        "ones, demote low-relevance entries, deduplicate near-identical entries, "
+        "and distill cold memory clusters. Returns stats on actions taken."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "dry_run": {
+                "type": "boolean",
+                "description": "If true, report what would happen without making changes",
+                "default": False,
+            },
+        },
+    },
+}
+
+
+def run_consolidation_tool(
+    dry_run: bool = False,
+    **kwargs,
+) -> str:
+    """Run memory consolidation."""
+    db = _get_intelligence_db()
+    if not db:
+        return "Intelligence module is not enabled."
+
+    provider = _get_embedding_provider()
+
+    try:
+        from intelligence.consolidation import run_consolidation
+        stats = run_consolidation(
+            intelligence_db=db,
+            embedding_provider=provider,
+            dry_run=dry_run,
+        )
+
+        prefix = "[DRY RUN] " if dry_run else ""
+        return (
+            f"{prefix}Consolidation complete in {stats['duration_s']}s:\n"
+            f"  Decayed: {stats['decayed']}\n"
+            f"  Promoted to hot: {stats['promoted']}\n"
+            f"  Demoted to cold: {stats['demoted']}\n"
+            f"  Deduplicated: {stats['deduplicated']}\n"
+            f"  Cold clusters distilled: {stats['distilled']}"
+        )
+    except Exception as exc:
+        return f"Consolidation failed: {exc}"
+
+
+# ══════════════════════════════════════════════════════════════════
+# Wrapper handlers that extract args from the dict
+# ══════════════════════════════════════════════════════════════════
+
+def _handle_vector_search(args: dict, **kwargs) -> str:
+    return vector_search(
+        query=args.get("query", ""),
+        content_type=args.get("content_type"),
+        limit=args.get("limit", 5),
+        **kwargs,
+    )
+
+
+def _handle_vector_remember(args: dict, **kwargs) -> str:
+    return vector_remember(
+        content=args.get("content", ""),
+        content_type=args.get("content_type", "episode"),
+        metadata=args.get("metadata"),
+        **kwargs,
+    )
+
+
+def _handle_knowledge_query(args: dict, **kwargs) -> str:
+    return knowledge_query(
+        entity_name=args.get("entity_name", ""),
+        action=args.get("action", "lookup"),
+        entity_type=args.get("entity_type"),
+        **kwargs,
+    )
+
+
+def _handle_run_consolidation(args: dict, **kwargs) -> str:
+    return run_consolidation_tool(
+        dry_run=args.get("dry_run", False),
+        **kwargs,
+    )
+
+
+# ══════════════════════════════════════════════════════════════════
 # Tool Registration
 # ══════════════════════════════════════════════════════════════════
 
@@ -378,7 +472,7 @@ registry.register(
     name="vector_search",
     toolset="intelligence",
     schema=VECTOR_SEARCH_SCHEMA,
-    handler=vector_search,
+    handler=_handle_vector_search,
     check_fn=_check_intelligence_available,
     description="Search long-term memories using semantic similarity",
     emoji="🔍",
@@ -388,7 +482,7 @@ registry.register(
     name="vector_remember",
     toolset="intelligence",
     schema=VECTOR_REMEMBER_SCHEMA,
-    handler=vector_remember,
+    handler=_handle_vector_remember,
     check_fn=_check_intelligence_available,
     description="Store important information in long-term memory",
     emoji="💾",
@@ -398,8 +492,18 @@ registry.register(
     name="knowledge_query",
     toolset="intelligence",
     schema=KNOWLEDGE_QUERY_SCHEMA,
-    handler=knowledge_query,
+    handler=_handle_knowledge_query,
     check_fn=_check_intelligence_available,
     description="Query the personal knowledge graph",
     emoji="🧠",
+)
+
+registry.register(
+    name="run_consolidation",
+    toolset="intelligence",
+    schema=RUN_CONSOLIDATION_SCHEMA,
+    handler=_handle_run_consolidation,
+    check_fn=_check_intelligence_available,
+    description="Run memory consolidation (decay, promote, dedup, distill)",
+    emoji="🔄",
 )

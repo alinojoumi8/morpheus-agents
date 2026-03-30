@@ -5243,6 +5243,13 @@ class AIAgent:
                                   self.session_id)
                 except (ImportError, Exception):
                     pass
+            # Intelligence: auto-bookmark URLs from web tools
+            if not is_error and function_name in ("web_search", "web_extract"):
+                try:
+                    from intelligence.integration import on_tool_result
+                    on_tool_result(function_name, function_args, result, self.session_id)
+                except (ImportError, Exception):
+                    pass
             results[index] = (function_name, function_args, result, duration, is_error)
 
         # Start spinner for CLI mode (skip when TUI handles tool progress)
@@ -5559,6 +5566,14 @@ class AIAgent:
                 try:
                     from intelligence.integration import on_tool_error
                     on_tool_error(function_name, function_result[:500], self.session_id)
+                except (ImportError, Exception):
+                    pass
+
+            # Intelligence: auto-bookmark URLs from web tools (sequential path)
+            if not _is_error_result and function_name in ("web_search", "web_extract"):
+                try:
+                    from intelligence.integration import on_tool_result
+                    on_tool_result(function_name, function_args, function_result, self.session_id)
                 except (ImportError, Exception):
                     pass
 
