@@ -37,7 +37,7 @@ def _ensure_initialized(config: Optional[Dict] = None):
 
     try:
         if config is None:
-            from hermes_cli.config import load_config
+            from morpheus_cli.config import load_config
             config = load_config()
 
         _config = config.get("intelligence", {})

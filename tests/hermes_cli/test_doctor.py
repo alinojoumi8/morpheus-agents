@@ -1,4 +1,4 @@
-"""Tests for hermes_cli.doctor."""
+"""Tests for morpheus_cli.doctor."""
 
 import os
 import sys
@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-import hermes_cli.doctor as doctor
-import hermes_cli.gateway as gateway_cli
-from hermes_cli import doctor as doctor_mod
-from hermes_cli.doctor import _has_provider_env_config
+import morpheus_cli.doctor as doctor
+import morpheus_cli.gateway as gateway_cli
+from morpheus_cli import doctor as doctor_mod
+from morpheus_cli.doctor import _has_provider_env_config
 
 
 class TestProviderEnvDetection:
@@ -78,12 +78,12 @@ class TestHonchoDoctorConfigDetection:
 def test_run_doctor_sets_interactive_env_for_tool_checks(monkeypatch, tmp_path):
     """Doctor should present CLI-gated tools as available in CLI context."""
     project_root = tmp_path / "project"
-    hermes_home = tmp_path / ".hermes"
+    hermes_home = tmp_path / ".morpheus"
     project_root.mkdir()
     hermes_home.mkdir()
 
     monkeypatch.setattr(doctor_mod, "PROJECT_ROOT", project_root)
-    monkeypatch.setattr(doctor_mod, "HERMES_HOME", hermes_home)
+    monkeypatch.setattr(doctor_mod, "MORPHEUS_HOME", hermes_home)
     monkeypatch.delenv("HERMES_INTERACTIVE", raising=False)
 
     seen = {}

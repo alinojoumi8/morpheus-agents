@@ -75,14 +75,14 @@ _ensure_ssl_certs()
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# Resolve Hermes home directory (respects HERMES_HOME override)
-from hermes_constants import get_hermes_home
-_hermes_home = get_hermes_home()
+# Resolve Morpheus home directory (respects MORPHEUS_HOME override)
+from morpheus_constants import get_morpheus_home
+_hermes_home = get_morpheus_home()
 
-# Load environment variables from ~/.hermes/.env first.
+# Load environment variables from ~/.morpheus/.env first.
 # User-managed env files should override stale shell exports on restart.
 from dotenv import load_dotenv  # backward-compat for tests that monkeypatch this symbol
-from hermes_cli.env_loader import load_hermes_dotenv
+from morpheus_cli.env_loader import load_hermes_dotenv
 _env_path = _hermes_home / '.env'
 load_hermes_dotenv(hermes_home=_hermes_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
@@ -95,7 +95,7 @@ if _config_path.exists():
         with open(_config_path, encoding="utf-8") as _f:
             _cfg = _yaml.safe_load(_f) or {}
         # Expand ${ENV_VAR} references before bridging to env vars.
-        from hermes_cli.config import _expand_env_vars
+        from morpheus_cli.config import _expand_env_vars
         _cfg = _expand_env_vars(_cfg)
         # Top-level simple values (fallback only — don't override .env)
         for _key, _val in _cfg.items():
@@ -235,7 +235,7 @@ _AGENT_PENDING_SENTINEL = object()
 
 def _resolve_runtime_agent_kwargs() -> dict:
     """Resolve provider credentials for gateway-created AIAgent instances."""
-    from hermes_cli.runtime_provider import (
+    from morpheus_cli.runtime_provider import (
         resolve_runtime_provider,
         format_runtime_provider_error,
     )
@@ -263,7 +263,7 @@ def _platform_config_key(platform: "Platform") -> str:
 
 
 def _load_gateway_config() -> dict:
-    """Load and parse ~/.hermes/config.yaml, returning {} on any error."""
+    """Load and parse ~/.morpheus/config.yaml, returning {} on any error."""
     try:
         config_path = _hermes_home / 'config.yaml'
         if config_path.exists():
@@ -293,26 +293,26 @@ def _resolve_gateway_model(config: dict | None = None) -> str:
 
 
 def _resolve_hermes_bin() -> Optional[list[str]]:
-    """Resolve the Hermes update command as argv parts.
+    """Resolve the Morpheus update command as argv parts.
 
     Tries in order:
-    1. ``shutil.which("hermes")`` — standard PATH lookup
-    2. ``sys.executable -m hermes_cli.main`` — fallback when Hermes is running
+    1. ``shutil.which("morpheus")`` — standard PATH lookup
+    2. ``sys.executable -m morpheus_cli.main`` — fallback when Morpheus is running
        from a venv/module invocation and the ``hermes`` shim is not on PATH
 
     Returns argv parts ready for quoting/joining, or ``None`` if neither works.
     """
     import shutil
 
-    hermes_bin = shutil.which("hermes")
+    hermes_bin = shutil.which("morpheus")
     if hermes_bin:
         return [hermes_bin]
 
     try:
         import importlib.util
 
-        if importlib.util.find_spec("hermes_cli") is not None:
-            return [sys.executable, "-m", "hermes_cli.main"]
+        if importlib.util.find_spec("morpheus_cli") is not None:
+            return [sys.executable, "-m", "morpheus_cli.main"]
     except Exception:
         pass
 
@@ -398,7 +398,7 @@ class GatewayRunner:
         # Initialize session database for session_search tool support
         self._session_db = None
         try:
-            from hermes_state import SessionDB
+            from morpheus_state import SessionDB
             self._session_db = SessionDB()
         except Exception as e:
             logger.debug("SQLite session store not available: %s", e)
@@ -475,10 +475,10 @@ class GatewayRunner:
     # -- Setup skill availability ----------------------------------------
 
     def _has_setup_skill(self) -> bool:
-        """Check if the hermes-agent-setup skill is installed."""
+        """Check if the morpheus-agent-setup skill is installed."""
         try:
             from tools.skill_manager_tool import _find_skill
-            return _find_skill("hermes-agent-setup") is not None
+            return _find_skill("morpheus-agent-setup") is not None
         except Exception:
             return False
 
@@ -760,8 +760,8 @@ class GatewayRunner:
         """Load ephemeral prefill messages from config or env var.
         
         Checks HERMES_PREFILL_MESSAGES_FILE env var first, then falls back to
-        the prefill_messages_file key in ~/.hermes/config.yaml.
-        Relative paths are resolved from ~/.hermes/.
+        the prefill_messages_file key in ~/.morpheus/config.yaml.
+        Relative paths are resolved from ~/.morpheus/.
         """
         import json as _json
         file_path = os.getenv("HERMES_PREFILL_MESSAGES_FILE", "")
@@ -799,7 +799,7 @@ class GatewayRunner:
         """Load ephemeral system prompt from config or env var.
         
         Checks HERMES_EPHEMERAL_SYSTEM_PROMPT env var first, then falls back to
-        agent.system_prompt in ~/.hermes/config.yaml.
+        agent.system_prompt in ~/.morpheus/config.yaml.
         """
         prompt = os.getenv("HERMES_EPHEMERAL_SYSTEM_PROMPT", "")
         if prompt:
@@ -824,7 +824,7 @@ class GatewayRunner:
         "medium", "low", "minimal", "none". Returns None to use default
         (medium).
         """
-        from hermes_constants import parse_reasoning_effort
+        from morpheus_constants import parse_reasoning_effort
         effort = ""
         try:
             import yaml as _y
@@ -945,7 +945,7 @@ class GatewayRunner:
         
         Returns True if at least one adapter connected successfully.
         """
-        logger.info("Starting Hermes Gateway...")
+        logger.info("Starting Morpheus Gateway...")
         logger.info("Session storage: %s", self.config.sessions_dir)
         try:
             from gateway.status import write_runtime_status
@@ -975,7 +975,7 @@ class GatewayRunner:
         if not _any_allowlist and not _allow_all:
             logger.warning(
                 "No user allowlists configured. All unauthorized users will be denied. "
-                "Set GATEWAY_ALLOW_ALL_USERS=true in ~/.hermes/.env to allow open access, "
+                "Set GATEWAY_ALLOW_ALL_USERS=true in ~/.morpheus/.env to allow open access, "
                 "or configure platform allowlists (e.g., TELEGRAM_ALLOWED_USERS=your_id)."
             )
         
@@ -1374,7 +1374,7 @@ class GatewayRunner:
         elif platform == Platform.SLACK:
             from gateway.platforms.slack import SlackAdapter, check_slack_requirements
             if not check_slack_requirements():
-                logger.warning("Slack: slack-bolt not installed. Run: pip install 'hermes-agent[slack]'")
+                logger.warning("Slack: slack-bolt not installed. Run: pip install 'morpheus-agent[slack]'")
                 return None
             return SlackAdapter(config)
 
@@ -1588,7 +1588,7 @@ class GatewayRunner:
                 return await self._handle_status_command(event)
 
             # Resolve the command once for all early-intercept checks below.
-            from hermes_cli.commands import resolve_command as _resolve_cmd_inner
+            from morpheus_cli.commands import resolve_command as _resolve_cmd_inner
             _evt_cmd = event.get_command()
             _cmd_def_inner = _resolve_cmd_inner(_evt_cmd) if _evt_cmd else None
 
@@ -1699,8 +1699,8 @@ class GatewayRunner:
         
         # Emit command:* hook for any recognized slash command.
         # GATEWAY_KNOWN_COMMANDS is derived from the central COMMAND_REGISTRY
-        # in hermes_cli/commands.py — no hardcoded set to maintain here.
-        from hermes_cli.commands import GATEWAY_KNOWN_COMMANDS, resolve_command as _resolve_cmd
+        # in morpheus_cli/commands.py — no hardcoded set to maintain here.
+        from morpheus_cli.commands import GATEWAY_KNOWN_COMMANDS, resolve_command as _resolve_cmd
         if command and command in GATEWAY_KNOWN_COMMANDS:
             await self.hooks.emit(f"command:{command}", {
                 "platform": source.platform.value if source.platform else "",
@@ -1849,7 +1849,7 @@ class GatewayRunner:
         # Plugin-registered slash commands
         if command:
             try:
-                from hermes_cli.plugins import get_plugin_command_handler
+                from morpheus_cli.plugins import get_plugin_command_handler
                 plugin_handler = get_plugin_command_handler(command)
                 if plugin_handler:
                     user_args = event.get_command_args().strip()
@@ -2297,7 +2297,7 @@ class GatewayRunner:
                     await adapter.send(
                         source.chat_id,
                         f"📬 No home channel is set for {platform_name.title()}. "
-                        f"A home channel is where Hermes delivers cron job results "
+                        f"A home channel is where Morpheus delivers cron job results "
                         f"and cross-platform messages.\n\n"
                         f"Type /sethome to make this chat your home channel, "
                         f"or ignore to skip."
@@ -2380,13 +2380,13 @@ class GatewayRunner:
                                 "🎤 I received your voice message but can't transcribe it — "
                                 "no speech-to-text provider is configured.\n\n"
                                 "To enable voice: install faster-whisper "
-                                "(`pip install faster-whisper` in the Hermes venv) "
+                                "(`pip install faster-whisper` in the Morpheus venv) "
                                 "and set `stt.enabled: true` in config.yaml, "
                                 "then /restart the gateway."
                             )
                             # Point to setup skill if it's installed
                             if self._has_setup_skill():
-                                _stt_msg += "\n\nFor full setup instructions, type: `/skill hermes-agent-setup`"
+                                _stt_msg += "\n\nFor full setup instructions, type: `/skill morpheus-agent-setup`"
                             await _stt_adapter.send(
                                 source.chat_id, _stt_msg,
                                 metadata=_stt_meta,
@@ -2903,7 +2903,7 @@ class GatewayRunner:
         is_running = session_key in self._running_agents
         
         lines = [
-            "📊 **Hermes Gateway Status**",
+            "📊 **Morpheus Gateway Status**",
             "",
             f"**Session ID:** `{session_entry.session_id[:12]}...`",
             f"**Created:** {session_entry.created_at.strftime('%Y-%m-%d %H:%M')}",
@@ -2948,9 +2948,9 @@ class GatewayRunner:
     
     async def _handle_help_command(self, event: MessageEvent) -> str:
         """Handle /help command - list available commands."""
-        from hermes_cli.commands import gateway_help_lines
+        from morpheus_cli.commands import gateway_help_lines
         lines = [
-            "📖 **Hermes Commands**\n",
+            "📖 **Morpheus Commands**\n",
             *gateway_help_lines(),
         ]
         try:
@@ -2967,7 +2967,7 @@ class GatewayRunner:
     async def _handle_provider_command(self, event: MessageEvent) -> str:
         """Handle /provider command - show available providers."""
         import yaml
-        from hermes_cli.models import (
+        from morpheus_cli.models import (
             list_available_providers,
             normalize_provider,
             _PROVIDER_LABELS,
@@ -2989,7 +2989,7 @@ class GatewayRunner:
         current_provider = normalize_provider(current_provider)
         if current_provider == "auto":
             try:
-                from hermes_cli.auth import resolve_provider as _resolve_provider
+                from morpheus_cli.auth import resolve_provider as _resolve_provider
                 current_provider = _resolve_provider(current_provider)
             except Exception:
                 current_provider = "openrouter"
@@ -3038,7 +3038,7 @@ class GatewayRunner:
             personalities = {}
 
         if not personalities:
-            return "No personalities configured in `~/.hermes/config.yaml`"
+            return "No personalities configured in `~/.morpheus/config.yaml`"
 
         if not args:
             lines = ["🎭 **Available Personalities**\n"]
@@ -3305,8 +3305,8 @@ class GatewayRunner:
             if "pynacl" in err_lower or "nacl" in err_lower or "davey" in err_lower:
                 return (
                     "Voice dependencies are missing (PyNaCl / davey). "
-                    "Install or reinstall Hermes with the messaging extra, e.g. "
-                    "`pip install hermes-agent[messaging]`."
+                    "Install or reinstall Morpheus with the messaging extra, e.g. "
+                    "`pip install morpheus-agent[messaging]`."
                 )
             return f"Failed to join voice channel: {e}"
 
@@ -3709,7 +3709,7 @@ class GatewayRunner:
             model = _resolve_gateway_model(user_config)
             platform_key = _platform_config_key(source.platform)
 
-            from hermes_cli.tools_config import _get_platform_tools
+            from morpheus_cli.tools_config import _get_platform_tools
             enabled_toolsets = sorted(_get_platform_tools(user_config, platform_key))
 
             pr = self._provider_routing
@@ -4210,7 +4210,7 @@ class GatewayRunner:
                     i += 1
 
         try:
-            from hermes_state import SessionDB
+            from morpheus_state import SessionDB
             from agent.insights import InsightsEngine
 
             loop = _asyncio.get_event_loop()
@@ -4371,7 +4371,7 @@ class GatewayRunner:
         return "❌ Command denied."
 
     async def _handle_update_command(self, event: MessageEvent) -> str:
-        """Handle /update command — update Hermes Agent to the latest version.
+        """Handle /update command — update Morpheus Agent to the latest version.
 
         Spawns ``hermes update`` in a separate systemd scope so it survives the
         gateway restart that ``hermes update`` may trigger at the end. Marker
@@ -4393,7 +4393,7 @@ class GatewayRunner:
         if not hermes_cmd:
             return (
                 "✗ Could not locate the `hermes` command. "
-                "Hermes is running, but the update command could not find the "
+                "Morpheus is running, but the update command could not find the "
                 "executable on PATH or via the current Python interpreter. "
                 "Try running `hermes update` manually in your terminal."
             )
@@ -4442,7 +4442,7 @@ class GatewayRunner:
             return f"✗ Failed to start update: {e}"
 
         self._schedule_update_notification_watch()
-        return "⚕ Starting Hermes update… I'll notify you when it's done."
+        return "⚕ Starting Morpheus update… I'll notify you when it's done."
 
     def _schedule_update_notification_watch(self) -> None:
         """Ensure a background task is watching for update completion."""
@@ -4539,14 +4539,14 @@ class GatewayRunner:
                     if len(output) > 3500:
                         output = "…" + output[-3500:]
                     if exit_code == 0:
-                        msg = f"✅ Hermes update finished.\n\n```\n{output}\n```"
+                        msg = f"✅ Morpheus update finished.\n\n```\n{output}\n```"
                     else:
-                        msg = f"❌ Hermes update failed.\n\n```\n{output}\n```"
+                        msg = f"❌ Morpheus update failed.\n\n```\n{output}\n```"
                 else:
                     if exit_code == 0:
-                        msg = "✅ Hermes update finished successfully."
+                        msg = "✅ Morpheus update finished successfully."
                     else:
-                        msg = "❌ Hermes update failed. Check the gateway logs or run `hermes update` manually for details."
+                        msg = "❌ Morpheus update failed. Check the gateway logs or run `hermes update` manually for details."
                 await adapter.send(chat_id, msg)
                 logger.info(
                     "Sent post-update notification to %s:%s (exit=%s)",
@@ -4668,8 +4668,8 @@ class GatewayRunner:
             disabled_note = "[The user sent voice message(s), but transcription is disabled in config."
             if self._has_setup_skill():
                 disabled_note += (
-                    " You have a skill called hermes-agent-setup that can help "
-                    "users configure Hermes features including voice, tools, and more."
+                    " You have a skill called morpheus-agent-setup that can help "
+                    "users configure Morpheus features including voice, tools, and more."
                 )
             disabled_note += "]"
             if user_text:
@@ -4706,8 +4706,8 @@ class GatewayRunner:
                         )
                         if self._has_setup_skill():
                             _no_stt_note += (
-                                " You have a skill called hermes-agent-setup "
-                                "that can help users configure Hermes features "
+                                " You have a skill called morpheus-agent-setup "
+                                "that can help users configure Morpheus features "
                                 "including voice, tools, and more."
                             )
                         _no_stt_note += "]"
@@ -4904,7 +4904,7 @@ class GatewayRunner:
         user_config = _load_gateway_config()
         platform_key = _platform_config_key(source.platform)
 
-        from hermes_cli.tools_config import _get_platform_tools
+        from morpheus_cli.tools_config import _get_platform_tools
         enabled_toolsets = sorted(_get_platform_tools(user_config, platform_key))
 
         # Tool progress mode from config.yaml: "all", "new", "verbose", "off"
@@ -5703,9 +5703,9 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
                  when the previous process hasn't fully exited yet.
     """
     # ── Duplicate-instance guard ──────────────────────────────────────
-    # Prevent two gateways from running under the same HERMES_HOME.
-    # The PID file is scoped to HERMES_HOME, so future multi-profile
-    # setups (each profile using a distinct HERMES_HOME) will naturally
+    # Prevent two gateways from running under the same MORPHEUS_HOME.
+    # The PID file is scoped to MORPHEUS_HOME, so future multi-profile
+    # setups (each profile using a distinct MORPHEUS_HOME) will naturally
     # allow concurrent instances without tripping this guard.
     import time as _time
     from gateway.status import get_running_pid, remove_pid_file
@@ -5756,9 +5756,9 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             except Exception:
                 pass
         else:
-            hermes_home = str(get_hermes_home())
+            hermes_home = str(get_morpheus_home())
             logger.error(
-                "Another gateway instance is already running (PID %d, HERMES_HOME=%s). "
+                "Another gateway instance is already running (PID %d, MORPHEUS_HOME=%s). "
                 "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",
                 existing_pid, hermes_home,
             )
@@ -5865,7 +5865,7 @@ def main():
     """CLI entry point for the gateway."""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Hermes Gateway - Multi-platform messaging")
+    parser = argparse.ArgumentParser(description="Morpheus Gateway - Multi-platform messaging")
     parser.add_argument("--config", "-c", help="Path to gateway config file")
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     

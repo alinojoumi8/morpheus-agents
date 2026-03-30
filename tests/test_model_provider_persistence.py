@@ -14,15 +14,15 @@ import pytest
 
 @pytest.fixture
 def config_home(tmp_path, monkeypatch):
-    """Isolated HERMES_HOME with a minimal string-format config."""
-    home = tmp_path / "hermes"
+    """Isolated MORPHEUS_HOME with a minimal string-format config."""
+    home = tmp_path / "morpheus"
     home.mkdir()
     config_yaml = home / "config.yaml"
     # Start with model as a plain string — the format that triggered the bug
     config_yaml.write_text("model: some-old-model\n")
     env_file = home / ".env"
     env_file.write_text("")
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(home))
     # Clear env vars that could interfere
     monkeypatch.delenv("HERMES_MODEL", raising=False)
     monkeypatch.delenv("LLM_MODEL", raising=False)
@@ -39,7 +39,7 @@ class TestSaveModelChoiceAlwaysDict:
     def test_string_model_becomes_dict(self, config_home):
         """When config.model is a plain string, _save_model_choice must
         convert it to a dict so provider can be set afterwards."""
-        from hermes_cli.auth import _save_model_choice
+        from morpheus_cli.auth import _save_model_choice
 
         _save_model_choice("kimi-k2.5")
 
@@ -57,7 +57,7 @@ class TestSaveModelChoiceAlwaysDict:
         (config_home / "config.yaml").write_text(
             "model:\n  default: old-model\n  provider: openrouter\n"
         )
-        from hermes_cli.auth import _save_model_choice
+        from morpheus_cli.auth import _save_model_choice
 
         _save_model_choice("new-model")
 
@@ -72,7 +72,7 @@ class TestProviderPersistsAfterModelSave:
     def test_api_key_provider_saved_when_model_was_string(self, config_home, monkeypatch):
         """_model_flow_api_key_provider must persist the provider even when
         config.model started as a plain string."""
-        from hermes_cli.auth import PROVIDER_REGISTRY
+        from morpheus_cli.auth import PROVIDER_REGISTRY
 
         pconfig = PROVIDER_REGISTRY.get("kimi-coding")
         if not pconfig:
@@ -81,13 +81,13 @@ class TestProviderPersistsAfterModelSave:
         # Simulate: user has a Kimi API key, model was a string
         monkeypatch.setenv("KIMI_API_KEY", "sk-kimi-test-key")
 
-        from hermes_cli.main import _model_flow_api_key_provider
-        from hermes_cli.config import load_config
+        from morpheus_cli.main import _model_flow_api_key_provider
+        from morpheus_cli.config import load_config
 
         # Mock the model selection prompt to return "kimi-k2.5"
         # Also mock input() for the base URL prompt and builtins.input
-        with patch("hermes_cli.auth._prompt_model_selection", return_value="kimi-k2.5"), \
-             patch("hermes_cli.auth.deactivate_provider"), \
+        with patch("morpheus_cli.auth._prompt_model_selection", return_value="kimi-k2.5"), \
+             patch("morpheus_cli.auth.deactivate_provider"), \
              patch("builtins.input", return_value=""):
             _model_flow_api_key_provider(load_config(), "kimi-coding", "old-model")
 
@@ -102,11 +102,11 @@ class TestProviderPersistsAfterModelSave:
 
     def test_copilot_provider_saved_when_selected(self, config_home):
         """_model_flow_copilot should persist provider/base_url/model together."""
-        from hermes_cli.main import _model_flow_copilot
-        from hermes_cli.config import load_config
+        from morpheus_cli.main import _model_flow_copilot
+        from morpheus_cli.config import load_config
 
         with patch(
-            "hermes_cli.auth.resolve_api_key_provider_credentials",
+            "morpheus_cli.auth.resolve_api_key_provider_credentials",
             return_value={
                 "provider": "copilot",
                 "api_key": "gh-cli-token",
@@ -114,7 +114,7 @@ class TestProviderPersistsAfterModelSave:
                 "source": "gh auth token",
             },
         ), patch(
-            "hermes_cli.models.fetch_github_model_catalog",
+            "morpheus_cli.models.fetch_github_model_catalog",
             return_value=[
                 {
                     "id": "gpt-4.1",
@@ -128,13 +128,13 @@ class TestProviderPersistsAfterModelSave:
                 },
             ],
         ), patch(
-            "hermes_cli.auth._prompt_model_selection",
+            "morpheus_cli.auth._prompt_model_selection",
             return_value="gpt-5.4",
         ), patch(
-            "hermes_cli.main._prompt_reasoning_effort_selection",
+            "morpheus_cli.main._prompt_reasoning_effort_selection",
             return_value="high",
         ), patch(
-            "hermes_cli.auth.deactivate_provider",
+            "morpheus_cli.auth.deactivate_provider",
         ):
             _model_flow_copilot(load_config(), "old-model")
 
@@ -151,18 +151,18 @@ class TestProviderPersistsAfterModelSave:
 
     def test_copilot_acp_provider_saved_when_selected(self, config_home):
         """_model_flow_copilot_acp should persist provider/base_url/model together."""
-        from hermes_cli.main import _model_flow_copilot_acp
-        from hermes_cli.config import load_config
+        from morpheus_cli.main import _model_flow_copilot_acp
+        from morpheus_cli.config import load_config
 
         with patch(
-            "hermes_cli.auth.get_external_process_provider_status",
+            "morpheus_cli.auth.get_external_process_provider_status",
             return_value={
                 "resolved_command": "/usr/local/bin/copilot",
                 "command": "copilot",
                 "base_url": "acp://copilot",
             },
         ), patch(
-            "hermes_cli.auth.resolve_external_process_provider_credentials",
+            "morpheus_cli.auth.resolve_external_process_provider_credentials",
             return_value={
                 "provider": "copilot-acp",
                 "api_key": "copilot-acp",
@@ -172,7 +172,7 @@ class TestProviderPersistsAfterModelSave:
                 "source": "process",
             },
         ), patch(
-            "hermes_cli.auth.resolve_api_key_provider_credentials",
+            "morpheus_cli.auth.resolve_api_key_provider_credentials",
             return_value={
                 "provider": "copilot",
                 "api_key": "gh-cli-token",
@@ -180,7 +180,7 @@ class TestProviderPersistsAfterModelSave:
                 "source": "gh auth token",
             },
         ), patch(
-            "hermes_cli.models.fetch_github_model_catalog",
+            "morpheus_cli.models.fetch_github_model_catalog",
             return_value=[
                 {
                     "id": "gpt-4.1",
@@ -194,10 +194,10 @@ class TestProviderPersistsAfterModelSave:
                 },
             ],
         ), patch(
-            "hermes_cli.auth._prompt_model_selection",
+            "morpheus_cli.auth._prompt_model_selection",
             return_value="gpt-5.4",
         ), patch(
-            "hermes_cli.auth.deactivate_provider",
+            "morpheus_cli.auth.deactivate_provider",
         ):
             _model_flow_copilot_acp(load_config(), "old-model")
 

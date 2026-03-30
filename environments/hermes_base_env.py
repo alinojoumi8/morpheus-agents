@@ -1,10 +1,10 @@
 """
-HermesAgentBaseEnv -- Abstract Base Environment for Hermes-Agent + Atropos
+MorpheusAgentBaseEnv -- Abstract Base Environment for Morpheus-Agent + Atropos
 
-Provides the Atropos integration plumbing that all hermes-agent environments share:
+Provides the Atropos integration plumbing that all morpheus-agent environments share:
 - Two-mode operation (OpenAI server for Phase 1, VLLM ManagedServer for Phase 2)
 - Per-group toolset/distribution resolution
-- Agent loop orchestration via HermesAgentLoop
+- Agent loop orchestration via MorpheusAgentLoop
 - ToolContext creation for reward functions
 - ScoredDataGroup construction from ManagedServer state
 
@@ -26,7 +26,7 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
-# Ensure the hermes-agent repo root is on sys.path so that imports like
+# Ensure the morpheus-agent repo root is on sys.path so that imports like
 # `from model_tools import ...` and `from environments.X import ...` work
 # regardless of where the script is invoked from.
 _repo_root = Path(__file__).resolve().parent.parent
@@ -36,7 +36,7 @@ if str(_repo_root) not in sys.path:
 from dotenv import load_dotenv
 from pydantic import Field
 
-# Load API keys from hermes-agent/.env so all environments can access them
+# Load API keys from morpheus-agent/.env so all environments can access them
 _env_path = _repo_root / ".env"
 if _env_path.exists():
     load_dotenv(dotenv_path=_env_path)
@@ -60,19 +60,19 @@ from atroposlib.envs.server_handling.server_manager import (
 )
 from atroposlib.type_definitions import Item
 
-from environments.agent_loop import AgentResult, HermesAgentLoop
+from environments.agent_loop import AgentResult, MorpheusAgentLoop
 from environments.tool_context import ToolContext
 
-# Import hermes-agent toolset infrastructure
+# Import morpheus-agent toolset infrastructure
 from model_tools import get_tool_definitions
 from toolset_distributions import sample_toolsets_from_distribution
 
 logger = logging.getLogger(__name__)
 
 
-class HermesAgentEnvConfig(BaseEnvConfig):
+class MorpheusAgentEnvConfig(BaseEnvConfig):
     """
-    Configuration for hermes-agent Atropos environments.
+    Configuration for morpheus-agent Atropos environments.
 
     Extends BaseEnvConfig with agent-specific settings for toolsets,
     terminal backend, dataset loading, and tool call parsing.
@@ -154,7 +154,7 @@ class HermesAgentEnvConfig(BaseEnvConfig):
 
     # --- Phase 2: Tool call parsing ---
     tool_call_parser: str = Field(
-        default="hermes",
+        default="morpheus",
         description="Tool call parser name for Phase 2 (VLLM server type). "
         "Ignored in Phase 1 (OpenAI server type where VLLM parses natively). "
         "Options: hermes, mistral, llama3_json, qwen, deepseek_v3, etc.",
@@ -177,9 +177,9 @@ class HermesAgentEnvConfig(BaseEnvConfig):
     )
 
 
-class HermesAgentBaseEnv(BaseEnv):
+class MorpheusAgentBaseEnv(BaseEnv):
     """
-    Abstract base environment for hermes-agent Atropos integration.
+    Abstract base environment for morpheus-agent Atropos integration.
 
     Handles two modes of operation:
     - Phase 1 (OpenAI server type): Uses server.chat_completion() directly.
@@ -199,12 +199,12 @@ class HermesAgentBaseEnv(BaseEnv):
         evaluate()        -- Periodic evaluation
     """
 
-    name: Optional[str] = "hermes-agent"
-    env_config_cls = HermesAgentEnvConfig
+    name: Optional[str] = "morpheus-agent"
+    env_config_cls = MorpheusAgentEnvConfig
 
     def __init__(
         self,
-        config: HermesAgentEnvConfig,
+        config: MorpheusAgentEnvConfig,
         server_configs: Union[ServerBaseline, List[APIServerConfig]],
         slurm=False,
         testing=False,
@@ -481,7 +481,7 @@ class HermesAgentBaseEnv(BaseEnv):
                     tokenizer=self.tokenizer,
                     preserve_think_blocks=bool(self.config.thinking_mode),
                 ) as managed:
-                    agent = HermesAgentLoop(
+                    agent = MorpheusAgentLoop(
                         server=managed,
                         tool_schemas=tools,
                         valid_tool_names=valid_names,
@@ -498,7 +498,7 @@ class HermesAgentBaseEnv(BaseEnv):
                     "ManagedServer not available (OpenAI server?). "
                     "Falling back to direct server mode."
                 )
-                agent = HermesAgentLoop(
+                agent = MorpheusAgentLoop(
                     server=self.server,
                     tool_schemas=tools,
                     valid_tool_names=valid_names,
@@ -511,7 +511,7 @@ class HermesAgentBaseEnv(BaseEnv):
                 result = await agent.run(messages)
         else:
             # Phase 1: OpenAI server -- native tool_calls, placeholder tokens
-            agent = HermesAgentLoop(
+            agent = MorpheusAgentLoop(
                 server=self.server,
                 tool_schemas=tools,
                 valid_tool_names=valid_names,
@@ -645,7 +645,7 @@ class HermesAgentBaseEnv(BaseEnv):
         Score the rollout. Has full access to:
         - item: the original dataset item (ground truth, test commands, etc.)
         - result: AgentResult with full messages, turn count, reasoning, etc.
-        - ctx: ToolContext -- call ANY hermes-agent tool (terminal, file, web,
+        - ctx: ToolContext -- call ANY morpheus-agent tool (terminal, file, web,
                browser, vision...) scoped to this rollout's sandbox. Nothing
                is off-limits.
 

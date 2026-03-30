@@ -1,12 +1,12 @@
 ---
 sidebar_position: 8
 title: "Session Storage"
-description: "How Hermes stores sessions in SQLite, maintains lineage, and exposes recall/search"
+description: "How Morpheus stores sessions in SQLite, maintains lineage, and exposes recall/search"
 ---
 
 # Session Storage
 
-Hermes uses a SQLite-backed session store as the main source of truth for historical conversation state.
+Morpheus uses a SQLite-backed session store as the main source of truth for historical conversation state.
 
 Primary files:
 
@@ -19,7 +19,7 @@ Primary files:
 The primary store lives at:
 
 ```text
-~/.hermes/state.db
+~/.morpheus/state.db
 ```
 
 It contains:
@@ -45,7 +45,7 @@ Examples of important session metadata:
 
 ## Lineage
 
-When Hermes compresses a conversation, it can continue in a new session ID while preserving ancestry via `parent_session_id`.
+When Morpheus compresses a conversation, it can continue in a new session ID while preserving ancestry via `parent_session_id`.
 
 This means resuming/searching can follow session families instead of treating each compressed shard as unrelated.
 

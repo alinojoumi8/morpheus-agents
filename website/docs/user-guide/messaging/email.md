@@ -1,12 +1,12 @@
 ---
 sidebar_position: 7
 title: "Email"
-description: "Set up Hermes Agent as an email assistant via IMAP/SMTP"
+description: "Set up Morpheus Agent as an email assistant via IMAP/SMTP"
 ---
 
 # Email Setup
 
-Hermes can receive and reply to emails using standard IMAP and SMTP protocols. Send an email to the agent's address and it replies in-thread — no special client or bot API needed. Works with Gmail, Outlook, Yahoo, Fastmail, or any provider that supports IMAP/SMTP.
+Morpheus can receive and reply to emails using standard IMAP and SMTP protocols. Send an email to the agent's address and it replies in-thread — no special client or bot API needed. Works with Gmail, Outlook, Yahoo, Fastmail, or any provider that supports IMAP/SMTP.
 
 :::info No External Dependencies
 The Email adapter uses Python's built-in `imaplib`, `smtplib`, and `email` modules. No additional packages or external services are required.
@@ -16,7 +16,7 @@ The Email adapter uses Python's built-in `imaplib`, `smtplib`, and `email` modul
 
 ## Prerequisites
 
-- **A dedicated email account** for your Hermes agent (don't use your personal email)
+- **A dedicated email account** for your Morpheus agent (don't use your personal email)
 - **IMAP enabled** on the email account
 - **An app password** if using Gmail or another provider with 2FA
 
@@ -43,7 +43,7 @@ Most email providers support IMAP/SMTP. Check your provider's documentation for:
 
 ---
 
-## Step 1: Configure Hermes
+## Step 1: Configure Morpheus
 
 The easiest way:
 
@@ -55,7 +55,7 @@ Select **Email** from the platform menu. The wizard prompts for your email addre
 
 ### Manual Configuration
 
-Add to `~/.hermes/.env`:
+Add to `~/.morpheus/.env`:
 
 ```bash
 # Required
@@ -134,7 +134,7 @@ When enabled, attachment and inline parts are skipped before payload decoding. T
 
 ## Access Control
 
-Email access follows the same pattern as all other Hermes platforms:
+Email access follows the same pattern as all other Morpheus platforms:
 
 1. **`EMAIL_ALLOWED_USERS` set** → only emails from those addresses are processed
 2. **No allowlist set** → unknown senders get a pairing code
@@ -168,7 +168,7 @@ Email access follows the same pattern as all other Hermes platforms:
 
 - Use **App Passwords** instead of your main password (required for Gmail with 2FA)
 - Set `EMAIL_ALLOWED_USERS` to restrict who can interact with the agent
-- The password is stored in `~/.hermes/.env` — protect this file (`chmod 600`)
+- The password is stored in `~/.morpheus/.env` — protect this file (`chmod 600`)
 - IMAP uses SSL (port 993) and SMTP uses STARTTLS (port 587) by default — connections are encrypted
 
 ---

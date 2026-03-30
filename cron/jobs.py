@@ -1,8 +1,8 @@
 """
 Cron job storage and management.
 
-Jobs are stored in ~/.hermes/cron/jobs.json
-Output is saved to ~/.hermes/cron/output/{job_id}/{timestamp}.md
+Jobs are stored in ~/.morpheus/cron/jobs.json
+Output is saved to ~/.morpheus/cron/output/{job_id}/{timestamp}.md
 """
 
 import copy
@@ -14,12 +14,12 @@ import re
 import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Optional, Dict, List, Any
 
 logger = logging.getLogger(__name__)
 
-from hermes_time import now as _hermes_now
+from morpheus_time import now as _hermes_now
 
 try:
     from croniter import croniter
@@ -31,8 +31,8 @@ except ImportError:
 # Configuration
 # =============================================================================
 
-HERMES_DIR = get_hermes_home()
-CRON_DIR = HERMES_DIR / "cron"
+MORPHEUS_DIR = get_morpheus_home()
+CRON_DIR = MORPHEUS_DIR / "cron"
 JOBS_FILE = CRON_DIR / "jobs.json"
 OUTPUT_DIR = CRON_DIR / "output"
 ONESHOT_GRACE_SECONDS = 120
@@ -204,13 +204,13 @@ def parse_schedule(schedule: str) -> Dict[str, Any]:
 
 
 def _ensure_aware(dt: datetime) -> datetime:
-    """Return a timezone-aware datetime in Hermes configured timezone.
+    """Return a timezone-aware datetime in Morpheus configured timezone.
 
     Backward compatibility:
     - Older stored timestamps may be naive.
     - Naive values are interpreted as *system-local wall time* (the timezone
       `datetime.now()` used when they were created), then converted to the
-      configured Hermes timezone.
+      configured Morpheus timezone.
 
     This preserves relative ordering for legacy naive timestamps across
     timezone changes and avoids false not-due results.

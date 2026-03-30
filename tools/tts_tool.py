@@ -12,7 +12,7 @@ Output formats:
 - Opus (.ogg) for Telegram voice bubbles (requires ffmpeg for Edge TTS)
 - MP3 (.mp3) for everything else (CLI, Discord, WhatsApp)
 
-Configuration is loaded from ~/.hermes/config.yaml under the 'tts:' key.
+Configuration is loaded from ~/.morpheus/config.yaml under the 'tts:' key.
 The user chooses the provider and voice; the model just sends text.
 
 Usage:
@@ -33,7 +33,7 @@ import subprocess
 import tempfile
 import threading
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Callable, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
@@ -74,26 +74,26 @@ DEFAULT_ELEVENLABS_MODEL_ID = "eleven_multilingual_v2"
 DEFAULT_ELEVENLABS_STREAMING_MODEL_ID = "eleven_flash_v2_5"
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini-tts"
 DEFAULT_OPENAI_VOICE = "alloy"
-DEFAULT_OUTPUT_DIR = str(get_hermes_home() / "audio_cache")
+DEFAULT_OUTPUT_DIR = str(get_morpheus_home() / "audio_cache")
 MAX_TEXT_LENGTH = 4000
 
 
 # ===========================================================================
-# Config loader -- reads tts: section from ~/.hermes/config.yaml
+# Config loader -- reads tts: section from ~/.morpheus/config.yaml
 # ===========================================================================
 def _load_tts_config() -> Dict[str, Any]:
     """
-    Load TTS configuration from ~/.hermes/config.yaml.
+    Load TTS configuration from ~/.morpheus/config.yaml.
 
     Returns a dict with provider settings. Falls back to defaults
     for any missing fields.
     """
     try:
-        from hermes_cli.config import load_config
+        from morpheus_cli.config import load_config
         config = load_config()
         return config.get("tts", {})
     except ImportError:
-        logger.debug("hermes_cli.config not available, using default TTS config")
+        logger.debug("morpheus_cli.config not available, using default TTS config")
         return {}
     except Exception as e:
         logger.warning("Failed to load TTS config: %s", e, exc_info=True)
@@ -347,7 +347,7 @@ def text_to_speech_tool(
     """
     Convert text to speech audio.
 
-    Reads provider/voice config from ~/.hermes/config.yaml (tts: section).
+    Reads provider/voice config from ~/.morpheus/config.yaml (tts: section).
     The model sends text; the user configures voice and provider.
 
     On messaging platforms, the returned MEDIA:<path> tag is intercepted
@@ -828,7 +828,7 @@ TTS_SCHEMA = {
             },
             "output_path": {
                 "type": "string",
-                "description": "Optional custom file path to save the audio. Defaults to ~/.hermes/audio_cache/<timestamp>.mp3"
+                "description": "Optional custom file path to save the audio. Defaults to ~/.morpheus/audio_cache/<timestamp>.mp3"
             }
         },
         "required": ["text"]

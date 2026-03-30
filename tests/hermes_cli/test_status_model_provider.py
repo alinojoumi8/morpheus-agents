@@ -1,13 +1,13 @@
-"""Tests for hermes_cli.status model/provider display."""
+"""Tests for morpheus_cli.status model/provider display."""
 
 from types import SimpleNamespace
 
 
 def _patch_common_status_deps(monkeypatch, status_mod, tmp_path, *, openai_base_url=""):
-    import hermes_cli.auth as auth_mod
+    import morpheus_cli.auth as auth_mod
 
     monkeypatch.setattr(status_mod, "get_env_path", lambda: tmp_path / ".env", raising=False)
-    monkeypatch.setattr(status_mod, "get_hermes_home", lambda: tmp_path, raising=False)
+    monkeypatch.setattr(status_mod, "get_morpheus_home", lambda: tmp_path, raising=False)
 
     def _get_env_value(name: str):
         if name == "OPENAI_BASE_URL":
@@ -25,7 +25,7 @@ def _patch_common_status_deps(monkeypatch, status_mod, tmp_path, *, openai_base_
 
 
 def test_show_status_displays_configured_dict_model_and_provider_label(monkeypatch, capsys, tmp_path):
-    from hermes_cli import status as status_mod
+    from morpheus_cli import status as status_mod
 
     _patch_common_status_deps(monkeypatch, status_mod, tmp_path)
     monkeypatch.setattr(
@@ -46,7 +46,7 @@ def test_show_status_displays_configured_dict_model_and_provider_label(monkeypat
 
 
 def test_show_status_displays_legacy_string_model_and_custom_endpoint(monkeypatch, capsys, tmp_path):
-    from hermes_cli import status as status_mod
+    from morpheus_cli import status as status_mod
 
     _patch_common_status_deps(monkeypatch, status_mod, tmp_path, openai_base_url="http://localhost:8080/v1")
     monkeypatch.setattr(status_mod, "load_config", lambda: {"model": "qwen3:latest"}, raising=False)

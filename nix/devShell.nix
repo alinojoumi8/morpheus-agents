@@ -10,7 +10,7 @@
         ];
 
         shellHook = ''
-          echo "Hermes Agent dev shell"
+          echo "Morpheus Agent dev shell"
 
           # Composite stamp: changes when nix python or uv change
           STAMP_VALUE="${python}:${pkgs.uv}"

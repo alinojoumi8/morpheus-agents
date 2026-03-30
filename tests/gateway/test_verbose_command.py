@@ -48,7 +48,7 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_disabled_by_default(self, tmp_path, monkeypatch):
         """When tool_progress_command is false, /verbose returns an info message."""
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         config_path = hermes_home / "config.yaml"
         config_path.write_text("display:\n  tool_progress: all\n", encoding="utf-8")
@@ -64,7 +64,7 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_enabled_cycles_mode(self, tmp_path, monkeypatch):
         """When enabled, /verbose cycles tool_progress mode."""
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         config_path = hermes_home / "config.yaml"
         config_path.write_text(
@@ -87,7 +87,7 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_cycles_through_all_modes(self, tmp_path, monkeypatch):
         """Calling /verbose repeatedly cycles through all four modes."""
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         config_path = hermes_home / "config.yaml"
         config_path.write_text(
@@ -109,7 +109,7 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_defaults_to_all_when_no_tool_progress_set(self, tmp_path, monkeypatch):
         """When tool_progress is not in config, defaults to 'all' then cycles to verbose."""
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         config_path = hermes_home / "config.yaml"
         config_path.write_text(
@@ -130,7 +130,7 @@ class TestVerboseCommand:
     @pytest.mark.asyncio
     async def test_no_config_file_returns_disabled(self, tmp_path, monkeypatch):
         """When config.yaml doesn't exist, command reports disabled."""
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         # No config.yaml
 
@@ -142,5 +142,5 @@ class TestVerboseCommand:
 
     def test_verbose_is_in_gateway_known_commands(self):
         """The /verbose command is recognized by the gateway dispatch."""
-        from hermes_cli.commands import GATEWAY_KNOWN_COMMANDS
+        from morpheus_cli.commands import GATEWAY_KNOWN_COMMANDS
         assert "verbose" in GATEWAY_KNOWN_COMMANDS

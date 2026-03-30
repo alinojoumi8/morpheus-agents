@@ -31,13 +31,13 @@ import re
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Dict, Any, List, Optional
 
 logger = logging.getLogger(__name__)
 
 # Where memory files live
-MEMORY_DIR = get_hermes_home() / "memories"
+MEMORY_DIR = get_morpheus_home() / "memories"
 
 ENTRY_DELIMITER = "\n§\n"
 
@@ -62,7 +62,7 @@ _MEMORY_THREAT_PATTERNS = [
     # Persistence via shell rc
     (r'authorized_keys', "ssh_backdoor"),
     (r'\$HOME/\.ssh|\~/\.ssh', "ssh_access"),
-    (r'\$HOME/\.hermes/\.env|\~/\.hermes/\.env', "hermes_env"),
+    (r'\$HOME/\.morpheus/\.env|\~/\.morpheus/\.env', "hermes_env"),
 ]
 
 # Subset of invisible chars for injection detection

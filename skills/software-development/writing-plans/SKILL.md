@@ -2,7 +2,7 @@
 name: writing-plans
 description: Use when you have a spec or requirements for a multi-step task. Creates comprehensive implementation plans with bite-sized tasks, exact file paths, and complete code examples.
 version: 1.1.0
-author: Hermes Agent (adapted from obra/superpowers)
+author: Morpheus Agent (adapted from obra/superpowers)
 license: MIT
 metadata:
   hermes:
@@ -70,7 +70,7 @@ Every plan MUST start with:
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
+> **For Morpheus:** Use subagent-driven-development skill to implement this plan task-by-task.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -140,7 +140,7 @@ Read and understand:
 
 ### Step 2: Explore the Codebase
 
-Use Hermes tools to understand the project:
+Use Morpheus tools to understand the project:
 
 ```python
 # Understand project structure

@@ -1,4 +1,4 @@
-"""Tests for hermes_cli.skin_engine — the data-driven skin/theme system."""
+"""Tests for morpheus_cli.skin_engine — the data-driven skin/theme system."""
 
 import json
 import os
@@ -10,7 +10,7 @@ from unittest.mock import patch
 @pytest.fixture(autouse=True)
 def reset_skin_state():
     """Reset skin engine state between tests."""
-    from hermes_cli import skin_engine
+    from morpheus_cli import skin_engine
     skin_engine._active_skin = None
     skin_engine._active_skin_name = "default"
     yield
@@ -20,7 +20,7 @@ def reset_skin_state():
 
 class TestSkinConfig:
     def test_default_skin_has_required_fields(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("default")
         assert skin.name == "default"
         assert skin.tool_prefix == "┊"
@@ -29,33 +29,33 @@ class TestSkinConfig:
         assert "agent_name" in skin.branding
 
     def test_get_color_with_fallback(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("default")
         assert skin.get_color("banner_title") == "#FFD700"
         assert skin.get_color("nonexistent", "#000") == "#000"
 
     def test_get_branding_with_fallback(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("default")
-        assert skin.get_branding("agent_name") == "Hermes Agent"
+        assert skin.get_branding("agent_name") == "Morpheus Agent"
         assert skin.get_branding("nonexistent", "fallback") == "fallback"
 
     def test_get_spinner_list_empty_for_default(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("default")
         # Default skin has no custom spinner config
         assert skin.get_spinner_list("waiting_faces") == []
         assert skin.get_spinner_list("thinking_verbs") == []
 
     def test_get_spinner_wings_empty_for_default(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("default")
         assert skin.get_spinner_wings() == []
 
 
 class TestBuiltinSkins:
     def test_ares_skin_loads(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("ares")
         assert skin.name == "ares"
         assert skin.tool_prefix == "╎"
@@ -66,7 +66,7 @@ class TestBuiltinSkins:
         assert skin.get_branding("agent_name") == "Ares Agent"
 
     def test_ares_has_spinner_customization(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("ares")
         assert len(skin.get_spinner_list("waiting_faces")) > 0
         assert len(skin.get_spinner_list("thinking_faces")) > 0
@@ -77,24 +77,24 @@ class TestBuiltinSkins:
         assert len(wings[0]) == 2
 
     def test_mono_skin_loads(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("mono")
         assert skin.name == "mono"
         assert skin.get_color("banner_title") == "#e6edf3"
 
     def test_slate_skin_loads(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("slate")
         assert skin.name == "slate"
         assert skin.get_color("banner_title") == "#7eb8f6"
 
     def test_unknown_skin_falls_back_to_default(self):
-        from hermes_cli.skin_engine import load_skin
+        from morpheus_cli.skin_engine import load_skin
         skin = load_skin("nonexistent_skin_xyz")
         assert skin.name == "default"
 
     def test_all_builtin_skins_have_complete_colors(self):
-        from hermes_cli.skin_engine import _BUILTIN_SKINS, _build_skin_config
+        from morpheus_cli.skin_engine import _BUILTIN_SKINS, _build_skin_config
         required_keys = ["banner_border", "banner_title", "banner_accent",
                          "banner_dim", "banner_text", "ui_accent"]
         for name, data in _BUILTIN_SKINS.items():
@@ -105,19 +105,19 @@ class TestBuiltinSkins:
 
 class TestSkinManagement:
     def test_set_active_skin(self):
-        from hermes_cli.skin_engine import set_active_skin, get_active_skin, get_active_skin_name
+        from morpheus_cli.skin_engine import set_active_skin, get_active_skin, get_active_skin_name
         skin = set_active_skin("ares")
         assert skin.name == "ares"
         assert get_active_skin_name() == "ares"
         assert get_active_skin().name == "ares"
 
     def test_get_active_skin_defaults(self):
-        from hermes_cli.skin_engine import get_active_skin
+        from morpheus_cli.skin_engine import get_active_skin
         skin = get_active_skin()
         assert skin.name == "default"
 
     def test_list_skins_includes_builtins(self):
-        from hermes_cli.skin_engine import list_skins
+        from morpheus_cli.skin_engine import list_skins
         skins = list_skins()
         names = [s["name"] for s in skins]
         assert "default" in names
@@ -129,19 +129,19 @@ class TestSkinManagement:
             assert s["source"] == "builtin"
 
     def test_init_skin_from_config(self):
-        from hermes_cli.skin_engine import init_skin_from_config, get_active_skin_name
+        from morpheus_cli.skin_engine import init_skin_from_config, get_active_skin_name
         init_skin_from_config({"display": {"skin": "ares"}})
         assert get_active_skin_name() == "ares"
 
     def test_init_skin_from_empty_config(self):
-        from hermes_cli.skin_engine import init_skin_from_config, get_active_skin_name
+        from morpheus_cli.skin_engine import init_skin_from_config, get_active_skin_name
         init_skin_from_config({})
         assert get_active_skin_name() == "default"
 
 
 class TestUserSkins:
     def test_load_user_skin_from_yaml(self, tmp_path, monkeypatch):
-        from hermes_cli.skin_engine import load_skin, _skins_dir
+        from morpheus_cli.skin_engine import load_skin, _skins_dir
         # Create a user skin YAML
         skins_dir = tmp_path / "skins"
         skins_dir.mkdir()
@@ -157,7 +157,7 @@ class TestUserSkins:
         skin_file.write_text(yaml.dump(skin_data))
 
         # Patch skins dir
-        monkeypatch.setattr("hermes_cli.skin_engine._skins_dir", lambda: skins_dir)
+        monkeypatch.setattr("morpheus_cli.skin_engine._skins_dir", lambda: skins_dir)
 
         skin = load_skin("custom")
         assert skin.name == "custom"
@@ -168,7 +168,7 @@ class TestUserSkins:
         assert skin.get_color("banner_border") == "#CD7F32"  # from default
 
     def test_list_skins_includes_user_skins(self, tmp_path, monkeypatch):
-        from hermes_cli.skin_engine import list_skins
+        from morpheus_cli.skin_engine import list_skins
         skins_dir = tmp_path / "skins"
         skins_dir.mkdir()
         import yaml
@@ -176,7 +176,7 @@ class TestUserSkins:
             "name": "pirate",
             "description": "Arr matey",
         }))
-        monkeypatch.setattr("hermes_cli.skin_engine._skins_dir", lambda: skins_dir)
+        monkeypatch.setattr("morpheus_cli.skin_engine._skins_dir", lambda: skins_dir)
 
         skins = list_skins()
         names = [s["name"] for s in skins]
@@ -191,7 +191,7 @@ class TestDisplayIntegration:
         assert get_skin_tool_prefix() == "┊"
 
     def test_get_skin_tool_prefix_custom(self):
-        from hermes_cli.skin_engine import set_active_skin
+        from morpheus_cli.skin_engine import set_active_skin
         from agent.display import get_skin_tool_prefix
         set_active_skin("ares")
         assert get_skin_tool_prefix() == "╎"
@@ -203,7 +203,7 @@ class TestDisplayIntegration:
         assert faces == KawaiiSpinner.KAWAII_WAITING
 
     def test_get_skin_faces_ares(self):
-        from hermes_cli.skin_engine import set_active_skin
+        from morpheus_cli.skin_engine import set_active_skin
         from agent.display import get_skin_faces, KawaiiSpinner
         set_active_skin("ares")
         faces = get_skin_faces("waiting_faces", KawaiiSpinner.KAWAII_WAITING)
@@ -215,14 +215,14 @@ class TestDisplayIntegration:
         assert verbs == KawaiiSpinner.THINKING_VERBS
 
     def test_get_skin_verbs_ares(self):
-        from hermes_cli.skin_engine import set_active_skin
+        from morpheus_cli.skin_engine import set_active_skin
         from agent.display import get_skin_verbs
         set_active_skin("ares")
         verbs = get_skin_verbs()
         assert "forging" in verbs
 
     def test_tool_message_uses_skin_prefix(self):
-        from hermes_cli.skin_engine import set_active_skin
+        from morpheus_cli.skin_engine import set_active_skin
         from agent.display import get_cute_tool_message
         set_active_skin("ares")
         msg = get_cute_tool_message("terminal", {"command": "ls"}, 0.5)
@@ -237,30 +237,30 @@ class TestDisplayIntegration:
 
 class TestCliBrandingHelpers:
     def test_active_prompt_symbol_default(self):
-        from hermes_cli.skin_engine import get_active_prompt_symbol
+        from morpheus_cli.skin_engine import get_active_prompt_symbol
 
         assert get_active_prompt_symbol() == "❯ "
 
     def test_active_prompt_symbol_ares(self):
-        from hermes_cli.skin_engine import set_active_skin, get_active_prompt_symbol
+        from morpheus_cli.skin_engine import set_active_skin, get_active_prompt_symbol
 
         set_active_skin("ares")
         assert get_active_prompt_symbol() == "⚔ ❯ "
 
     def test_active_help_header_ares(self):
-        from hermes_cli.skin_engine import set_active_skin, get_active_help_header
+        from morpheus_cli.skin_engine import set_active_skin, get_active_help_header
 
         set_active_skin("ares")
         assert get_active_help_header() == "(⚔) Available Commands"
 
     def test_active_goodbye_ares(self):
-        from hermes_cli.skin_engine import set_active_skin, get_active_goodbye
+        from morpheus_cli.skin_engine import set_active_skin, get_active_goodbye
 
         set_active_skin("ares")
         assert get_active_goodbye() == "Farewell, warrior! ⚔"
 
     def test_prompt_toolkit_style_overrides_cover_tui_classes(self):
-        from hermes_cli.skin_engine import set_active_skin, get_prompt_toolkit_style_overrides
+        from morpheus_cli.skin_engine import set_active_skin, get_prompt_toolkit_style_overrides
 
         set_active_skin("ares")
         overrides = get_prompt_toolkit_style_overrides()
@@ -298,7 +298,7 @@ class TestCliBrandingHelpers:
         assert required.issubset(overrides.keys())
 
     def test_prompt_toolkit_style_overrides_use_skin_colors(self):
-        from hermes_cli.skin_engine import (
+        from morpheus_cli.skin_engine import (
             set_active_skin,
             get_active_skin,
             get_prompt_toolkit_style_overrides,

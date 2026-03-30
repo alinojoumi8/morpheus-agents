@@ -3,7 +3,7 @@
 import os
 from types import SimpleNamespace
 
-import hermes_cli.gateway as gateway_cli
+import morpheus_cli.gateway as gateway_cli
 
 
 class TestSystemdServiceRefresh:

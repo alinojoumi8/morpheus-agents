@@ -1,25 +1,25 @@
 ---
 sidebar_position: 5
-title: "Use MCP with Hermes"
-description: "A practical guide to connecting MCP servers to Hermes Agent, filtering their tools, and using them safely in real workflows"
+title: "Use MCP with Morpheus"
+description: "A practical guide to connecting MCP servers to Morpheus Agent, filtering their tools, and using them safely in real workflows"
 ---
 
-# Use MCP with Hermes
+# Use MCP with Morpheus
 
-This guide shows how to actually use MCP with Hermes Agent in day-to-day workflows.
+This guide shows how to actually use MCP with Morpheus Agent in day-to-day workflows.
 
 If the feature page explains what MCP is, this guide is about how to get value from it quickly and safely.
 
 ## When should you use MCP?
 
 Use MCP when:
-- a tool already exists in MCP form and you do not want to build a native Hermes tool
-- you want Hermes to operate against a local or remote system through a clean RPC layer
+- a tool already exists in MCP form and you do not want to build a native Morpheus tool
+- you want Morpheus to operate against a local or remote system through a clean RPC layer
 - you want fine-grained per-server exposure control
-- you want to connect Hermes to internal APIs, databases, or company systems without modifying Hermes core
+- you want to connect Morpheus to internal APIs, databases, or company systems without modifying Morpheus core
 
 Do not use MCP when:
-- a built-in Hermes tool already solves the job well
+- a built-in Morpheus tool already solves the job well
 - the server exposes a huge dangerous tool surface and you are not prepared to filter it
 - you only need one very narrow integration and a native tool would be simpler and safer
 
@@ -27,9 +27,9 @@ Do not use MCP when:
 
 Think of MCP as an adapter layer:
 
-- Hermes remains the agent
+- Morpheus remains the agent
 - MCP servers contribute tools
-- Hermes discovers those tools at startup or reload time
+- Morpheus discovers those tools at startup or reload time
 - the model can use them like normal tools
 - you control how much of each server is visible
 
@@ -37,12 +37,12 @@ That last part matters. Good MCP usage is not just “connect everything.” It 
 
 ## Step 1: install MCP support
 
-If you installed Hermes with the standard install script, MCP support is already included (the installer runs `uv pip install -e ".[all]"`).
+If you installed Morpheus with the standard install script, MCP support is already included (the installer runs `uv pip install -e ".[all]"`).
 
 If you installed without extras and need to add MCP separately:
 
 ```bash
-cd ~/.hermes/hermes-agent
+cd ~/.morpheus/morpheus-agent
 uv pip install -e ".[mcp]"
 ```
 
@@ -63,7 +63,7 @@ mcp_servers:
     args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/my-project"]
 ```
 
-Then start Hermes:
+Then start Morpheus:
 
 ```bash
 hermes chat
@@ -79,8 +79,8 @@ Inspect this project and summarize the repo layout.
 
 You can verify MCP in a few ways:
 
-- Hermes banner/status should show MCP integration when configured
-- ask Hermes what tools it has available
+- Morpheus banner/status should show MCP integration when configured
+- ask Morpheus what tools it has available
 - use `/reload-mcp` after config changes
 - check logs if the server failed to connect
 
@@ -134,14 +134,14 @@ mcp_servers:
 
 ## What does filtering actually affect?
 
-There are two categories of MCP-exposed functionality in Hermes:
+There are two categories of MCP-exposed functionality in Morpheus:
 
 1. Server-native MCP tools
 - filtered with:
   - `tools.include`
   - `tools.exclude`
 
-2. Hermes-added utility wrappers
+2. Morpheus-added utility wrappers
 - filtered with:
   - `tools.resources`
   - `tools.prompts`
@@ -160,13 +160,13 @@ These wrappers only appear if:
 - your config allows them, and
 - the MCP server session actually supports those capabilities
 
-So Hermes will not pretend a server has resources/prompts if it does not.
+So Morpheus will not pretend a server has resources/prompts if it does not.
 
 ## Common patterns
 
 ### Pattern 1: local project assistant
 
-Use MCP for a repo-local filesystem or git server when you want Hermes to reason over a bounded workspace.
+Use MCP for a repo-local filesystem or git server when you want Morpheus to reason over a bounded workspace.
 
 ```yaml
 mcp_servers:
@@ -278,7 +278,7 @@ mcp_servers:
       resources: false
 ```
 
-Start Hermes and ask:
+Start Morpheus and ask:
 
 ```text
 Search the codebase for references to MCP and summarize the main integration points.
@@ -318,13 +318,13 @@ mcp_servers:
     args: ["-y", "@modelcontextprotocol/server-filesystem", "/home/user/project"]
 ```
 
-Now Hermes can combine them:
+Now Morpheus can combine them:
 
 ```text
 Inspect the local project files, then create a GitHub issue summarizing the bug you find.
 ```
 
-That is where MCP gets powerful: multi-system workflows without changing Hermes core.
+That is where MCP gets powerful: multi-system workflows without changing Morpheus core.
 
 ## Safe usage recommendations
 
@@ -383,7 +383,7 @@ Check:
 
 ### "Why do I see fewer tools than the MCP server advertises?"
 
-Because Hermes now respects your per-server policy and capability-aware registration. That is expected, and usually desirable.
+Because Morpheus now respects your per-server policy and capability-aware registration. That is expected, and usually desirable.
 
 ### "How do I remove an MCP server without deleting the config?"
 

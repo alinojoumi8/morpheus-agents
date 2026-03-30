@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from hermes_cli import config as hermes_config
-from hermes_cli import main as hermes_main
+from morpheus_cli import config as hermes_config
+from morpheus_cli import main as hermes_main
 
 
 def test_stash_local_changes_if_needed_returns_none_when_tree_clean(monkeypatch, tmp_path):
@@ -31,7 +31,7 @@ def test_stash_local_changes_if_needed_returns_specific_stash_commit(monkeypatch
     def fake_run(cmd, **kwargs):
         calls.append((cmd, kwargs))
         if cmd[-2:] == ["status", "--porcelain"]:
-            return SimpleNamespace(stdout=" M hermes_cli/main.py\n?? notes.txt\n", returncode=0)
+            return SimpleNamespace(stdout=" M morpheus_cli/main.py\n?? notes.txt\n", returncode=0)
         if cmd[1:4] == ["stash", "push", "--include-untracked"]:
             return SimpleNamespace(stdout="Saved working directory\n", returncode=0)
         if cmd[-3:] == ["rev-parse", "--verify", "refs/stash"]:
@@ -219,7 +219,7 @@ def test_restore_stashed_changes_prompts_before_reset_on_conflict(monkeypatch, t
         if cmd[1:3] == ["stash", "apply"]:
             return SimpleNamespace(stdout="conflict output\n", stderr="conflict stderr\n", returncode=1)
         if cmd[1:3] == ["diff", "--name-only"]:
-            return SimpleNamespace(stdout="hermes_cli/main.py\n", stderr="", returncode=0)
+            return SimpleNamespace(stdout="morpheus_cli/main.py\n", stderr="", returncode=0)
         if cmd[1:3] == ["reset", "--hard"]:
             return SimpleNamespace(stdout="", stderr="", returncode=0)
         raise AssertionError(f"unexpected command: {cmd}")
@@ -232,7 +232,7 @@ def test_restore_stashed_changes_prompts_before_reset_on_conflict(monkeypatch, t
 
     out = capsys.readouterr().out
     assert "Conflicted files:" in out
-    assert "hermes_cli/main.py" in out
+    assert "morpheus_cli/main.py" in out
     assert "stashed changes are preserved" in out
     assert "Reset working tree to clean state" in out
     assert "Working tree reset to clean state" in out
@@ -294,7 +294,7 @@ def test_restore_stashed_changes_auto_resets_non_interactive(monkeypatch, tmp_pa
 def test_stash_local_changes_if_needed_raises_when_stash_ref_missing(monkeypatch, tmp_path):
     def fake_run(cmd, **kwargs):
         if cmd[-2:] == ["status", "--porcelain"]:
-            return SimpleNamespace(stdout=" M hermes_cli/main.py\n", returncode=0)
+            return SimpleNamespace(stdout=" M morpheus_cli/main.py\n", returncode=0)
         if cmd[1:4] == ["stash", "push", "--include-untracked"]:
             return SimpleNamespace(stdout="Saved working directory\n", returncode=0)
         if cmd[-3:] == ["rev-parse", "--verify", "refs/stash"]:

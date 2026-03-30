@@ -27,12 +27,12 @@ from pathlib import Path
 import fire
 import yaml
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from ~/.morpheus/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-_hermes_home = get_hermes_home()
+_hermes_home = get_morpheus_home()
 _project_env = Path(__file__).parent / '.env'
 
-from hermes_cli.env_loader import load_hermes_dotenv
+from morpheus_cli.env_loader import load_hermes_dotenv
 
 _loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
 for _env_path in _loaded_env_paths:
@@ -46,7 +46,7 @@ if tinker_atropos_dir.exists():
     os.environ['HERMES_QUIET'] = '1'  # Disable temp subdirectory creation
     print(f"📂 Terminal working directory: {tinker_atropos_dir}")
 else:
-    # Fall back to hermes-agent directory if submodule not found
+    # Fall back to morpheus-agent directory if submodule not found
     os.environ['TERMINAL_CWD'] = str(Path(__file__).parent)
     os.environ['HERMES_QUIET'] = '1'
     print(f"⚠️  tinker-atropos submodule not found, using: {Path(__file__).parent}")
@@ -60,7 +60,7 @@ from tools.rl_training_tool import get_missing_keys
 # Config Loading
 # ============================================================================
 
-from hermes_constants import get_hermes_home, OPENROUTER_BASE_URL
+from morpheus_constants import get_morpheus_home, OPENROUTER_BASE_URL
 
 DEFAULT_MODEL = "anthropic/claude-opus-4.5"
 DEFAULT_BASE_URL = OPENROUTER_BASE_URL
@@ -68,7 +68,7 @@ DEFAULT_BASE_URL = OPENROUTER_BASE_URL
 
 def load_hermes_config() -> dict:
     """
-    Load configuration from ~/.hermes/config.yaml.
+    Load configuration from ~/.morpheus/config.yaml.
     
     Returns:
         dict: Configuration with model, base_url, etc.
@@ -249,7 +249,7 @@ def main(
     
     Args:
         task: The training task/goal (e.g., "Train a model on GSM8k for math")
-        model: Model to use for the agent (reads from ~/.hermes/config.yaml if not provided)
+        model: Model to use for the agent (reads from ~/.morpheus/config.yaml if not provided)
         api_key: OpenRouter API key (uses OPENROUTER_API_KEY env var if not provided)
         base_url: API base URL (reads from config or defaults to OpenRouter)
         max_iterations: Maximum agent iterations (default: 200 for long workflows)
@@ -272,7 +272,7 @@ def main(
         # Check server status
         python rl_cli.py --check-server
     """
-    # Load config from ~/.hermes/config.yaml
+    # Load config from ~/.morpheus/config.yaml
     config = load_hermes_config()
     
     # Use config values if not explicitly provided
@@ -297,7 +297,7 @@ def main(
             missing = get_missing_keys()
             if missing:
                 print(f"\n⚠️  Missing API keys: {', '.join(missing)}")
-                print("   Add them to ~/.hermes/.env")
+                print("   Add them to ~/.morpheus/.env")
             else:
                 print("✅ API keys configured")
         else:

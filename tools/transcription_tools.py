@@ -32,7 +32,7 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 
 logger = logging.getLogger(__name__)
 
@@ -78,14 +78,14 @@ _local_model_name: Optional[str] = None
 
 
 def get_stt_model_from_config() -> Optional[str]:
-    """Read the STT model name from ~/.hermes/config.yaml.
+    """Read the STT model name from ~/.morpheus/config.yaml.
 
     Returns the value of ``stt.model`` if present, otherwise ``None``.
     Silently returns ``None`` on any error (missing file, bad YAML, etc.).
     """
     try:
         import yaml
-        cfg_path = get_hermes_home() / "config.yaml"
+        cfg_path = get_morpheus_home() / "config.yaml"
         if cfg_path.exists():
             with open(cfg_path) as f:
                 data = yaml.safe_load(f) or {}
@@ -98,7 +98,7 @@ def get_stt_model_from_config() -> Optional[str]:
 def _load_stt_config() -> dict:
     """Load the ``stt`` section from user config, falling back to defaults."""
     try:
-        from hermes_cli.config import load_config
+        from morpheus_cli.config import load_config
         return load_config().get("stt", {})
     except Exception:
         return {}

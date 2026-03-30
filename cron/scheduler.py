@@ -4,7 +4,7 @@ Cron job scheduler - executes due jobs.
 Provides tick() which checks for due jobs and runs them. The gateway
 calls this every 60 seconds from a background thread.
 
-Uses a file-based lock (~/.hermes/cron/.tick.lock) so only one tick
+Uses a file-based lock (~/.morpheus/cron/.tick.lock) so only one tick
 runs at a time if multiple processes overlap.
 """
 
@@ -25,10 +25,10 @@ except ImportError:
     except ImportError:
         msvcrt = None
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Optional
 
-from hermes_time import now as _hermes_now
+from morpheus_time import now as _hermes_now
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,8 @@ from cron.jobs import get_due_jobs, mark_job_run, save_job_output, advance_next_
 # locally for audit.
 SILENT_MARKER = "[SILENT]"
 
-# Resolve Hermes home directory (respects HERMES_HOME override)
-_hermes_home = get_hermes_home()
+# Resolve Morpheus home directory (respects MORPHEUS_HOME override)
+_hermes_home = get_morpheus_home()
 
 # File-based lock prevents concurrent ticks from gateway + daemon + systemd timer
 _LOCK_DIR = _hermes_home / "cron"
@@ -271,7 +271,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
     # and discoverable via session_search (same pattern as gateway/run.py).
     _session_db = None
     try:
-        from hermes_state import SessionDB
+        from morpheus_state import SessionDB
         _session_db = SessionDB()
     except Exception as e:
         logger.debug("Job '%s': SQLite session store not available: %s", job.get("id", "?"), e)
@@ -328,7 +328,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
             logger.warning("Job '%s': failed to load config.yaml, using defaults: %s", job_id, e)
 
         # Reasoning config from env or config.yaml
-        from hermes_constants import parse_reasoning_effort
+        from morpheus_constants import parse_reasoning_effort
         effort = os.getenv("HERMES_REASONING_EFFORT", "")
         if not effort:
             effort = str(_cfg.get("agent", {}).get("reasoning_effort", "")).strip()
@@ -359,7 +359,7 @@ def run_job(job: dict) -> tuple[bool, str, str, Optional[str]]:
         pr = _cfg.get("provider_routing", {})
         smart_routing = _cfg.get("smart_model_routing", {}) or {}
 
-        from hermes_cli.runtime_provider import (
+        from morpheus_cli.runtime_provider import (
             resolve_runtime_provider,
             format_runtime_provider_error,
         )

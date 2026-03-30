@@ -25,14 +25,14 @@ Official optional skills live in the repository under `optional-skills/`. Instal
 
 | Skill | Description | Path |
 |-------|-------------|------|
-| `blender-mcp` | Control Blender directly from Hermes via socket connection to the blender-mcp addon. Create 3D objects, materials, animations, and run arbitrary Blender Python. | `creative/blender-mcp` |
+| `blender-mcp` | Control Blender directly from Morpheus via socket connection to the blender-mcp addon. Create 3D objects, materials, animations, and run arbitrary Blender Python. | `creative/blender-mcp` |
 | `meme-generation` | Generate real meme images by picking a template and overlaying text with Pillow. Produces actual .png meme files. | `creative/meme-generation` |
 
 ## email
 
 | Skill | Description | Path |
 |-------|-------------|------|
-| `agentmail` | Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. hermes-agent@agentmail.to). | `email/agentmail` |
+| `agentmail` | Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. morpheus-agent@agentmail.to). | `email/agentmail` |
 
 ## health
 
@@ -50,13 +50,13 @@ Official optional skills live in the repository under `optional-skills/`. Instal
 
 | Skill | Description | Path |
 |-------|-------------|------|
-| `openclaw-migration` | Migrate a user's OpenClaw customization footprint into Hermes Agent. Imports Hermes-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be migrated and why. | `migration/openclaw-migration` |
+| `openclaw-migration` | Migrate a user's OpenClaw customization footprint into Morpheus Agent. Imports Morpheus-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be migrated and why. | `migration/openclaw-migration` |
 
 ## productivity
 
 | Skill | Description | Path |
 |-------|-------------|------|
-| `telephony` | Give Hermes phone capabilities — provision a Twilio number, send/receive SMS/MMS, make direct calls, and place AI-driven outbound calls through Bland.ai or Vapi. | `productivity/telephony` |
+| `telephony` | Give Morpheus phone capabilities — provision a Twilio number, send/receive SMS/MMS, make direct calls, and place AI-driven outbound calls through Bland.ai or Vapi. | `productivity/telephony` |
 
 ## research
 

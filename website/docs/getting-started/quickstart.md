@@ -1,20 +1,20 @@
 ---
 sidebar_position: 1
 title: "Quickstart"
-description: "Your first conversation with Hermes Agent — from install to chatting in 2 minutes"
+description: "Your first conversation with Morpheus Agent — from install to chatting in 2 minutes"
 ---
 
 # Quickstart
 
-This guide walks you through installing Hermes Agent, setting up a provider, and having your first conversation. By the end, you'll know the key features and how to explore further.
+This guide walks you through installing Morpheus Agent, setting up a provider, and having your first conversation. By the end, you'll know the key features and how to explore further.
 
-## 1. Install Hermes Agent
+## 1. Install Morpheus Agent
 
 Run the one-line installer:
 
 ```bash
 # Linux / macOS / WSL2
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
 
 :::tip Windows Users
@@ -58,7 +58,7 @@ hermes setup       # Or configure everything at once
 | **Custom Endpoint** | VLLM, SGLang, Ollama, or any OpenAI-compatible API | Set base URL + API key |
 
 :::tip
-You can switch providers at any time with `hermes model` — no code changes, no lock-in. When configuring a custom endpoint, Hermes will prompt for the context window size and auto-detect it when possible. See [Context Length Detection](../user-guide/configuration.md#context-length-detection) for details.
+You can switch providers at any time with `hermes model` — no code changes, no lock-in. When configuring a custom endpoint, Morpheus will prompt for the context window size and auto-detect it when possible. See [Context Length Detection](../user-guide/configuration.md#context-length-detection) for details.
 :::
 
 ## 3. Start Chatting
@@ -129,7 +129,7 @@ hermes config set terminal.backend ssh       # Remote server
 
 ### Connect messaging platforms
 
-Chat with Hermes from your phone or other surfaces via Telegram, Discord, Slack, WhatsApp, Signal, Email, or Home Assistant:
+Chat with Morpheus from your phone or other surfaces via Telegram, Discord, Slack, WhatsApp, Signal, Email, or Home Assistant:
 
 ```bash
 hermes gateway setup    # Interactive platform configuration
@@ -140,19 +140,19 @@ hermes gateway setup    # Interactive platform configuration
 Want microphone input in the CLI or spoken replies in messaging?
 
 ```bash
-pip install "hermes-agent[voice]"
+pip install "morpheus-agent[voice]"
 
 # Optional but recommended for free local speech-to-text
 pip install faster-whisper
 ```
 
-Then start Hermes and enable it inside the CLI:
+Then start Morpheus and enable it inside the CLI:
 
 ```text
 /voice on
 ```
 
-Press `Ctrl+B` to record, or use `/voice tts` to have Hermes speak its replies. See [Voice Mode](../user-guide/features/voice-mode.md) for the full setup across CLI, Telegram, Discord, and Discord voice channels.
+Press `Ctrl+B` to record, or use `/voice tts` to have Morpheus speak its replies. See [Voice Mode](../user-guide/features/voice-mode.md) for the full setup across CLI, Telegram, Discord, and Discord voice channels.
 
 ### Schedule automated tasks
 
@@ -180,9 +180,9 @@ Tips:
 
 Or use the `/skills` slash command inside chat.
 
-### Use Hermes inside an editor via ACP
+### Use Morpheus inside an editor via ACP
 
-Hermes can also run as an ACP server for ACP-compatible editors like VS Code, Zed, and JetBrains:
+Morpheus can also run as an ACP server for ACP-compatible editors like VS Code, Zed, and JetBrains:
 
 ```bash
 pip install -e '.[acp]'
@@ -196,7 +196,7 @@ See [ACP Editor Integration](../user-guide/features/acp.md) for setup details.
 Connect to external tools via the Model Context Protocol:
 
 ```yaml
-# Add to ~/.hermes/config.yaml
+# Add to ~/.morpheus/config.yaml
 mcp_servers:
   github:
     command: npx

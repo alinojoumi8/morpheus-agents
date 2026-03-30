@@ -1,12 +1,12 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from cli import HermesCLI, _rich_text_from_ansi
-from hermes_cli.skin_engine import get_active_skin, set_active_skin
+from cli import MorpheusCLI, _rich_text_from_ansi
+from morpheus_cli.skin_engine import get_active_skin, set_active_skin
 
 
 def _make_cli_stub():
-    cli = HermesCLI.__new__(HermesCLI)
+    cli = MorpheusCLI.__new__(MorpheusCLI)
     cli._sudo_state = None
     cli._secret_state = None
     cli._approval_state = None
@@ -53,7 +53,7 @@ class TestCliSkinPromptIntegration:
         cli = _make_cli_stub()
         cli._secret_state = {"response_queue": object()}
 
-        with patch("hermes_cli.skin_engine.get_active_prompt_symbol", return_value="⚔ "):
+        with patch("morpheus_cli.skin_engine.get_active_prompt_symbol", return_value="⚔ "):
             assert cli._get_tui_prompt_fragments() == [("class:sudo-prompt", "🔑 ⚔ ")]
 
     def test_build_tui_style_dict_uses_skin_overrides(self):

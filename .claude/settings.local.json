@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest tests/intelligence/ -q --tb=short)",
+      "Bash(python -m pytest tests/intelligence/ -q --tb=short -o \"addopts=\")",
+      "Bash(python -m hermes_cli.main setup)",
+      "Bash(uv pip:*)",
+      "Bash(uv venv:*)",
+      "Bash(.venv/Scripts/pip install:*)",
+      "Bash(.venv/Scripts/python.exe -m uv pip install -e \".[intelligence]\")",
+      "Bash(.venv/Scripts/python.exe -m hermes_cli.main --help)"
+    ]
+  }
+}

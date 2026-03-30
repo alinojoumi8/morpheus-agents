@@ -1,12 +1,12 @@
 ---
 sidebar_position: 1
 title: "Telegram"
-description: "Set up Hermes Agent as a Telegram bot"
+description: "Set up Morpheus Agent as a Telegram bot"
 ---
 
 # Telegram Setup
 
-Hermes Agent integrates with Telegram as a full-featured conversational bot. Once connected, you can chat with your agent from any device, send voice memos that get auto-transcribed, receive scheduled task results, and use the agent in group chats. The integration is built on [python-telegram-bot](https://python-telegram-bot.org/) and supports text, voice, images, and file attachments.
+Morpheus Agent integrates with Telegram as a full-featured conversational bot. Once connected, you can chat with your agent from any device, send voice memos that get auto-transcribed, receive scheduled task results, and use the agent in group chats. The integration is built on [python-telegram-bot](https://python-telegram-bot.org/) and supports text, voice, images, and file attachments.
 
 ## Step 1: Create a Bot via BotFather
 
@@ -14,7 +14,7 @@ Every Telegram bot requires an API token issued by [@BotFather](https://t.me/Bot
 
 1. Open Telegram and search for **@BotFather**, or visit [t.me/BotFather](https://t.me/BotFather)
 2. Send `/newbot`
-3. Choose a **display name** (e.g., "Hermes Agent") — this can be anything
+3. Choose a **display name** (e.g., "Morpheus Agent") — this can be anything
 4. Choose a **username** — this must be unique and end in `bot` (e.g., `my_hermes_bot`)
 5. BotFather replies with your **API token**. It looks like this:
 
@@ -77,7 +77,7 @@ An alternative to disabling privacy mode: promote the bot to **group admin**. Ad
 
 ## Step 4: Find Your User ID
 
-Hermes Agent uses numeric Telegram user IDs to control access. Your user ID is **not** your username — it's a number like `123456789`.
+Morpheus Agent uses numeric Telegram user IDs to control access. Your user ID is **not** your username — it's a number like `123456789`.
 
 **Method 1 (recommended):** Message [@userinfobot](https://t.me/userinfobot) — it instantly replies with your user ID.
 
@@ -85,7 +85,7 @@ Hermes Agent uses numeric Telegram user IDs to control access. Your user ID is *
 
 Save this number; you'll need it for the next step.
 
-## Step 5: Configure Hermes
+## Step 5: Configure Morpheus
 
 ### Option A: Interactive Setup (Recommended)
 
@@ -97,7 +97,7 @@ Select **Telegram** when prompted. The wizard asks for your bot token and allowe
 
 ### Option B: Manual Configuration
 
-Add the following to `~/.hermes/.env`:
+Add the following to `~/.morpheus/.env`:
 
 ```bash
 TELEGRAM_BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrSTUvwxYZ
@@ -116,7 +116,7 @@ The bot should come online within seconds. Send it a message on Telegram to veri
 
 Use the `/sethome` command in any Telegram chat (DM or group) to designate it as the **home channel**. Scheduled tasks (cron jobs) deliver their results to this channel.
 
-You can also set it manually in `~/.hermes/.env`:
+You can also set it manually in `~/.morpheus/.env`:
 
 ```bash
 TELEGRAM_HOME_CHANNEL=-1001234567890
@@ -131,9 +131,9 @@ Group chat IDs are negative numbers (e.g., `-1001234567890`). Your personal DM c
 
 ### Incoming Voice (Speech-to-Text)
 
-Voice messages you send on Telegram are automatically transcribed by Hermes's configured STT provider and injected as text into the conversation.
+Voice messages you send on Telegram are automatically transcribed by Morpheus's configured STT provider and injected as text into the conversation.
 
-- `local` uses `faster-whisper` on the machine running Hermes — no API key required
+- `local` uses `faster-whisper` on the machine running Morpheus — no API key required
 - `groq` uses Groq Whisper and requires `GROQ_API_KEY`
 - `openai` uses OpenAI Whisper and requires `VOICE_TOOLS_OPENAI_KEY`
 
@@ -158,7 +158,7 @@ Configure the TTS provider in your `config.yaml` under the `tts.provider` key.
 
 ## Group Chat Usage
 
-Hermes Agent works in Telegram group chats with a few considerations:
+Morpheus Agent works in Telegram group chats with a few considerations:
 
 - **Privacy mode** determines what messages the bot can see (see [Step 3](#step-3-privacy-mode-critical-for-groups))
 - When privacy mode is on, **@mention the bot** (e.g., `@my_hermes_bot what's the weather?`) or **reply to its messages** to interact
@@ -167,7 +167,7 @@ Hermes Agent works in Telegram group chats with a few considerations:
 
 ## Private Chat Topics (Bot API 9.4)
 
-Telegram Bot API 9.4 (February 2026) introduced **Private Chat Topics** — bots can create forum-style topic threads directly in 1-on-1 DM chats, no supergroup needed. This lets you run multiple isolated workspaces within your existing DM with Hermes.
+Telegram Bot API 9.4 (February 2026) introduced **Private Chat Topics** — bots can create forum-style topic threads directly in 1-on-1 DM chats, no supergroup needed. This lets you run multiple isolated workspaces within your existing DM with Morpheus.
 
 ### Use case
 
@@ -181,7 +181,7 @@ Each topic gets its own conversation session, history, and context — completel
 
 ### Configuration
 
-Add topics under `platforms.telegram.extra.dm_topics` in `~/.hermes/config.yaml`:
+Add topics under `platforms.telegram.extra.dm_topics` in `~/.morpheus/config.yaml`:
 
 ```yaml
 platforms:
@@ -211,7 +211,7 @@ platforms:
 
 ### How it works
 
-1. On gateway startup, Hermes calls `createForumTopic` for each topic that doesn't have a `thread_id` yet
+1. On gateway startup, Morpheus calls `createForumTopic` for each topic that doesn't have a `thread_id` yet
 2. The `thread_id` is saved back to `config.yaml` automatically — subsequent restarts skip the API call
 3. Each topic maps to an isolated session key: `agent:main:telegram:dm:{chat_id}:{thread_id}`
 4. Messages in each topic have their own conversation history, memory flush, and context window
@@ -239,7 +239,7 @@ Topics created outside of the config (e.g., by manually calling the Telegram API
 | Bot not responding at all | Verify `TELEGRAM_BOT_TOKEN` is correct. Check `hermes gateway` logs for errors. |
 | Bot responds with "unauthorized" | Your user ID is not in `TELEGRAM_ALLOWED_USERS`. Double-check with @userinfobot. |
 | Bot ignores group messages | Privacy mode is likely on. Disable it (Step 3) or make the bot a group admin. **Remember to remove and re-add the bot after changing privacy.** |
-| Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.hermes/.env`. |
+| Voice messages not transcribed | Verify STT is available: install `faster-whisper` for local transcription, or set `GROQ_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` in `~/.morpheus/.env`. |
 | Voice replies are files, not bubbles | Install `ffmpeg` (needed for Edge TTS Opus conversion). |
 | Bot token revoked/invalid | Generate a new token via `/revoke` then `/newbot` or `/token` in BotFather. Update your `.env` file. |
 

@@ -7,15 +7,15 @@ sidebar_position: 8
 
 # Honcho Memory
 
-[Honcho](https://honcho.dev) is an AI-native memory system that gives Hermes persistent, cross-session understanding of users. While Hermes has built-in memory (`MEMORY.md` and `USER.md`), Honcho adds a deeper layer of **user modeling** — learning preferences, goals, communication style, and context across conversations via a dual-peer architecture where both the user and the AI build representations over time.
+[Honcho](https://honcho.dev) is an AI-native memory system that gives Morpheus persistent, cross-session understanding of users. While Morpheus has built-in memory (`MEMORY.md` and `USER.md`), Honcho adds a deeper layer of **user modeling** — learning preferences, goals, communication style, and context across conversations via a dual-peer architecture where both the user and the AI build representations over time.
 
 ## Works Alongside Built-in Memory
 
-Hermes has two memory systems that can work together or be configured separately. In `hybrid` mode (the default), both run side by side — Honcho adds cross-session user modeling while local files handle agent-level notes.
+Morpheus has two memory systems that can work together or be configured separately. In `hybrid` mode (the default), both run side by side — Honcho adds cross-session user modeling while local files handle agent-level notes.
 
 | Feature | Built-in Memory | Honcho Memory |
 |---------|----------------|---------------|
-| Storage | Local files (`~/.hermes/memories/`) | Cloud-hosted Honcho API |
+| Storage | Local files (`~/.morpheus/memories/`) | Cloud-hosted Honcho API |
 | Scope | Agent-level notes and user profile | Deep user modeling via dialectic reasoning |
 | Persistence | Across sessions on same machine | Across sessions, machines, and platforms |
 | Query | Injected into system prompt automatically | Prefetched + on-demand via tools |
@@ -27,7 +27,7 @@ Set `memoryMode` to `honcho` to use Honcho exclusively. See [Memory Modes](#memo
 
 ## Self-hosted / Docker
 
-Hermes supports a local Honcho instance (e.g. via Docker) in addition to the hosted API. Point it at your instance using `HONCHO_BASE_URL` — no API key required.
+Morpheus supports a local Honcho instance (e.g. via Docker) in addition to the hosted API. Point it at your instance using `HONCHO_BASE_URL` — no API key required.
 
 **Via `hermes config`:**
 
@@ -48,7 +48,7 @@ hermes config set HONCHO_BASE_URL http://localhost:8000
 }
 ```
 
-Hermes auto-enables Honcho when either `apiKey` or `base_url` is present, so no further configuration is needed for a local instance.
+Morpheus auto-enables Honcho when either `apiKey` or `base_url` is present, so no further configuration is needed for a local instance.
 
 To run Honcho locally, refer to the [Honcho self-hosting docs](https://docs.honcho.dev).
 
@@ -112,7 +112,7 @@ When an API key is present (either in `~/.honcho/config.json` or as `HONCHO_API_
 
 ### Global Config (`~/.honcho/config.json`)
 
-Settings are scoped to `hosts.hermes` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- Hermes only writes to its own host block (except `apiKey`, which is a shared credential at root).
+Settings are scoped to `hosts.hermes` and fall back to root-level globals when the host field is absent. Root-level keys are managed by the user or the honcho CLI -- Morpheus only writes to its own host block (except `apiKey`, which is a shared credential at root).
 
 **Root-level (shared)**
 
@@ -220,7 +220,7 @@ Multiple Honcho-enabled tools share `~/.honcho/config.json`. Each tool writes on
 
 Resolution: `hosts.<tool>` field > root-level field > default. In this example, both tools share the root `apiKey` and `peerName`, but each has its own `aiPeer` and workspace settings.
 
-### Hermes Config (`~/.hermes/config.yaml`)
+### Morpheus Config (`~/.morpheus/config.yaml`)
 
 Intentionally minimal — most configuration comes from `~/.honcho/config.json`:
 
@@ -351,7 +351,7 @@ hermes honcho tokens --context N           # Set context token cap
 hermes honcho tokens --dialectic N         # Set dialectic char cap
 hermes honcho identity                     # Show AI peer identity
 hermes honcho identity <file>              # Seed AI peer identity from file (SOUL.md, etc.)
-hermes honcho migrate                      # Migration guide: OpenClaw → Hermes + Honcho
+hermes honcho migrate                      # Migration guide: OpenClaw → Morpheus + Honcho
 ```
 
 ### Doctor Integration
@@ -380,7 +380,7 @@ Walks through converting an OpenClaw native Honcho setup to the shared `~/.honch
 Honcho can build a representation of the AI assistant over time (via `observe_me=True`). You can also seed the AI peer explicitly:
 
 ```bash
-hermes honcho identity ~/.hermes/SOUL.md
+hermes honcho identity ~/.morpheus/SOUL.md
 ```
 
 This uploads the file content through Honcho's observation pipeline. The AI peer representation is then injected into the system prompt alongside the user's, giving the agent awareness of its own accumulated identity.

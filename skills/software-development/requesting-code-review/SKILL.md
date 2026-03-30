@@ -2,7 +2,7 @@
 name: requesting-code-review
 description: Use when completing tasks, implementing major features, or before merging. Validates work meets requirements through systematic review process.
 version: 1.1.0
-author: Hermes Agent (adapted from obra/superpowers)
+author: Morpheus Agent (adapted from obra/superpowers)
 license: MIT
 metadata:
   hermes:

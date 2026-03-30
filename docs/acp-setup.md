@@ -1,16 +1,16 @@
-# Hermes Agent — ACP (Agent Client Protocol) Setup Guide
+# Morpheus Agent — ACP (Agent Client Protocol) Setup Guide
 
-Hermes Agent supports the **Agent Client Protocol (ACP)**, allowing it to run as
-a coding agent inside your editor. ACP lets your IDE send tasks to Hermes, and
-Hermes responds with file edits, terminal commands, and explanations — all shown
+Morpheus Agent supports the **Agent Client Protocol (ACP)**, allowing it to run as
+a coding agent inside your editor. ACP lets your IDE send tasks to Morpheus, and
+Morpheus responds with file edits, terminal commands, and explanations — all shown
 natively in the editor UI.
 
 ---
 
 ## Prerequisites
 
-- Hermes Agent installed and configured (`hermes setup` completed)
-- An API key / provider set up in `~/.hermes/.env` or via `hermes login`
+- Morpheus Agent installed and configured (`hermes setup` completed)
+- An API key / provider set up in `~/.morpheus/.env` or via `hermes login`
 - Python 3.11+
 
 Install the ACP extra:
@@ -45,22 +45,22 @@ Open your VS Code settings (`Ctrl+,` → click the `{}` icon for JSON) and add:
 {
   "acpClient.agents": [
     {
-      "name": "hermes-agent",
-      "registryDir": "/path/to/hermes-agent/acp_registry"
+      "name": "morpheus-agent",
+      "registryDir": "/path/to/morpheus-agent/acp_registry"
     }
   ]
 }
 ```
 
-Replace `/path/to/hermes-agent` with the actual path to your Hermes Agent
-installation (e.g. `~/.hermes/hermes-agent`).
+Replace `/path/to/morpheus-agent` with the actual path to your Morpheus Agent
+installation (e.g. `~/.morpheus/morpheus-agent`).
 
 Alternatively, if `hermes` is on your PATH, the ACP Client can discover it
 automatically via the registry directory.
 
 ### 3. Restart VS Code
 
-After configuring, restart VS Code. You should see **Hermes Agent** appear in
+After configuring, restart VS Code. You should see **Morpheus Agent** appear in
 the ACP agent picker in the chat/agent panel.
 
 ---
@@ -79,8 +79,8 @@ Open Zed settings (`Cmd+,` on macOS or `Ctrl+,` on Linux) and add to your
   "acp": {
     "agents": [
       {
-        "name": "hermes-agent",
-        "registry_dir": "/path/to/hermes-agent/acp_registry"
+        "name": "morpheus-agent",
+        "registry_dir": "/path/to/morpheus-agent/acp_registry"
       }
     ]
   }
@@ -89,7 +89,7 @@ Open Zed settings (`Cmd+,` on macOS or `Ctrl+,` on Linux) and add to your
 
 ### 2. Restart Zed
 
-Hermes Agent will appear in the agent panel. Select it and start a conversation.
+Morpheus Agent will appear in the agent panel. Select it and start a conversation.
 
 ---
 
@@ -106,38 +106,38 @@ Hermes Agent will appear in the agent panel. Select it and start a conversation.
 - Open **Settings** → **Tools** → **ACP Agents**
 - Click **+** to add a new agent
 - Set the registry directory to your `acp_registry/` folder:
-  `/path/to/hermes-agent/acp_registry`
+  `/path/to/morpheus-agent/acp_registry`
 - Click **OK**
 
 ### 3. Use the agent
 
-Open the ACP panel (usually in the right sidebar) and select **Hermes Agent**.
+Open the ACP panel (usually in the right sidebar) and select **Morpheus Agent**.
 
 ---
 
 ## What You Will See
 
-Once connected, your editor provides a native interface to Hermes Agent:
+Once connected, your editor provides a native interface to Morpheus Agent:
 
 ### Chat Panel
 A conversational interface where you can describe tasks, ask questions, and
-give instructions. Hermes responds with explanations and actions.
+give instructions. Morpheus responds with explanations and actions.
 
 ### File Diffs
-When Hermes edits files, you see standard diffs in the editor. You can:
+When Morpheus edits files, you see standard diffs in the editor. You can:
 - **Accept** individual changes
 - **Reject** changes you don't want
 - **Review** the full diff before applying
 
 ### Terminal Commands
-When Hermes needs to run shell commands (builds, tests, installs), the editor
+When Morpheus needs to run shell commands (builds, tests, installs), the editor
 shows them in an integrated terminal. Depending on your settings:
 - Commands may run automatically
 - Or you may be prompted to **approve** each command
 
 ### Approval Flow
 For potentially destructive operations, the editor will prompt you for
-approval before Hermes proceeds. This includes:
+approval before Morpheus proceeds. This includes:
 - File deletions
 - Shell commands
 - Git operations
@@ -146,19 +146,19 @@ approval before Hermes proceeds. This includes:
 
 ## Configuration
 
-Hermes Agent under ACP uses the **same configuration** as the CLI:
+Morpheus Agent under ACP uses the **same configuration** as the CLI:
 
-- **API keys / providers**: `~/.hermes/.env`
-- **Agent config**: `~/.hermes/config.yaml`
-- **Skills**: `~/.hermes/skills/`
-- **Sessions**: `~/.hermes/state.db`
+- **API keys / providers**: `~/.morpheus/.env`
+- **Agent config**: `~/.morpheus/config.yaml`
+- **Skills**: `~/.morpheus/skills/`
+- **Sessions**: `~/.morpheus/state.db`
 
-You can run `hermes setup` to configure providers, or edit `~/.hermes/.env`
+You can run `hermes setup` to configure providers, or edit `~/.morpheus/.env`
 directly.
 
 ### Changing the model
 
-Edit `~/.hermes/config.yaml`:
+Edit `~/.morpheus/config.yaml`:
 
 ```yaml
 model: openrouter/nous/hermes-3-llama-3.1-70b
@@ -209,8 +209,8 @@ settings for auto-approval or manual-approval preferences.
 
 ### Logs
 
-Hermes logs are written to stderr when running in ACP mode. Check:
-- VS Code: **Output** panel → select **ACP Client** or **Hermes Agent**
+Morpheus logs are written to stderr when running in ACP mode. Check:
+- VS Code: **Output** panel → select **ACP Client** or **Morpheus Agent**
 - Zed: **View** → **Toggle Terminal** and check the process output
 - JetBrains: **Event Log** or the ACP tool window
 
@@ -225,5 +225,5 @@ HERMES_LOG_LEVEL=DEBUG hermes acp
 ## Further Reading
 
 - [ACP Specification](https://github.com/anysphere/acp)
-- [Hermes Agent Documentation](https://github.com/NousResearch/hermes-agent)
+- [Morpheus Agent Documentation](https://github.com/NousResearch/morpheus-agent)
 - Run `hermes --help` for all CLI options

@@ -1,4 +1,4 @@
-"""Tests for HermesCLI initialization -- catches configuration bugs
+"""Tests for MorpheusCLI initialization -- catches configuration bugs
 that only manifest at runtime (not in mocked unit tests)."""
 
 import os
@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
-    """Create a HermesCLI instance with minimal mocking."""
+    """Create a MorpheusCLI instance with minimal mocking."""
     import importlib
 
     _clean_config = {
@@ -50,7 +50,7 @@ def _make_cli(env_overrides=None, config_overrides=None, **kwargs):
         _cli_mod = importlib.reload(_cli_mod)
         with patch.object(_cli_mod, "get_tool_definitions", return_value=[]), \
              patch.dict(_cli_mod.__dict__, {"CLI_CONFIG": _clean_config}):
-            return _cli_mod.HermesCLI(**kwargs)
+            return _cli_mod.MorpheusCLI(**kwargs)
 
 
 class TestMaxTurnsResolution:
@@ -181,11 +181,11 @@ class TestHistoryDisplay:
         output = capsys.readouterr().out
 
         assert "[You #1]" in output
-        assert "[Hermes #2]" in output
+        assert "[Morpheus #2]" in output
         assert "(requested 2 tool calls)" in output
         assert "[Tools]" in output
         assert "(2 tool messages hidden)" in output
-        assert "[Hermes #3]" in output
+        assert "[Morpheus #3]" in output
         assert "[You #4]" in output
         assert "[You #5]" not in output
         assert "A" * 250 in output

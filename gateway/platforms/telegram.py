@@ -285,7 +285,7 @@ class TelegramAdapter(BasePlatformAdapter):
         # Exhausted retries — fatal
         message = (
             "Another Telegram bot poller is already using this token. "
-            "Hermes stopped Telegram polling after %d retries. "
+            "Morpheus stopped Telegram polling after %d retries. "
             "Make sure only one gateway instance is running for this bot token."
             % MAX_CONFLICT_RETRIES
         )
@@ -345,7 +345,7 @@ class TelegramAdapter(BasePlatformAdapter):
     def _persist_dm_topic_thread_id(self, chat_id: int, topic_name: str, thread_id: int) -> None:
         """Save a newly created thread_id back into config.yaml so it persists across restarts."""
         try:
-            config_path = _Path.home() / ".hermes" / "config.yaml"
+            config_path = _Path.home() / ".morpheus" / "config.yaml"
             if not config_path.exists():
                 logger.warning("[%s] Config file not found at %s, cannot persist thread_id", self.name, config_path)
                 return
@@ -479,7 +479,7 @@ class TelegramAdapter(BasePlatformAdapter):
             if not acquired:
                 owner_pid = existing.get("pid") if isinstance(existing, dict) else None
                 message = (
-                    "Another local Hermes gateway is already using this Telegram bot token"
+                    "Another local Morpheus gateway is already using this Telegram bot token"
                     + (f" (PID {owner_pid})." if owner_pid else ".")
                     + " Stop the other gateway before starting a second Telegram poller."
                 )
@@ -576,7 +576,7 @@ class TelegramAdapter(BasePlatformAdapter):
             # gateway command there automatically adds it to the Telegram menu.
             try:
                 from telegram import BotCommand
-                from hermes_cli.commands import telegram_bot_commands
+                from morpheus_cli.commands import telegram_bot_commands
                 await self._bot.set_my_commands([
                     BotCommand(name, desc) for name, desc in telegram_bot_commands()
                 ])
@@ -1757,7 +1757,7 @@ class TelegramAdapter(BasePlatformAdapter):
         recognized without a gateway restart.
         """
         try:
-            config_path = _Path.home() / ".hermes" / "config.yaml"
+            config_path = _Path.home() / ".morpheus" / "config.yaml"
             if not config_path.exists():
                 return
 

@@ -20,8 +20,8 @@ from honcho_integration.client import (
 class TestHonchoClientConfigDefaults:
     def test_default_values(self):
         config = HonchoClientConfig()
-        assert config.host == "hermes"
-        assert config.workspace_id == "hermes"
+        assert config.host == "morpheus"
+        assert config.workspace_id == "morpheus"
         assert config.api_key is None
         assert config.environment == "production"
         assert config.enabled is False
@@ -102,7 +102,7 @@ class TestFromGlobalConfig:
             "sessionPeerPrefix": True,
             "sessions": {"/home/user/proj": "my-session"},
             "hosts": {
-                "hermes": {
+                "morpheus": {
                     "workspace": "override-ws",
                     "aiPeer": "override-ai",
                     "linkedHosts": ["cursor"],
@@ -130,7 +130,7 @@ class TestFromGlobalConfig:
             "workspace": "root-ws",
             "aiPeer": "root-ai",
             "hosts": {
-                "hermes": {
+                "morpheus": {
                     "workspace": "host-ws",
                     "aiPeer": "host-ai",
                 }
@@ -166,7 +166,7 @@ class TestFromGlobalConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "contextTokens": 1000,
-            "hosts": {"hermes": {"contextTokens": 2000}},
+            "hosts": {"morpheus": {"contextTokens": 2000}},
         }))
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.context_tokens == 2000
@@ -177,7 +177,7 @@ class TestFromGlobalConfig:
         config_file.write_text(json.dumps({
             "apiKey": "key",
             "recallMode": "tools",
-            "hosts": {"hermes": {"recallMode": "context"}},
+            "hosts": {"morpheus": {"recallMode": "context"}},
         }))
         config = HonchoClientConfig.from_global_config(config_path=config_file)
         assert config.recall_mode == "context"
@@ -228,7 +228,7 @@ class TestFromGlobalConfig:
         config_file = tmp_path / "config.json"
         config_file.write_text(json.dumps({
             "baseUrl": "http://root:9000",
-            "hosts": {"hermes": {"baseUrl": "http://host-block:9001"}},
+            "hosts": {"morpheus": {"baseUrl": "http://host-block:9001"}},
         }))
 
         config = HonchoClientConfig.from_global_config(config_path=config_file)
@@ -264,10 +264,10 @@ class TestResolveSessionName:
     def test_per_repo_uses_git_root(self):
         config = HonchoClientConfig(session_strategy="per-repo")
         with patch.object(
-            HonchoClientConfig, "_git_repo_name", return_value="hermes-agent"
+            HonchoClientConfig, "_git_repo_name", return_value="morpheus-agent"
         ):
-            result = config.resolve_session_name("/home/user/hermes-agent/subdir")
-        assert result == "hermes-agent"
+            result = config.resolve_session_name("/home/user/morpheus-agent/subdir")
+        assert result == "morpheus-agent"
 
     def test_per_repo_with_peer_prefix(self):
         config = HonchoClientConfig(
@@ -333,32 +333,32 @@ class TestGetLinkedWorkspaces:
 
 class TestResolveConfigPath:
     def test_prefers_hermes_home_when_exists(self, tmp_path):
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         local_cfg = hermes_home / "honcho.json"
         local_cfg.write_text('{"apiKey": "local"}')
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
             result = resolve_config_path()
         assert result == local_cfg
 
     def test_falls_back_to_global_when_no_local(self, tmp_path):
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
-        # No honcho.json in HERMES_HOME
+        # No honcho.json in MORPHEUS_HOME
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
             result = resolve_config_path()
         assert result == GLOBAL_CONFIG_PATH
 
     def test_falls_back_to_global_without_hermes_home_env(self):
         with patch.dict(os.environ, {}, clear=False):
-            os.environ.pop("HERMES_HOME", None)
+            os.environ.pop("MORPHEUS_HOME", None)
             result = resolve_config_path()
         assert result == GLOBAL_CONFIG_PATH
 
     def test_from_global_config_uses_local_path(self, tmp_path):
-        hermes_home = tmp_path / "hermes"
+        hermes_home = tmp_path / "morpheus"
         hermes_home.mkdir()
         local_cfg = hermes_home / "honcho.json"
         local_cfg.write_text(json.dumps({
@@ -366,7 +366,7 @@ class TestResolveConfigPath:
             "workspace": "local-ws",
         }))
 
-        with patch.dict(os.environ, {"HERMES_HOME": str(hermes_home)}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": str(hermes_home)}):
             config = HonchoClientConfig.from_global_config()
         assert config.api_key == "local-key"
         assert config.workspace_id == "local-ws"

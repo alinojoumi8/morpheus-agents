@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "FAQ & Troubleshooting"
-description: "Frequently asked questions and solutions to common issues with Hermes Agent"
+description: "Frequently asked questions and solutions to common issues with Morpheus Agent"
 ---
 
 # FAQ & Troubleshooting
@@ -12,9 +12,9 @@ Quick answers and fixes for the most common questions and issues.
 
 ## Frequently Asked Questions
 
-### What LLM providers work with Hermes?
+### What LLM providers work with Morpheus?
 
-Hermes Agent works with any OpenAI-compatible API. Supported providers include:
+Morpheus Agent works with any OpenAI-compatible API. Supported providers include:
 
 - **[OpenRouter](https://openrouter.ai/)** — access hundreds of models through one API key (recommended for flexibility)
 - **Nous Portal** — Nous Research's own inference endpoint
@@ -26,19 +26,19 @@ Hermes Agent works with any OpenAI-compatible API. Supported providers include:
 - **MiniMax** — global and China endpoints
 - **Local models** — via [Ollama](https://ollama.com/), [vLLM](https://docs.vllm.ai/), [llama.cpp](https://github.com/ggerganov/llama.cpp), [SGLang](https://github.com/sgl-project/sglang), or any OpenAI-compatible server
 
-Set your provider with `hermes model` or by editing `~/.hermes/.env`. See the [Environment Variables](./environment-variables.md) reference for all provider keys.
+Set your provider with `hermes model` or by editing `~/.morpheus/.env`. See the [Environment Variables](./environment-variables.md) reference for all provider keys.
 
 ### Does it work on Windows?
 
-**Not natively.** Hermes Agent requires a Unix-like environment. On Windows, install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run Hermes from inside it. The standard install command works perfectly in WSL2:
+**Not natively.** Morpheus Agent requires a Unix-like environment. On Windows, install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run Morpheus from inside it. The standard install command works perfectly in WSL2:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
 
 ### Is my data sent anywhere?
 
-API calls go **only to the LLM provider you configure** (e.g., OpenRouter, your local Ollama instance). Hermes Agent does not collect telemetry, usage data, or analytics. Your conversations, memory, and skills are stored locally in `~/.hermes/`.
+API calls go **only to the LLM provider you configure** (e.g., OpenRouter, your local Ollama instance). Morpheus Agent does not collect telemetry, usage data, or analytics. Your conversations, memory, and skills are stored locally in `~/.morpheus/`.
 
 ### Can I use it offline / with local models?
 
@@ -62,21 +62,21 @@ model:
   base_url: http://localhost:11434/v1
 ```
 
-Hermes persists the endpoint, provider, and base URL in `config.yaml` so it survives restarts. If your local server has exactly one model loaded, `/model custom` auto-detects it. You can also set `provider: custom` in config.yaml — it's a first-class provider, not an alias for anything else.
+Morpheus persists the endpoint, provider, and base URL in `config.yaml` so it survives restarts. If your local server has exactly one model loaded, `/model custom` auto-detects it. You can also set `provider: custom` in config.yaml — it's a first-class provider, not an alias for anything else.
 
 This works with Ollama, vLLM, llama.cpp server, SGLang, LocalAI, and others. See the [Configuration guide](../user-guide/configuration.md) for details.
 
 :::tip Ollama users
-If you set a custom `num_ctx` in Ollama (e.g., `ollama run --num_ctx 16384`), make sure to set the matching context length in Hermes — Ollama's `/api/show` reports the model's *maximum* context, not the effective `num_ctx` you configured.
+If you set a custom `num_ctx` in Ollama (e.g., `ollama run --num_ctx 16384`), make sure to set the matching context length in Morpheus — Ollama's `/api/show` reports the model's *maximum* context, not the effective `num_ctx` you configured.
 :::
 
 ### How much does it cost?
 
-Hermes Agent itself is **free and open-source** (MIT license). You pay only for the LLM API usage from your chosen provider. Local models are completely free to run.
+Morpheus Agent itself is **free and open-source** (MIT license). You pay only for the LLM API usage from your chosen provider. Local models are completely free to run.
 
 ### Can multiple people use one instance?
 
-Yes. The [messaging gateway](../user-guide/messaging/index.md) lets multiple users interact with the same Hermes Agent instance via Telegram, Discord, Slack, WhatsApp, or Home Assistant. Access is controlled through allowlists (specific user IDs) and DM pairing (first user to message claims access).
+Yes. The [messaging gateway](../user-guide/messaging/index.md) lets multiple users interact with the same Morpheus Agent instance via Telegram, Discord, Slack, WhatsApp, or Home Assistant. Access is controlled through allowlists (specific user IDs) and DM pairing (first user to message claims access).
 
 ### What's the difference between memory and skills?
 
@@ -87,7 +87,7 @@ Both persist across sessions. See [Memory](../user-guide/features/memory.md) and
 
 ### Can I use it in my own Python project?
 
-Yes. Import the `AIAgent` class and use Hermes programmatically:
+Yes. Import the `AIAgent` class and use Morpheus programmatically:
 
 ```python
 from hermes.agent import AIAgent
@@ -129,7 +129,7 @@ The installer adds `~/.local/bin` to your PATH. If you use a non-standard shell 
 
 #### Python version too old
 
-**Cause:** Hermes requires Python 3.11 or newer.
+**Cause:** Morpheus requires Python 3.11 or newer.
 
 **Solution:**
 ```bash
@@ -162,7 +162,7 @@ source ~/.bashrc
 # If you previously installed with sudo, clean up:
 sudo rm /usr/local/bin/hermes
 # Then re-run the standard installer
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
 
 ---
@@ -186,7 +186,7 @@ hermes config set OPENROUTER_API_KEY sk-or-v1-xxxxxxxxxxxx
 ```
 
 :::warning
-Make sure the key matches the provider. An OpenAI key won't work with OpenRouter and vice versa. Check `~/.hermes/.env` for conflicting entries.
+Make sure the key matches the provider. An OpenAI key won't work with OpenRouter and vice versa. Check `~/.morpheus/.env` for conflicting entries.
 :::
 
 #### Model not available / model not found
@@ -216,7 +216,7 @@ hermes chat --model openrouter/meta-llama/llama-3.1-70b-instruct
 
 #### Context length exceeded
 
-**Cause:** The conversation has grown too long for the model's context window, or Hermes detected the wrong context length for your model.
+**Cause:** The conversation has grown too long for the model's context window, or Morpheus detected the wrong context length for your model.
 
 **Solution:**
 ```bash
@@ -230,14 +230,14 @@ hermes chat
 hermes chat --model openrouter/google/gemini-2.0-flash-001
 ```
 
-If this happens on the first long conversation, Hermes may have the wrong context length for your model. Check what it detected:
+If this happens on the first long conversation, Morpheus may have the wrong context length for your model. Check what it detected:
 
 Look at the CLI startup line — it shows the detected context length (e.g., `📊 Context limit: 128000 tokens`). You can also check with `/usage` during a session.
 
 To fix context detection, set it explicitly:
 
 ```yaml
-# In ~/.hermes/config.yaml
+# In ~/.morpheus/config.yaml
 model:
   default: your-model-name
   context_length: 131072  # your model's actual context window
@@ -262,14 +262,14 @@ See [Context Length Detection](../user-guide/configuration.md#context-length-det
 
 #### Command blocked as dangerous
 
-**Cause:** Hermes detected a potentially destructive command (e.g., `rm -rf`, `DROP TABLE`). This is a safety feature.
+**Cause:** Morpheus detected a potentially destructive command (e.g., `rm -rf`, `DROP TABLE`). This is a safety feature.
 
 **Solution:** When prompted, review the command and type `y` to approve it. You can also:
 - Ask the agent to use a safer alternative
 - See the full list of dangerous patterns in the [Security docs](../user-guide/security.md)
 
 :::tip
-This is working as intended — Hermes never silently runs destructive commands. The approval prompt shows you exactly what will execute.
+This is working as intended — Morpheus never silently runs destructive commands. The approval prompt shows you exactly what will execute.
 :::
 
 #### `sudo` not working via messaging gateway
@@ -315,7 +315,7 @@ hermes gateway status
 hermes gateway start
 
 # Check logs for errors
-cat ~/.hermes/logs/gateway.log | tail -50
+cat ~/.morpheus/logs/gateway.log | tail -50
 ```
 
 #### Messages not delivering
@@ -324,7 +324,7 @@ cat ~/.hermes/logs/gateway.log | tail -50
 
 **Solution:**
 - Verify your bot token is valid with `hermes gateway setup`
-- Check gateway logs: `cat ~/.hermes/logs/gateway.log | tail -50`
+- Check gateway logs: `cat ~/.morpheus/logs/gateway.log | tail -50`
 - For webhook-based platforms (Slack, WhatsApp), ensure your server is publicly accessible
 
 #### Allowlist confusion — who can talk to the bot?
@@ -339,7 +339,7 @@ cat ~/.hermes/logs/gateway.log | tail -50
 | **DM pairing** | First user to message in DM claims exclusive access |
 | **Open** | Anyone can interact (not recommended for production) |
 
-Configure in `~/.hermes/config.yaml` under your gateway's settings. See the [Messaging docs](../user-guide/messaging/index.md).
+Configure in `~/.morpheus/config.yaml` under your gateway's settings. See the [Messaging docs](../user-guide/messaging/index.md).
 
 #### Gateway won't start
 
@@ -348,7 +348,7 @@ Configure in `~/.hermes/config.yaml` under your gateway's settings. See the [Mes
 **Solution:**
 ```bash
 # Install messaging dependencies
-pip install "hermes-agent[telegram]"   # or [discord], [slack], [whatsapp]
+pip install "morpheus-agent[telegram]"   # or [discord], [slack], [whatsapp]
 
 # Check for port conflicts
 lsof -i :8080
@@ -415,7 +415,7 @@ hermes chat --continue
 **Solution:**
 ```bash
 # Ensure MCP dependencies are installed (already included in standard install)
-cd ~/.hermes/hermes-agent && uv pip install -e ".[mcp]"
+cd ~/.morpheus/morpheus-agent && uv pip install -e ".[mcp]"
 
 # For npm-based servers, ensure Node.js is available
 node --version
@@ -425,7 +425,7 @@ npx --version
 npx -y @modelcontextprotocol/server-filesystem /tmp
 ```
 
-Verify your `~/.hermes/config.yaml` MCP configuration:
+Verify your `~/.morpheus/config.yaml` MCP configuration:
 ```yaml
 mcp_servers:
   filesystem:
@@ -448,13 +448,13 @@ mcp_servers:
 # Verify MCP servers are configured
 hermes config show | grep -A 12 mcp_servers
 
-# Restart Hermes or reload MCP after config changes
+# Restart Morpheus or reload MCP after config changes
 hermes chat
 ```
 
 See also:
 - [MCP (Model Context Protocol)](/docs/user-guide/features/mcp)
-- [Use MCP with Hermes](/docs/guides/use-mcp-with-hermes)
+- [Use MCP with Morpheus](/docs/guides/use-mcp-with-hermes)
 - [MCP Config Reference](/docs/reference/mcp-config-reference)
 
 #### MCP timeout errors
@@ -467,7 +467,7 @@ See also:
 - For remote HTTP MCP servers, check network connectivity
 
 :::warning
-If an MCP server crashes mid-request, Hermes will report a timeout. Check the server's own logs (not just Hermes logs) to diagnose the root cause.
+If an MCP server crashes mid-request, Morpheus will report a timeout. Check the server's own logs (not just Morpheus logs) to diagnose the root cause.
 :::
 
 ---
@@ -476,6 +476,6 @@ If an MCP server crashes mid-request, Hermes will report a timeout. Check the se
 
 If your issue isn't covered here:
 
-1. **Search existing issues:** [GitHub Issues](https://github.com/NousResearch/hermes-agent/issues)
+1. **Search existing issues:** [GitHub Issues](https://github.com/NousResearch/morpheus-agent/issues)
 2. **Ask the community:** [Nous Research Discord](https://discord.gg/nousresearch)
-3. **File a bug report:** Include your OS, Python version (`python3 --version`), Hermes version (`hermes --version`), and the full error message
+3. **File a bug report:** Include your OS, Python version (`python3 --version`), Morpheus version (`hermes --version`), and the full error message

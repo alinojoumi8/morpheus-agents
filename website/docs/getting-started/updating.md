@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 title: "Updating & Uninstalling"
-description: "How to update Hermes Agent to the latest version or uninstall it"
+description: "How to update Morpheus Agent to the latest version or uninstall it"
 ---
 
 # Updating & Uninstalling
@@ -35,7 +35,7 @@ This pulls the latest code, updates dependencies, and restarts the gateway.
 If you installed manually (not via the quick installer):
 
 ```bash
-cd /path/to/hermes-agent
+cd /path/to/morpheus-agent
 export VIRTUAL_ENV="$(pwd)/venv"
 
 # Pull latest code and submodules
@@ -59,14 +59,14 @@ hermes config migrate   # Interactively add any missing options
 hermes uninstall
 ```
 
-The uninstaller gives you the option to keep your configuration files (`~/.hermes/`) for a future reinstall.
+The uninstaller gives you the option to keep your configuration files (`~/.morpheus/`) for a future reinstall.
 
 ### Manual Uninstall
 
 ```bash
 rm -f ~/.local/bin/hermes
-rm -rf /path/to/hermes-agent
-rm -rf ~/.hermes            # Optional — keep if you plan to reinstall
+rm -rf /path/to/morpheus-agent
+rm -rf ~/.morpheus            # Optional — keep if you plan to reinstall
 ```
 
 :::info

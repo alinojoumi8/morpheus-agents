@@ -1,4 +1,4 @@
-# nix/packages.nix — Hermes Agent package built with uv2nix
+# nix/packages.nix — Morpheus Agent package built with uv2nix
 { inputs, ... }: {
   perSystem = { pkgs, system, ... }:
     let
@@ -20,7 +20,7 @@
       runtimePath = pkgs.lib.makeBinPath runtimeDeps;
     in {
       packages.default = pkgs.stdenv.mkDerivation {
-        pname = "hermes-agent";
+        pname = "morpheus-agent";
         version = "0.1.0";
 
         dontUnpack = true;
@@ -30,21 +30,21 @@
         installPhase = ''
           runHook preInstall
 
-          mkdir -p $out/share/hermes-agent $out/bin
-          cp -r ${bundledSkills} $out/share/hermes-agent/skills
+          mkdir -p $out/share/morpheus-agent $out/bin
+          cp -r ${bundledSkills} $out/share/morpheus-agent/skills
 
           ${pkgs.lib.concatMapStringsSep "\n" (name: ''
             makeWrapper ${hermesVenv}/bin/${name} $out/bin/${name} \
               --suffix PATH : "${runtimePath}" \
-              --set HERMES_BUNDLED_SKILLS $out/share/hermes-agent/skills
-          '') [ "hermes" "hermes-agent" "hermes-acp" ]}
+              --set HERMES_BUNDLED_SKILLS $out/share/morpheus-agent/skills
+          '') [ "hermes" "morpheus-agent" "hermes-acp" ]}
 
           runHook postInstall
         '';
 
         meta = with pkgs.lib; {
           description = "AI agent with advanced tool-calling capabilities";
-          homepage = "https://github.com/NousResearch/hermes-agent";
+          homepage = "https://github.com/NousResearch/morpheus-agent";
           mainProgram = "hermes";
           license = licenses.mit;
           platforms = platforms.unix;

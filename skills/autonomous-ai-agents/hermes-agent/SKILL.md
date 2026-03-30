@@ -1,19 +1,19 @@
 ---
-name: hermes-agent-spawning
-description: Spawn additional Hermes Agent instances as autonomous subprocesses for independent long-running tasks. Supports non-interactive one-shot mode (-q) and interactive PTY mode for multi-turn collaboration. Different from delegate_task — this runs a full separate hermes process.
+name: morpheus-agent-spawning
+description: Spawn additional Morpheus Agent instances as autonomous subprocesses for independent long-running tasks. Supports non-interactive one-shot mode (-q) and interactive PTY mode for multi-turn collaboration. Different from delegate_task — this runs a full separate hermes process.
 version: 1.1.0
-author: Hermes Agent
+author: Morpheus Agent
 license: MIT
 metadata:
   hermes:
-    tags: [Agent, Hermes, Multi-Agent, Orchestration, Subprocess, Interactive]
-    homepage: https://github.com/NousResearch/hermes-agent
+    tags: [Agent, Morpheus, Multi-Agent, Orchestration, Subprocess, Interactive]
+    homepage: https://github.com/NousResearch/morpheus-agent
     related_skills: [claude-code, codex]
 ---
 
-# Spawning Hermes Agent Instances
+# Spawning Morpheus Agent Instances
 
-Run additional Hermes Agent processes as autonomous subprocesses. Unlike `delegate_task` (which spawns lightweight subagents sharing the same process), this launches fully independent `hermes` CLI processes with their own sessions, tools, and terminal environments.
+Run additional Morpheus Agent processes as autonomous subprocesses. Unlike `delegate_task` (which spawns lightweight subagents sharing the same process), this launches fully independent `hermes` CLI processes with their own sessions, tools, and terminal environments.
 
 ## When to Use This vs delegate_task
 
@@ -30,17 +30,17 @@ Run additional Hermes Agent processes as autonomous subprocesses. Unlike `delega
 ## Prerequisites
 
 - `hermes` CLI installed and on PATH
-- API key configured in `~/.hermes/.env`
+- API key configured in `~/.morpheus/.env`
 
 ### Installation
 
 Requires an interactive shell (the installer runs a setup wizard):
 
 ```
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
 
-This installs uv, Python 3.11, clones the repo, sets up the venv, and launches an interactive setup wizard to configure your API provider and model. See the [GitHub repo](https://github.com/NousResearch/hermes-agent) for details.
+This installs uv, Python 3.11, clones the repo, sets up the venv, and launches an interactive setup wizard to configure your API provider and model. See the [GitHub repo](https://github.com/NousResearch/morpheus-agent) for details.
 
 ## Resuming Previous Sessions
 
@@ -72,9 +72,9 @@ terminal(command="hermes chat -q 'Set up CI/CD for ~/myapp'", background=true)
 
 ## Mode 2: Interactive PTY Session
 
-Launch a full interactive Hermes session with PTY for back-and-forth collaboration. You can send messages, review its work, give feedback, and steer it.
+Launch a full interactive Morpheus session with PTY for back-and-forth collaboration. You can send messages, review its work, give feedback, and steer it.
 
-Note: Hermes uses prompt_toolkit for its CLI UI. Through a PTY, this works because ptyprocess provides a real terminal — input sent via `submit` arrives as keystrokes. The output log will contain ANSI escape sequences from the UI rendering — focus on the text content, not the formatting.
+Note: Morpheus uses prompt_toolkit for its CLI UI. Through a PTY, this works because ptyprocess provides a real terminal — input sent via `submit` arrives as keystrokes. The output log will contain ANSI escape sequences from the UI rendering — focus on the text content, not the formatting.
 
 ```
 # Start interactive hermes in background with PTY

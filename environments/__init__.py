@@ -1,7 +1,7 @@
 """
-Hermes-Agent Atropos Environments
+Morpheus-Agent Atropos Environments
 
-Provides a layered integration between hermes-agent's tool-calling capabilities
+Provides a layered integration between morpheus-agent's tool-calling capabilities
 and the Atropos RL training framework.
 
 Core layers:
@@ -19,9 +19,9 @@ Benchmarks (eval-only):
 """
 
 try:
-    from environments.agent_loop import AgentResult, HermesAgentLoop
+    from environments.agent_loop import AgentResult, MorpheusAgentLoop
     from environments.tool_context import ToolContext
-    from environments.hermes_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
+    from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 except ImportError:
     # atroposlib not installed — environments are unavailable but
     # submodules like tool_call_parsers can still be imported directly.
@@ -29,8 +29,8 @@ except ImportError:
 
 __all__ = [
     "AgentResult",
-    "HermesAgentLoop",
+    "MorpheusAgentLoop",
     "ToolContext",
-    "HermesAgentBaseEnv",
-    "HermesAgentEnvConfig",
+    "MorpheusAgentBaseEnv",
+    "MorpheusAgentEnvConfig",
 ]

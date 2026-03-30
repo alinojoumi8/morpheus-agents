@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from hermes_cli.config import load_config, save_config, save_env_value
-from hermes_cli.setup import _print_setup_summary, setup_model_provider
+from morpheus_cli.config import load_config, save_config, save_env_value
+from morpheus_cli.setup import _print_setup_summary, setup_model_provider
 
 
 def _maybe_keep_current_tts(question, choices):
@@ -46,7 +46,7 @@ def _clear_provider_env(monkeypatch):
 
 def test_setup_keep_current_custom_from_config_does_not_fall_through(tmp_path, monkeypatch):
     """Keep-current custom should not fall through to the generic model menu."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
     save_env_value("OPENAI_BASE_URL", "https://example.invalid/v1")
     save_env_value("OPENAI_API_KEY", "custom-key")
@@ -68,11 +68,11 @@ def test_setup_keep_current_custom_from_config_does_not_fall_through(tmp_path, m
             return tts_idx
         raise AssertionError("Model menu should not appear for keep-current custom")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", lambda *args, **kwargs: "")
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
 
     setup_model_provider(config)
     save_config(config)
@@ -84,7 +84,7 @@ def test_setup_keep_current_custom_from_config_does_not_fall_through(tmp_path, m
 
 
 def test_setup_custom_endpoint_saves_working_v1_base_url(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -108,14 +108,14 @@ def test_setup_custom_endpoint_saves_working_v1_base_url(tmp_path, monkeypatch):
     ])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(input_values))
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
     monkeypatch.setattr("agent.auxiliary_client.get_available_vision_backends", lambda: [])
-    monkeypatch.setattr("hermes_cli.main._save_custom_provider", lambda *args, **kwargs: None)
+    monkeypatch.setattr("morpheus_cli.main._save_custom_provider", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        "hermes_cli.models.probe_api_models",
+        "morpheus_cli.models.probe_api_models",
         lambda api_key, base_url: {
             "models": ["llm"],
             "probed_url": "http://localhost:8000/v1/models",
@@ -143,7 +143,7 @@ def test_setup_custom_endpoint_saves_working_v1_base_url(tmp_path, monkeypatch):
 
 def test_setup_keep_current_config_provider_uses_provider_specific_model_menu(tmp_path, monkeypatch):
     """Keep-current should respect config-backed providers, not fall back to OpenRouter."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -172,12 +172,12 @@ def test_setup_keep_current_config_provider_uses_provider_specific_model_menu(tm
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.models.provider_model_ids", lambda provider: [])
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", lambda *args, **kwargs: "")
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.models.provider_model_ids", lambda provider: [])
     monkeypatch.setattr("agent.auxiliary_client.get_available_vision_backends", lambda: [])
 
     setup_model_provider(config)
@@ -190,7 +190,7 @@ def test_setup_keep_current_config_provider_uses_provider_specific_model_menu(tm
 
 
 def test_setup_keep_current_anthropic_can_configure_openai_vision_default(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -217,15 +217,15 @@ def test_setup_keep_current_anthropic_can_configure_openai_vision_default(tmp_pa
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
     monkeypatch.setattr(
-        "hermes_cli.setup.prompt",
+        "morpheus_cli.setup.prompt",
         lambda message, *args, **kwargs: "sk-openai" if "OpenAI API key" in message else "",
     )
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.models.provider_model_ids", lambda provider: [])
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.models.provider_model_ids", lambda provider: [])
     monkeypatch.setattr("agent.auxiliary_client.get_available_vision_backends", lambda: [])
 
     setup_model_provider(config)
@@ -237,7 +237,7 @@ def test_setup_keep_current_anthropic_can_configure_openai_vision_default(tmp_pa
 
 
 def test_setup_copilot_uses_gh_auth_and_saves_provider(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -269,14 +269,14 @@ def test_setup_copilot_uses_gh_auth_and_saves_provider(tmp_path, monkeypatch):
             return {"logged_in": True}
         return {"logged_in": False}
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", fake_prompt)
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.auth.get_auth_status", fake_get_auth_status)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", fake_prompt)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.auth.get_auth_status", fake_get_auth_status)
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_api_key_provider_credentials",
+        "morpheus_cli.auth.resolve_api_key_provider_credentials",
         lambda provider_id: {
             "provider": provider_id,
             "api_key": "gh-cli-token",
@@ -285,7 +285,7 @@ def test_setup_copilot_uses_gh_auth_and_saves_provider(tmp_path, monkeypatch):
         },
     )
     monkeypatch.setattr(
-        "hermes_cli.models.fetch_github_model_catalog",
+        "morpheus_cli.models.fetch_github_model_catalog",
         lambda api_key: [
             {
                 "id": "gpt-4.1",
@@ -316,7 +316,7 @@ def test_setup_copilot_uses_gh_auth_and_saves_provider(tmp_path, monkeypatch):
 
 
 def test_setup_copilot_acp_uses_model_picker_and_saves_provider(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -339,14 +339,14 @@ def test_setup_copilot_acp_uses_model_picker_and_saves_provider(tmp_path, monkey
     def fake_prompt(message, *args, **kwargs):
         raise AssertionError(f"Unexpected prompt call: {message}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", fake_prompt)
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.auth.get_auth_status", lambda provider_id: {"logged_in": provider_id == "copilot-acp"})
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", fake_prompt)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.auth.get_auth_status", lambda provider_id: {"logged_in": provider_id == "copilot-acp"})
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_api_key_provider_credentials",
+        "morpheus_cli.auth.resolve_api_key_provider_credentials",
         lambda provider_id: {
             "provider": "copilot",
             "api_key": "gh-cli-token",
@@ -355,7 +355,7 @@ def test_setup_copilot_acp_uses_model_picker_and_saves_provider(tmp_path, monkey
         },
     )
     monkeypatch.setattr(
-        "hermes_cli.models.fetch_github_model_catalog",
+        "morpheus_cli.models.fetch_github_model_catalog",
         lambda api_key: [
             {
                 "id": "gpt-4.1",
@@ -384,7 +384,7 @@ def test_setup_copilot_acp_uses_model_picker_and_saves_provider(tmp_path, monkey
 
 def test_setup_switch_custom_to_codex_clears_custom_endpoint_and_updates_config(tmp_path, monkeypatch):
     """Switching from custom to Codex should clear custom endpoint overrides."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     save_env_value("OPENAI_BASE_URL", "https://example.invalid/v1")
@@ -409,21 +409,21 @@ def test_setup_switch_custom_to_codex_clears_custom_endpoint_and_updates_config(
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.get_active_provider", lambda: None)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.auth._login_openai_codex", lambda *args, **kwargs: None)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", lambda *args, **kwargs: "")
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.get_active_provider", lambda: None)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.auth._login_openai_codex", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_codex_runtime_credentials",
+        "morpheus_cli.auth.resolve_codex_runtime_credentials",
         lambda *args, **kwargs: {
             "base_url": "https://chatgpt.com/backend-api/codex",
             "api_key": "codex-...oken",
         },
     )
     monkeypatch.setattr(
-        "hermes_cli.codex_models.get_codex_model_ids",
+        "morpheus_cli.codex_models.get_codex_model_ids",
         lambda **kwargs: ["openai/gpt-5.3-codex", "openai/gpt-5-codex-mini"],
     )
 
@@ -441,7 +441,7 @@ def test_setup_switch_custom_to_codex_clears_custom_endpoint_and_updates_config(
 
 
 def test_setup_summary_marks_codex_auth_as_vision_available(tmp_path, monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     (tmp_path / "auth.json").write_text(
@@ -460,7 +460,7 @@ def test_setup_summary_marks_codex_auth_as_vision_available(tmp_path, monkeypatc
 
 
 def test_setup_summary_marks_anthropic_auth_as_vision_available(tmp_path, monkeypatch, capsys):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-api03-key")
     monkeypatch.setattr("shutil.which", lambda _name: None)

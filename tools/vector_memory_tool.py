@@ -27,7 +27,7 @@ def _get_intelligence_db():
     if _intelligence_db is None:
         try:
             from intelligence.db import IntelligenceDB
-            from hermes_cli.config import load_config
+            from morpheus_cli.config import load_config
             config = load_config()
             intel_config = config.get("intelligence", {})
             if not intel_config.get("enabled", False):
@@ -49,7 +49,7 @@ def _get_embedding_provider():
     if _embedding_provider is None:
         try:
             from intelligence.embeddings import get_embedding_provider
-            from hermes_cli.config import load_config
+            from morpheus_cli.config import load_config
             config = load_config()
             intel_config = config.get("intelligence", {})
             _embedding_provider = get_embedding_provider(
@@ -67,7 +67,7 @@ def _get_embedding_provider():
 def _check_intelligence_available() -> bool:
     """Check if intelligence module is available and enabled."""
     try:
-        from hermes_cli.config import load_config
+        from morpheus_cli.config import load_config
         config = load_config()
         return config.get("intelligence", {}).get("enabled", False)
     except Exception:

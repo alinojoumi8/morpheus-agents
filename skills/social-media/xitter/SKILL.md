@@ -2,7 +2,7 @@
 name: xitter
 description: Interact with X/Twitter via the x-cli terminal client using official X API credentials. Use for posting, reading timelines, searching tweets, liking, retweeting, bookmarks, mentions, and user lookups.
 version: 1.0.0
-author: Siddharth Balyan + Hermes Agent
+author: Siddharth Balyan + Morpheus Agent
 license: MIT
 platforms: [linux, macos]
 prerequisites:
@@ -25,7 +25,7 @@ This skill is for:
 - liking and retweeting
 - checking mentions and bookmarks
 
-This skill intentionally does not vendor a separate CLI implementation into Hermes. Install and use upstream `x-cli` instead.
+This skill intentionally does not vendor a separate CLI implementation into Morpheus. Install and use upstream `x-cli` instead.
 
 ## Important Cost / Access Note
 
@@ -92,11 +92,11 @@ If the user wants the least brittle long-term setup, use this skill. If they wan
 
 `x-cli` looks for credentials in `~/.config/x-cli/.env`.
 
-If you already keep your X credentials in `~/.hermes/.env`, the cleanest setup is:
+If you already keep your X credentials in `~/.morpheus/.env`, the cleanest setup is:
 
 ```bash
 mkdir -p ~/.config/x-cli
-ln -sf ~/.hermes/.env ~/.config/x-cli/.env
+ln -sf ~/.morpheus/.env ~/.config/x-cli/.env
 ```
 
 Or create a dedicated file:
@@ -192,7 +192,7 @@ Recommended defaults:
 - **403 oauth1-permissions**: regenerate the access token after enabling `Read and write`.
 - **Reply restrictions**: X restricts many programmatic replies. `tweet quote` is often more reliable than `tweet reply`.
 - **Rate limits**: expect per-endpoint limits and cooldown windows.
-- **Credential drift**: if you rotate tokens in `~/.hermes/.env`, make sure `~/.config/x-cli/.env` still points at the current file.
+- **Credential drift**: if you rotate tokens in `~/.morpheus/.env`, make sure `~/.config/x-cli/.env` still points at the current file.
 
 ## Notes
 

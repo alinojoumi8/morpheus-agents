@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""OpenClaw -> Hermes migration helper.
+"""OpenClaw -> Morpheus migration helper.
 
 This script migrates the parts of an OpenClaw user footprint that map cleanly
-into Hermes Agent, archives selected unmapped docs for manual review, and
+into Morpheus Agent, archives selected unmapped docs for manual review, and
 reports exactly what was skipped and why.
 """
 
@@ -45,7 +45,7 @@ WORKSPACE_INSTRUCTIONS_FILENAME = "AGENTS" + ".md"
 MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     "soul": {
         "label": "SOUL.md",
-        "description": "Import the OpenClaw persona file into Hermes.",
+        "description": "Import the OpenClaw persona file into Morpheus.",
     },
     "workspace-agents": {
         "label": "Workspace instructions",
@@ -53,67 +53,67 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     },
     "memory": {
         "label": "MEMORY.md",
-        "description": "Import long-term memory entries into Hermes memories.",
+        "description": "Import long-term memory entries into Morpheus memories.",
     },
     "user-profile": {
         "label": "USER.md",
-        "description": "Import user profile entries into Hermes memories.",
+        "description": "Import user profile entries into Morpheus memories.",
     },
     "messaging-settings": {
         "label": "Messaging settings",
-        "description": "Import Hermes-compatible messaging settings such as allowlists and working directory.",
+        "description": "Import Morpheus-compatible messaging settings such as allowlists and working directory.",
     },
     "secret-settings": {
         "label": "Allowlisted secrets",
-        "description": "Import the small allowlist of Hermes-compatible secrets when explicitly enabled.",
+        "description": "Import the small allowlist of Morpheus-compatible secrets when explicitly enabled.",
     },
     "command-allowlist": {
         "label": "Command allowlist",
-        "description": "Merge OpenClaw exec approval patterns into Hermes command_allowlist.",
+        "description": "Merge OpenClaw exec approval patterns into Morpheus command_allowlist.",
     },
     "skills": {
         "label": "User skills",
-        "description": "Copy OpenClaw skills into ~/.hermes/skills/openclaw-imports/.",
+        "description": "Copy OpenClaw skills into ~/.morpheus/skills/openclaw-imports/.",
     },
     "tts-assets": {
         "label": "TTS assets",
-        "description": "Copy compatible workspace TTS assets into ~/.hermes/tts/.",
+        "description": "Copy compatible workspace TTS assets into ~/.morpheus/tts/.",
     },
     "discord-settings": {
         "label": "Discord settings",
-        "description": "Import Discord bot token and allowlist into Hermes .env.",
+        "description": "Import Discord bot token and allowlist into Morpheus .env.",
     },
     "slack-settings": {
         "label": "Slack settings",
-        "description": "Import Slack bot/app tokens and allowlist into Hermes .env.",
+        "description": "Import Slack bot/app tokens and allowlist into Morpheus .env.",
     },
     "whatsapp-settings": {
         "label": "WhatsApp settings",
-        "description": "Import WhatsApp allowlist into Hermes .env.",
+        "description": "Import WhatsApp allowlist into Morpheus .env.",
     },
     "signal-settings": {
         "label": "Signal settings",
-        "description": "Import Signal account, HTTP URL, and allowlist into Hermes .env.",
+        "description": "Import Signal account, HTTP URL, and allowlist into Morpheus .env.",
     },
     "provider-keys": {
         "label": "Provider API keys",
-        "description": "Import model provider API keys into Hermes .env (requires --migrate-secrets).",
+        "description": "Import model provider API keys into Morpheus .env (requires --migrate-secrets).",
     },
     "model-config": {
         "label": "Default model",
-        "description": "Import the default model setting into Hermes config.yaml.",
+        "description": "Import the default model setting into Morpheus config.yaml.",
     },
     "tts-config": {
         "label": "TTS configuration",
-        "description": "Import TTS provider and voice settings into Hermes config.yaml.",
+        "description": "Import TTS provider and voice settings into Morpheus config.yaml.",
     },
     "shared-skills": {
         "label": "Shared skills",
-        "description": "Copy shared OpenClaw skills from ~/.openclaw/skills/ into Hermes.",
+        "description": "Copy shared OpenClaw skills from ~/.openclaw/skills/ into Morpheus.",
     },
     "daily-memory": {
         "label": "Daily memory files",
-        "description": "Merge daily memory entries from workspace/memory/ into Hermes MEMORY.md.",
+        "description": "Merge daily memory entries from workspace/memory/ into Morpheus MEMORY.md.",
     },
     "archive": {
         "label": "Archive unmapped docs",
@@ -121,7 +121,7 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     },
     "mcp-servers": {
         "label": "MCP servers",
-        "description": "Import MCP server definitions from OpenClaw into Hermes config.yaml.",
+        "description": "Import MCP server definitions from OpenClaw into Morpheus config.yaml.",
     },
     "plugins-config": {
         "label": "Plugins configuration",
@@ -137,7 +137,7 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     },
     "agent-config": {
         "label": "Agent defaults and multi-agent setup",
-        "description": "Import agent defaults (compaction, context, thinking) into Hermes config. Archive multi-agent list.",
+        "description": "Import agent defaults (compaction, context, thinking) into Morpheus config. Archive multi-agent list.",
     },
     "gateway-config": {
         "label": "Gateway configuration",
@@ -145,11 +145,11 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     },
     "session-config": {
         "label": "Session configuration",
-        "description": "Import session reset policies (daily/idle) into Hermes session_reset config.",
+        "description": "Import session reset policies (daily/idle) into Morpheus session_reset config.",
     },
     "full-providers": {
         "label": "Full model provider definitions",
-        "description": "Import custom model providers (baseUrl, apiType, headers) into Hermes custom_providers.",
+        "description": "Import custom model providers (baseUrl, apiType, headers) into Morpheus custom_providers.",
     },
     "deep-channels": {
         "label": "Deep channel configuration",
@@ -157,15 +157,15 @@ MIGRATION_OPTION_METADATA: Dict[str, Dict[str, str]] = {
     },
     "browser-config": {
         "label": "Browser configuration",
-        "description": "Import browser automation settings into Hermes config.yaml.",
+        "description": "Import browser automation settings into Morpheus config.yaml.",
     },
     "tools-config": {
         "label": "Tools configuration",
-        "description": "Import tool settings (exec timeout, sandbox, web search) into Hermes config.yaml.",
+        "description": "Import tool settings (exec timeout, sandbox, web search) into Morpheus config.yaml.",
     },
     "approvals-config": {
         "label": "Approval rules",
-        "description": "Import approval mode and rules into Hermes config.yaml approvals section.",
+        "description": "Import approval mode and rules into Morpheus config.yaml approvals section.",
     },
     "memory-backend": {
         "label": "Memory backend configuration",
@@ -313,7 +313,7 @@ def load_yaml_file(path: Path) -> Dict[str, Any]:
 
 def dump_yaml_file(path: Path, data: Dict[str, Any]) -> None:
     if yaml is None:
-        raise RuntimeError("PyYAML is required to update Hermes config.yaml")
+        raise RuntimeError("PyYAML is required to update Morpheus config.yaml")
     ensure_parent(path)
     path.write_text(
         yaml.safe_dump(data, sort_keys=False, allow_unicode=False),
@@ -493,7 +493,7 @@ def write_report(output_dir: Path, report: Dict[str, Any]) -> None:
         grouped.setdefault(item["status"], []).append(item)
 
     lines = [
-        "# OpenClaw -> Hermes Migration Report",
+        "# OpenClaw -> Morpheus Migration Report",
         "",
         f"- Timestamp: {report['timestamp']}",
         f"- Mode: {report['mode']}",
@@ -861,7 +861,7 @@ class Migrator:
             self.record("command-allowlist", source, destination, "skipped", "No allowlist patterns found")
             return
         if not destination.exists():
-            self.record("command-allowlist", source, destination, "skipped", "Hermes config.yaml does not exist yet")
+            self.record("command-allowlist", source, destination, "skipped", "Morpheus config.yaml does not exist yet")
             return
 
         config = load_yaml_file(destination)
@@ -973,7 +973,7 @@ class Migrator:
         if additions:
             self.merge_env_values(additions, "messaging-settings", self.source_root / "openclaw.json")
         else:
-            self.record("messaging-settings", self.source_root / "openclaw.json", self.target_root / ".env", "skipped", "No Hermes-compatible messaging settings found")
+            self.record("messaging-settings", self.source_root / "openclaw.json", self.target_root / ".env", "skipped", "No Morpheus-compatible messaging settings found")
 
     def handle_secret_settings(self, config: Optional[Dict[str, Any]] = None) -> None:
         config = config or self.load_openclaw_config()
@@ -1020,7 +1020,7 @@ class Migrator:
                 self.source_root / "openclaw.json",
                 self.target_root / ".env",
                 "skipped",
-                "No allowlisted Hermes-compatible secrets found",
+                "No allowlisted Morpheus-compatible secrets found",
                 supported_targets=sorted(SUPPORTED_SECRET_TARGETS),
             )
 
@@ -1521,16 +1521,16 @@ class Migrator:
         ]
         for candidate in candidates:
             if candidate:
-                self.archive_path(candidate, reason="No direct Hermes destination; archived for manual review")
+                self.archive_path(candidate, reason="No direct Morpheus destination; archived for manual review")
 
         for rel in ("workspace/.learnings", "workspace/memory"):
             candidate = self.source_root / rel
             if candidate.exists():
-                self.archive_path(candidate, reason="No direct Hermes destination; archived for manual review")
+                self.archive_path(candidate, reason="No direct Morpheus destination; archived for manual review")
 
         partially_extracted = [
-            ("openclaw.json", "Selected Hermes-compatible values were extracted; raw OpenClaw config was not copied."),
-            ("credentials/telegram-default-allowFrom.json", "Selected Hermes-compatible values were extracted; raw credentials file was not copied."),
+            ("openclaw.json", "Selected Morpheus-compatible values were extracted; raw OpenClaw config was not copied."),
+            ("credentials/telegram-default-allowFrom.json", "Selected Morpheus-compatible values were extracted; raw credentials file was not copied."),
         ]
         for rel, reason in partially_extracted:
             candidate = self.source_root / rel
@@ -1579,7 +1579,7 @@ class Migrator:
                 continue
             if name in existing_mcp and not self.overwrite:
                 self.record("mcp-servers", f"mcp.servers.{name}", f"mcp_servers.{name}", "conflict",
-                            "MCP server already exists in Hermes config")
+                            "MCP server already exists in Morpheus config")
                 continue
 
             hermes_srv: Dict[str, Any] = {}
@@ -1760,7 +1760,7 @@ class Migrator:
             agent_cfg["verbose"] = defaults["verboseDefault"]
             changes = True
         if defaults.get("thinkingDefault"):
-            # Map OpenClaw thinking -> Hermes reasoning_effort
+            # Map OpenClaw thinking -> Morpheus reasoning_effort
             thinking = defaults["thinkingDefault"]
             if thinking in ("always", "high"):
                 agent_cfg["reasoning_effort"] = "high"
@@ -1828,7 +1828,7 @@ class Migrator:
                 self.maybe_backup(hermes_cfg_path)
                 dump_yaml_file(hermes_cfg_path, hermes_cfg)
             self.record("agent-config", "openclaw.json agents.defaults", "config.yaml agent/compression/terminal",
-                        "migrated", "Agent defaults mapped to Hermes config")
+                        "migrated", "Agent defaults mapped to Morpheus config")
 
         # Archive multi-agent list
         if agent_list:
@@ -2042,7 +2042,7 @@ class Migrator:
                         continue
                     self._set_env_var(env_key, str(val), f"channels.{ch_name}.{oc_key}")
 
-        # Map Discord-specific settings to Hermes config
+        # Map Discord-specific settings to Morpheus config
         discord_cfg = channels.get("discord") or {}
         if discord_cfg:
             hermes_cfg_path = self.target_root / "config.yaml"
@@ -2275,7 +2275,7 @@ class Migrator:
         if not self.output_dir:
             return
         notes = [
-            "# OpenClaw -> Hermes Migration Notes",
+            "# OpenClaw -> Morpheus Migration Notes",
             "",
             "This document lists items that require manual attention after migration.",
             "",
@@ -2293,7 +2293,7 @@ class Migrator:
                 "## Archived Items (Manual Review Needed)",
                 "",
                 "These OpenClaw configurations were archived because they don't have a",
-                "direct 1:1 mapping in Hermes. Review each file and recreate manually:",
+                "direct 1:1 mapping in Morpheus. Review each file and recreate manually:",
                 "",
             ])
             for item in archived:
@@ -2303,9 +2303,9 @@ class Migrator:
         conflicts = [i for i in self.items if i.status == "conflict"]
         if conflicts:
             notes.extend([
-                "## Conflicts (Existing Hermes Config Not Overwritten)",
+                "## Conflicts (Existing Morpheus Config Not Overwritten)",
                 "",
-                "These items already existed in your Hermes config. Re-run with",
+                "These items already existed in your Morpheus config. Re-run with",
                 "`--overwrite` to force, or merge manually:",
                 "",
             ])
@@ -2314,14 +2314,14 @@ class Migrator:
             notes.append("")
 
         notes.extend([
-            "## Hermes-Specific Setup",
+            "## Morpheus-Specific Setup",
             "",
             "After migration, you may want to:",
             "- Run `hermes setup` to configure any remaining settings",
             "- Run `hermes mcp list` to verify MCP servers were imported correctly",
             "- Run `hermes cron` to recreate scheduled tasks (see archive/cron-config.json)",
             "- Run `hermes gateway install` if you need the gateway service",
-            "- Review `~/.hermes/config.yaml` for any adjustments",
+            "- Review `~/.morpheus/config.yaml` for any adjustments",
             "",
         ])
 
@@ -2333,19 +2333,19 @@ class Migrator:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Migrate OpenClaw user state into Hermes Agent.")
+    parser = argparse.ArgumentParser(description="Migrate OpenClaw user state into Morpheus Agent.")
     parser.add_argument("--source", default=str(Path.home() / ".openclaw"), help="OpenClaw home directory")
-    parser.add_argument("--target", default=str(Path.home() / ".hermes"), help="Hermes home directory")
+    parser.add_argument("--target", default=str(Path.home() / ".morpheus"), help="Morpheus home directory")
     parser.add_argument(
         "--workspace-target",
         help="Optional workspace root where the workspace instructions file should be copied",
     )
     parser.add_argument("--execute", action="store_true", help="Apply changes instead of reporting a dry run")
-    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing Hermes targets after backing them up")
+    parser.add_argument("--overwrite", action="store_true", help="Overwrite existing Morpheus targets after backing them up")
     parser.add_argument(
         "--migrate-secrets",
         action="store_true",
-        help="Import a narrow allowlist of Hermes-compatible secrets into the target env file",
+        help="Import a narrow allowlist of Morpheus-compatible secrets into the target env file",
     )
     parser.add_argument(
         "--skill-conflict",
@@ -2405,7 +2405,7 @@ def main() -> int:
 
     print()
     print(f"  ╔══════════════════════════════════════════════════════╗")
-    print(f"  ║   OpenClaw -> Hermes Migration   [{mode_label:>8s}]   ║")
+    print(f"  ║   OpenClaw -> Morpheus Migration   [{mode_label:>8s}]   ║")
     print(f"  ╠══════════════════════════════════════════════════════╣")
     print(f"  ║  Source:  {str(report['source_root'])[:42]:<42s}  ║")
     print(f"  ║  Target:  {str(report['target_root'])[:42]:<42s}  ║")
@@ -2428,7 +2428,7 @@ def main() -> int:
             seen_kinds.add(label)
             dest = item.get("destination") or ""
             if dest.startswith(str(report["target_root"])):
-                dest = "~/.hermes/" + dest[len(str(report["target_root"])) + 1:]
+                dest = "~/.morpheus/" + dest[len(str(report["target_root"])) + 1:]
             meta = MIGRATION_OPTION_METADATA.get(label, {})
             display = meta.get("label", label)
             print(f"    ✔ {display:<35s} -> {dest}")
@@ -2474,7 +2474,7 @@ def main() -> int:
     if args.execute:
         print()
         print("  Next steps:")
-        print("    1. Review ~/.hermes/config.yaml")
+        print("    1. Review ~/.morpheus/config.yaml")
         print("    2. Run: hermes mcp list")
         if any(i["kind"] == "cron-jobs" and i["status"] == "archived" for i in items):
             print("    3. Recreate cron jobs: hermes cron")

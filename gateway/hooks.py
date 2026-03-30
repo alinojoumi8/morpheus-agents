@@ -2,7 +2,7 @@
 Event Hook System
 
 A lightweight event-driven system that fires handlers at key lifecycle points.
-Hooks are discovered from ~/.hermes/hooks/ directories, each containing:
+Hooks are discovered from ~/.morpheus/hooks/ directories, each containing:
   - HOOK.yaml  (metadata: name, description, events list)
   - handler.py (Python handler with async def handle(event_type, context))
 
@@ -25,10 +25,10 @@ from typing import Any, Callable, Dict, List, Optional
 
 import yaml
 
-from hermes_cli.config import get_hermes_home
+from morpheus_cli.config import get_morpheus_home
 
 
-HOOKS_DIR = get_hermes_home() / "hooks"
+HOOKS_DIR = get_morpheus_home() / "hooks"
 
 
 class HookRegistry:

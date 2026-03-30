@@ -4,25 +4,25 @@ sidebar_position: 20
 
 # Plugins
 
-Hermes has a plugin system for adding custom tools, hooks, slash commands, and integrations without modifying core code.
+Morpheus has a plugin system for adding custom tools, hooks, slash commands, and integrations without modifying core code.
 
-**→ [Build a Hermes Plugin](/docs/guides/build-a-hermes-plugin)** — step-by-step guide with a complete working example.
+**→ [Build a Morpheus Plugin](/docs/guides/build-a-hermes-plugin)** — step-by-step guide with a complete working example.
 
 ## Quick overview
 
-Drop a directory into `~/.hermes/plugins/` with a `plugin.yaml` and Python code:
+Drop a directory into `~/.morpheus/plugins/` with a `plugin.yaml` and Python code:
 
 ```
-~/.hermes/plugins/my-plugin/
+~/.morpheus/plugins/my-plugin/
 ├── plugin.yaml      # manifest
 ├── __init__.py      # register() — wires schemas to handlers
 ├── schemas.py       # tool schemas (what the LLM sees)
 └── tools.py         # tool handlers (what runs when called)
 ```
 
-Start Hermes — your tools appear alongside built-in tools. The model can call them immediately.
+Start Morpheus — your tools appear alongside built-in tools. The model can call them immediately.
 
-Project-local plugins under `./.hermes/plugins/` are disabled by default. Enable them only for trusted repositories by setting `HERMES_ENABLE_PROJECT_PLUGINS=true` before starting Hermes.
+Project-local plugins under `./.morpheus/plugins/` are disabled by default. Enable them only for trusted repositories by setting `HERMES_ENABLE_PROJECT_PLUGINS=true` before starting Morpheus.
 
 ## What plugins can do
 
@@ -32,7 +32,7 @@ Project-local plugins under `./.hermes/plugins/` are disabled by default. Enable
 | Add hooks | `ctx.register_hook("post_tool_call", callback)` |
 | Add slash commands | `ctx.register_command("mycommand", handler)` |
 | Ship data files | `Path(__file__).parent / "data" / "file.yaml"` |
-| Bundle skills | Copy `skill.md` to `~/.hermes/skills/` at load time |
+| Bundle skills | Copy `skill.md` to `~/.morpheus/skills/` at load time |
 | Gate on env vars | `requires_env: [API_KEY]` in plugin.yaml |
 | Distribute via pip | `[project.entry-points."hermes_agent.plugins"]` |
 
@@ -40,8 +40,8 @@ Project-local plugins under `./.hermes/plugins/` are disabled by default. Enable
 
 | Source | Path | Use case |
 |--------|------|----------|
-| User | `~/.hermes/plugins/` | Personal plugins |
-| Project | `.hermes/plugins/` | Project-specific plugins (requires `HERMES_ENABLE_PROJECT_PLUGINS=true`) |
+| User | `~/.morpheus/plugins/` | Personal plugins |
+| Project | `.morpheus/plugins/` | Project-specific plugins (requires `HERMES_ENABLE_PROJECT_PLUGINS=true`) |
 | pip | `hermes_agent.plugins` entry_points | Distributed packages |
 
 ## Available hooks

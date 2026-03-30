@@ -1,25 +1,25 @@
 ---
 sidebar_position: 9
 title: "Matrix"
-description: "Set up Hermes Agent as a Matrix bot"
+description: "Set up Morpheus Agent as a Matrix bot"
 ---
 
 # Matrix Setup
 
-Hermes Agent integrates with Matrix, the open, federated messaging protocol. Matrix lets you run your own homeserver or use a public one like matrix.org — either way, you keep control of your communications. The bot connects via the `matrix-nio` Python SDK, processes messages through the Hermes Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, audio, video, and optional end-to-end encryption (E2EE).
+Morpheus Agent integrates with Matrix, the open, federated messaging protocol. Matrix lets you run your own homeserver or use a public one like matrix.org — either way, you keep control of your communications. The bot connects via the `matrix-nio` Python SDK, processes messages through the Morpheus Agent pipeline (including tool use, memory, and reasoning), and responds in real time. It supports text, file attachments, images, audio, video, and optional end-to-end encryption (E2EE).
 
-Hermes works with any Matrix homeserver — Synapse, Conduit, Dendrite, or matrix.org.
+Morpheus works with any Matrix homeserver — Synapse, Conduit, Dendrite, or matrix.org.
 
-Before setup, here's the part most people want to know: how Hermes behaves once it's connected.
+Before setup, here's the part most people want to know: how Morpheus behaves once it's connected.
 
-## How Hermes Behaves
+## How Morpheus Behaves
 
 | Context | Behavior |
 |---------|----------|
-| **DMs** | Hermes responds to every message. No `@mention` needed. Each DM has its own session. |
-| **Rooms** | Hermes responds to all messages in rooms it has joined. Room invites are auto-accepted. |
-| **Threads** | Hermes supports Matrix threads (MSC3440). If you reply in a thread, Hermes keeps the thread context isolated from the main room timeline. |
-| **Shared rooms with multiple users** | By default, Hermes isolates session history per user inside the room. Two people talking in the same room do not share one transcript unless you explicitly disable that. |
+| **DMs** | Morpheus responds to every message. No `@mention` needed. Each DM has its own session. |
+| **Rooms** | Morpheus responds to all messages in rooms it has joined. Room invites are auto-accepted. |
+| **Threads** | Morpheus supports Matrix threads (MSC3440). If you reply in a thread, Morpheus keeps the thread context isolated from the main room timeline. |
+| **Shared rooms with multiple users** | By default, Morpheus isolates session history per user inside the room. Two people talking in the same room do not share one transcript unless you explicitly disable that. |
 
 :::tip
 The bot automatically joins rooms when invited. Just invite the bot's Matrix user to any room and it will join and start responding.
@@ -77,11 +77,11 @@ register_new_matrix_user -c /etc/synapse/homeserver.yaml http://localhost:8008
 
 ### Option C: Use Your Own Account
 
-You can also run Hermes as your own user. This means the bot posts as you — useful for personal assistants.
+You can also run Morpheus as your own user. This means the bot posts as you — useful for personal assistants.
 
 ## Step 2: Get an Access Token
 
-Hermes needs an access token to authenticate with the homeserver. You have two options:
+Morpheus needs an access token to authenticate with the homeserver. You have two options:
 
 ### Option A: Access Token (Recommended)
 
@@ -113,7 +113,7 @@ The access token gives full access to the bot's Matrix account. Never share it p
 
 ### Option B: Password Login
 
-Instead of providing an access token, you can give Hermes the bot's user ID and password. Hermes will log in automatically on startup. This is simpler but means the password is stored in your `.env` file.
+Instead of providing an access token, you can give Morpheus the bot's user ID and password. Morpheus will log in automatically on startup. This is simpler but means the password is stored in your `.env` file.
 
 ```bash
 MATRIX_USER_ID=@hermes:your-server.org
@@ -122,7 +122,7 @@ MATRIX_PASSWORD=your-password
 
 ## Step 3: Find Your Matrix User ID
 
-Hermes Agent uses your Matrix User ID to control who can interact with the bot. Matrix User IDs follow the format `@username:server`.
+Morpheus Agent uses your Matrix User ID to control who can interact with the bot. Matrix User IDs follow the format `@username:server`.
 
 To find yours:
 
@@ -134,7 +134,7 @@ To find yours:
 Matrix User IDs always start with `@` and contain a `:` followed by the server name. For example: `@alice:matrix.org`, `@bob:your-server.com`.
 :::
 
-## Step 4: Configure Hermes Agent
+## Step 4: Configure Morpheus Agent
 
 ### Option A: Interactive Setup (Recommended)
 
@@ -148,7 +148,7 @@ Select **Matrix** when prompted, then provide your homeserver URL, access token 
 
 ### Option B: Manual Configuration
 
-Add the following to your `~/.hermes/.env` file:
+Add the following to your `~/.morpheus/.env` file:
 
 **Using an access token:**
 
@@ -179,7 +179,7 @@ MATRIX_PASSWORD=***
 MATRIX_ALLOWED_USERS=@alice:matrix.example.org
 ```
 
-Optional behavior settings in `~/.hermes/config.yaml`:
+Optional behavior settings in `~/.morpheus/config.yaml`:
 
 ```yaml
 group_sessions_per_user: true
@@ -203,7 +203,7 @@ You can run `hermes gateway` in the background or as a systemd service for persi
 
 ## End-to-End Encryption (E2EE)
 
-Hermes supports Matrix end-to-end encryption, so you can chat with your bot in encrypted rooms.
+Morpheus supports Matrix end-to-end encryption, so you can chat with your bot in encrypted rooms.
 
 ### Requirements
 
@@ -214,7 +214,7 @@ E2EE requires the `matrix-nio` library with encryption extras and the `libolm` C
 pip install 'matrix-nio[e2e]'
 
 # Or install with hermes extras
-pip install 'hermes-agent[matrix]'
+pip install 'morpheus-agent[matrix]'
 ```
 
 You also need `libolm` installed on your system:
@@ -232,21 +232,21 @@ sudo dnf install libolm-devel
 
 ### Enable E2EE
 
-Add to your `~/.hermes/.env`:
+Add to your `~/.morpheus/.env`:
 
 ```bash
 MATRIX_ENCRYPTION=true
 ```
 
-When E2EE is enabled, Hermes:
+When E2EE is enabled, Morpheus:
 
-- Stores encryption keys in `~/.hermes/matrix/store/`
+- Stores encryption keys in `~/.morpheus/matrix/store/`
 - Uploads device keys on first connection
 - Decrypts incoming messages and encrypts outgoing messages automatically
 - Auto-joins encrypted rooms when invited
 
 :::warning
-If you delete the `~/.hermes/matrix/store/` directory, the bot loses its encryption keys. You'll need to verify the device again in your Matrix client. Back up this directory if you want to preserve encrypted sessions.
+If you delete the `~/.morpheus/matrix/store/` directory, the bot loses its encryption keys. You'll need to verify the device again in your Matrix client. Back up this directory if you want to preserve encrypted sessions.
 :::
 
 :::info
@@ -263,7 +263,7 @@ Type `/sethome` in any Matrix room where the bot is present. That room becomes t
 
 ### Manual Configuration
 
-Add this to your `~/.hermes/.env`:
+Add this to your `~/.morpheus/.env`:
 
 ```bash
 MATRIX_HOME_ROOM=!abc123def456:matrix.example.org
@@ -304,10 +304,10 @@ If this returns your user info, the token is valid. If it returns an error, gene
 pip install 'matrix-nio[e2e]'
 ```
 
-Or with Hermes extras:
+Or with Morpheus extras:
 
 ```bash
-pip install 'hermes-agent[matrix]'
+pip install 'morpheus-agent[matrix]'
 ```
 
 ### Encryption errors / "could not decrypt event"
@@ -324,11 +324,11 @@ pip install 'hermes-agent[matrix]'
 
 **Cause**: Long-running tool executions can delay the sync loop, or the homeserver is slow.
 
-**Fix**: The sync loop automatically retries every 5 seconds on error. Check the Hermes logs for sync-related warnings. If the bot consistently falls behind, ensure your homeserver has adequate resources.
+**Fix**: The sync loop automatically retries every 5 seconds on error. Check the Morpheus logs for sync-related warnings. If the bot consistently falls behind, ensure your homeserver has adequate resources.
 
 ### Bot is offline
 
-**Cause**: The Hermes gateway isn't running, or it failed to connect.
+**Cause**: The Morpheus gateway isn't running, or it failed to connect.
 
 **Fix**: Check that `hermes gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
 
@@ -336,7 +336,7 @@ pip install 'hermes-agent[matrix]'
 
 **Cause**: Your User ID isn't in `MATRIX_ALLOWED_USERS`.
 
-**Fix**: Add your User ID to `MATRIX_ALLOWED_USERS` in `~/.hermes/.env` and restart the gateway. Use the full `@user:server` format.
+**Fix**: Add your User ID to `MATRIX_ALLOWED_USERS` in `~/.morpheus/.env` and restart the gateway. Use the full `@user:server` format.
 
 ## Security
 
@@ -344,11 +344,11 @@ pip install 'hermes-agent[matrix]'
 Always set `MATRIX_ALLOWED_USERS` to restrict who can interact with the bot. Without it, the gateway denies all users by default as a safety measure. Only add User IDs of people you trust — authorized users have full access to the agent's capabilities, including tool use and system access.
 :::
 
-For more information on securing your Hermes Agent deployment, see the [Security Guide](../security.md).
+For more information on securing your Morpheus Agent deployment, see the [Security Guide](../security.md).
 
 ## Notes
 
 - **Any homeserver**: Works with Synapse, Conduit, Dendrite, matrix.org, or any spec-compliant Matrix homeserver. No specific homeserver software required.
 - **Federation**: If you're on a federated homeserver, the bot can communicate with users from other servers — just add their full `@user:server` IDs to `MATRIX_ALLOWED_USERS`.
 - **Auto-join**: The bot automatically accepts room invites and joins. It starts responding immediately after joining.
-- **Media support**: Hermes can send and receive images, audio, video, and file attachments. Media is uploaded to your homeserver using the Matrix content repository API.
+- **Media support**: Morpheus can send and receive images, audio, video, and file attachments. Media is uploaded to your homeserver using the Matrix content repository API.

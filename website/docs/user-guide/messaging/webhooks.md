@@ -1,12 +1,12 @@
 ---
 sidebar_position: 13
 title: "Webhooks"
-description: "Receive events from GitHub, GitLab, and other services to trigger Hermes agent runs"
+description: "Receive events from GitHub, GitLab, and other services to trigger Morpheus agent runs"
 ---
 
 # Webhooks
 
-Receive events from external services (GitHub, GitLab, JIRA, Stripe, etc.) and trigger Hermes agent runs automatically. The webhook adapter runs an HTTP server that accepts POST requests, validates HMAC signatures, transforms payloads into agent prompts, and routes responses back to the source or to another configured platform.
+Receive events from external services (GitHub, GitLab, JIRA, Stripe, etc.) and trigger Morpheus agent runs automatically. The webhook adapter runs an HTTP server that accepts POST requests, validates HMAC signatures, transforms payloads into agent prompts, and routes responses back to the source or to another configured platform.
 
 The agent processes the event and can respond by posting comments on PRs, sending messages to Telegram/Discord, or logging the result.
 
@@ -34,7 +34,7 @@ Follow the prompts to enable webhooks, set the port, and set a global HMAC secre
 
 ### Via environment variables
 
-Add to `~/.hermes/.env`:
+Add to `~/.morpheus/.env`:
 
 ```bash
 WEBHOOK_ENABLED=true
@@ -136,7 +136,7 @@ This walkthrough sets up automatic code review on every pull request.
 
 ### 2. Add the route config
 
-Add the `github-pr` route to your `~/.hermes/config.yaml` as shown in the example above.
+Add the `github-pr` route to your `~/.morpheus/config.yaml` as shown in the example above.
 
 ### 3. Ensure `gh` CLI is authenticated
 
@@ -148,7 +148,7 @@ gh auth login
 
 ### 4. Test it
 
-Open a pull request on the repository. The webhook fires, Hermes processes the event, and posts a review comment on the PR.
+Open a pull request on the repository. The webhook fires, Morpheus processes the event, and posts a review comment on the PR.
 
 ---
 

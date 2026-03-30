@@ -4,7 +4,7 @@ Fetches model metadata from https://models.dev/api.json — a community-maintain
 database of 3800+ models across 100+ providers, including per-provider context
 windows, pricing, and capabilities.
 
-Data is cached in memory (1hr TTL) and on disk (~/.hermes/models_dev_cache.json)
+Data is cached in memory (1hr TTL) and on disk (~/.morpheus/models_dev_cache.json)
 to avoid cold-start network latency.
 """
 
@@ -26,7 +26,7 @@ _MODELS_DEV_CACHE_TTL = 3600  # 1 hour in-memory
 _models_dev_cache: Dict[str, Any] = {}
 _models_dev_cache_time: float = 0
 
-# Provider ID mapping: Hermes provider names → models.dev provider IDs
+# Provider ID mapping: Morpheus provider names → models.dev provider IDs
 PROVIDER_TO_MODELS_DEV: Dict[str, str] = {
     "openrouter": "openrouter",
     "anthropic": "anthropic",
@@ -46,8 +46,8 @@ PROVIDER_TO_MODELS_DEV: Dict[str, str] = {
 
 def _get_cache_path() -> Path:
     """Return path to disk cache file."""
-    env_val = os.environ.get("HERMES_HOME", "")
-    hermes_home = Path(env_val) if env_val else Path.home() / ".hermes"
+    env_val = os.environ.get("MORPHEUS_HOME", "")
+    hermes_home = Path(env_val) if env_val else Path.home() / ".morpheus"
     return hermes_home / "models_dev_cache.json"
 
 

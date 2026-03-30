@@ -157,7 +157,7 @@ def _handle_sudo_failure(output: str, env_type: str) -> str:
     
     for failure in sudo_failures:
         if failure in output:
-            return output + "\n\n💡 Tip: To enable sudo over messaging, add SUDO_PASSWORD to ~/.hermes/.env on the agent machine."
+            return output + "\n\n💡 Tip: To enable sudo over messaging, add SUDO_PASSWORD to ~/.morpheus/.env on the agent machine."
     
     return output
 
@@ -443,7 +443,7 @@ def _parse_env_var(name: str, default: str, converter=int, type_label: str = "in
     except (ValueError, json.JSONDecodeError):
         raise ValueError(
             f"Invalid value for {name}: {raw!r} (expected {type_label}). "
-            f"Check ~/.hermes/.env or environment variables."
+            f"Check ~/.morpheus/.env or environment variables."
         )
 
 
@@ -1283,7 +1283,7 @@ if __name__ == "__main__":
     print(f"  TERMINAL_MODAL_IMAGE: {os.getenv('TERMINAL_MODAL_IMAGE', default_img)}")
     print(f"  TERMINAL_DAYTONA_IMAGE: {os.getenv('TERMINAL_DAYTONA_IMAGE', default_img)}")
     print(f"  TERMINAL_CWD: {os.getenv('TERMINAL_CWD', os.getcwd())}")
-    print(f"  TERMINAL_SANDBOX_DIR: {os.getenv('TERMINAL_SANDBOX_DIR', '~/.hermes/sandboxes')}")
+    print(f"  TERMINAL_SANDBOX_DIR: {os.getenv('TERMINAL_SANDBOX_DIR', '~/.morpheus/sandboxes')}")
     print(f"  TERMINAL_TIMEOUT: {os.getenv('TERMINAL_TIMEOUT', '60')}")
     print(f"  TERMINAL_LIFETIME_SECONDS: {os.getenv('TERMINAL_LIFETIME_SECONDS', '300')}")
 

@@ -45,13 +45,13 @@ import fire
 from datetime import datetime
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 
-# Load .env from ~/.hermes/.env first, then project root as dev fallback.
+# Load .env from ~/.morpheus/.env first, then project root as dev fallback.
 # User-managed env files should override stale shell exports on restart.
-from hermes_cli.env_loader import load_hermes_dotenv
+from morpheus_cli.env_loader import load_hermes_dotenv
 
-_hermes_home = get_hermes_home()
+_hermes_home = get_morpheus_home()
 _project_env = Path(__file__).parent / '.env'
 _loaded_env_paths = load_hermes_dotenv(hermes_home=_hermes_home, project_env=_project_env)
 if _loaded_env_paths:
@@ -73,7 +73,7 @@ from tools.interrupt import set_interrupt as _set_interrupt
 from tools.browser_tool import cleanup_browser
 
 
-from hermes_constants import OPENROUTER_BASE_URL
+from morpheus_constants import OPENROUTER_BASE_URL
 
 # Agent internals extracted to agent/ package for modularity
 from agent.prompt_builder import (
@@ -113,7 +113,7 @@ HONCHO_TOOL_NAMES = {
 class _SafeWriter:
     """Transparent stdio wrapper that catches OSError/ValueError from broken pipes.
 
-    When hermes-agent runs as a systemd service, Docker container, or headless
+    When morpheus-agent runs as a systemd service, Docker container, or headless
     daemon, the stdout/stderr pipe can become unavailable (idle timeout, buffer
     exhaustion, socket reset). Any print() call then raises
     ``OSError: [Errno 5] Input/output error``, which can crash agent setup or
@@ -523,7 +523,7 @@ class AIAgent:
 
         # Direct OpenAI sessions use the Responses API path.  GPT-5.x tool
         # calls with reasoning are rejected on /v1/chat/completions, and
-        # Hermes is a tool-using client by default.
+        # Morpheus is a tool-using client by default.
         if self.api_mode == "chat_completions" and self._is_direct_openai_url():
             self.api_mode = "codex_responses"
 
@@ -599,7 +599,7 @@ class AIAgent:
         # status_callback for gateway platforms.  Does NOT inject into messages.
         self._context_pressure_warned = False
 
-        # Persistent error log -- always writes WARNING+ to ~/.hermes/logs/errors.log
+        # Persistent error log -- always writes WARNING+ to ~/.morpheus/logs/errors.log
         # so tool failures, API errors, etc. are inspectable after the fact.
         # In gateway mode, each incoming message creates a new AIAgent instance,
         # while the root logger is process-global. Re-adding the same errors.log
@@ -673,7 +673,7 @@ class AIAgent:
                     'run_agent',            # agent runner internals
                     'trajectory_compressor',
                     'cron',                 # scheduler (only relevant in daemon mode)
-                    'hermes_cli',           # CLI helpers
+                    'morpheus_cli',           # CLI helpers
                 ]:
                     logging.getLogger(quiet_logger).setLevel(logging.ERROR)
         
@@ -734,12 +734,12 @@ class AIAgent:
                 effective_base = base_url
                 if "openrouter" in effective_base.lower():
                     client_kwargs["default_headers"] = {
-                        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-                        "X-OpenRouter-Title": "Hermes Agent",
+                        "HTTP-Referer": "https://morpheus-agent.nousresearch.com",
+                        "X-OpenRouter-Title": "Morpheus Agent",
                         "X-OpenRouter-Categories": "productivity,cli-agent",
                     }
                 elif "api.githubcopilot.com" in effective_base.lower():
-                    from hermes_cli.models import copilot_default_headers
+                    from morpheus_cli.models import copilot_default_headers
 
                     client_kwargs["default_headers"] = copilot_default_headers()
                 elif "api.kimi.com" in effective_base.lower():
@@ -775,8 +775,8 @@ class AIAgent:
                         "api_key": os.getenv("OPENROUTER_API_KEY", ""),
                         "base_url": OPENROUTER_BASE_URL,
                         "default_headers": {
-                            "HTTP-Referer": "https://hermes-agent.nousresearch.com",
-                            "X-OpenRouter-Title": "Hermes Agent",
+                            "HTTP-Referer": "https://morpheus-agent.nousresearch.com",
+                            "X-OpenRouter-Title": "Morpheus Agent",
                             "X-OpenRouter-Categories": "productivity,cli-agent",
                         },
                     }
@@ -864,8 +864,8 @@ class AIAgent:
             short_uuid = uuid.uuid4().hex[:6]
             self.session_id = f"{timestamp_str}_{short_uuid}"
         
-        # Session logs go into ~/.hermes/sessions/ alongside gateway sessions
-        hermes_home = get_hermes_home()
+        # Session logs go into ~/.morpheus/sessions/ alongside gateway sessions
+        hermes_home = get_morpheus_home()
         self.logs_dir = hermes_home / "sessions"
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.session_log_file = self.logs_dir / f"session_{self.session_id}.json"
@@ -916,7 +916,7 @@ class AIAgent:
         
         # Load config once for memory, skills, and compression sections
         try:
-            from hermes_cli.config import load_config as _load_agent_config
+            from morpheus_cli.config import load_config as _load_agent_config
             _agent_cfg = _load_agent_config()
         except Exception:
             _agent_cfg = {}
@@ -979,7 +979,7 @@ class AIAgent:
             pass  # Intelligence is optional
 
         # Honcho AI-native memory (cross-session user modeling)
-        # Reads $HERMES_HOME/honcho.json (instance) or ~/.honcho/config.json (global).
+        # Reads $MORPHEUS_HOME/honcho.json (instance) or ~/.honcho/config.json (global).
         self._honcho = None  # HonchoSessionManager | None
         self._honcho_session_key = honcho_session_key
         self._honcho_config = None  # HonchoClientConfig | None
@@ -2268,9 +2268,9 @@ class AIAgent:
         honcho_sess = self._honcho.get_or_create(self._honcho_session_key)
         if not honcho_sess.messages:
             try:
-                from hermes_cli.config import get_hermes_home
+                from morpheus_cli.config import get_morpheus_home
 
-                mem_dir = str(get_hermes_home() / "memories")
+                mem_dir = str(get_morpheus_home() / "memories")
                 self._honcho.migrate_memory_files(
                     self._honcho_session_key,
                     mem_dir,
@@ -2462,12 +2462,12 @@ class AIAgent:
             # Fallback to hardcoded identity
             _ai_peer_name = (
                 self._honcho_config.ai_peer
-                if self._honcho_config and self._honcho_config.ai_peer != "hermes"
+                if self._honcho_config and self._honcho_config.ai_peer != "morpheus"
                 else None
             )
             if _ai_peer_name:
                 _identity = DEFAULT_AGENT_IDENTITY.replace(
-                    "You are Hermes Agent",
+                    "You are Morpheus Agent",
                     f"You are {_ai_peer_name}",
                     1,
                 )
@@ -2486,7 +2486,7 @@ class AIAgent:
         if tool_guidance:
             prompt_parts.append(" ".join(tool_guidance))
 
-        # Honcho CLI awareness: tell Hermes about its own management commands
+        # Honcho CLI awareness: tell Morpheus about its own management commands
         # so it can refer the user to them rather than reinventing answers.
         if self._honcho and self._honcho_session_key:
             hcfg = self._honcho_config
@@ -2600,7 +2600,7 @@ class AIAgent:
 
         if not self.skip_context_files:
             # Use TERMINAL_CWD for context file discovery when set (gateway
-            # mode).  The gateway process runs from the hermes-agent install
+            # mode).  The gateway process runs from the morpheus-agent install
             # dir, so os.getcwd() would pick up the repo's AGENTS.md and
             # other dev files — inflating token usage by ~10k for no benefit.
             _context_cwd = os.getenv("TERMINAL_CWD") or None
@@ -2609,7 +2609,7 @@ class AIAgent:
             if context_files_prompt:
                 prompt_parts.append(context_files_prompt)
 
-        from hermes_time import now as _hermes_now
+        from morpheus_time import now as _hermes_now
         now = _hermes_now()
         timestamp_line = f"Conversation started: {now.strftime('%A, %B %d, %Y %I:%M %p')}"
         if self.pass_session_id and self.session_id:
@@ -3565,7 +3565,7 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.auth import resolve_codex_runtime_credentials
+            from morpheus_cli.auth import resolve_codex_runtime_credentials
 
             creds = resolve_codex_runtime_credentials(force_refresh=force)
         except Exception as exc:
@@ -3594,7 +3594,7 @@ class AIAgent:
             return False
 
         try:
-            from hermes_cli.auth import resolve_nous_runtime_credentials
+            from morpheus_cli.auth import resolve_nous_runtime_credentials
 
             creds = resolve_nous_runtime_credentials(
                 min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
@@ -4602,7 +4602,7 @@ class AIAgent:
 
         # Nous Portal product attribution
         if _is_nous:
-            extra_body["tags"] = ["product=hermes-agent"]
+            extra_body["tags"] = ["product=morpheus-agent"]
 
         if extra_body:
             api_kwargs["extra_body"] = extra_body
@@ -4622,7 +4622,7 @@ class AIAgent:
             return True
         if "models.github.ai" in self._base_url_lower or "api.githubcopilot.com" in self._base_url_lower:
             try:
-                from hermes_cli.models import github_model_reasoning_efforts
+                from morpheus_cli.models import github_model_reasoning_efforts
 
                 return bool(github_model_reasoning_efforts(self.model))
             except Exception:
@@ -4646,7 +4646,7 @@ class AIAgent:
     def _github_models_reasoning_extra_body(self) -> dict | None:
         """Format reasoning payload for GitHub Models/OpenAI-compatible routes."""
         try:
-            from hermes_cli.models import github_model_reasoning_efforts
+            from morpheus_cli.models import github_model_reasoning_efforts
         except Exception:
             return None
 
@@ -5754,7 +5754,7 @@ class AIAgent:
                         "effort": "medium"
                     }
             if _is_nous:
-                summary_extra_body["tags"] = ["product=hermes-agent"]
+                summary_extra_body["tags"] = ["product=morpheus-agent"]
 
             if self.api_mode == "codex_responses":
                 codex_kwargs = self._build_api_kwargs(api_messages)
@@ -6751,8 +6751,8 @@ class AIAgent:
                         print(f"{self.log_prefix}   Auth method: {auth_method}")
                         print(f"{self.log_prefix}   Token prefix: {key[:12]}..." if key and len(key) > 12 else f"{self.log_prefix}   Token: (empty or short)")
                         print(f"{self.log_prefix}   Troubleshooting:")
-                        print(f"{self.log_prefix}     • Check ANTHROPIC_TOKEN in ~/.hermes/.env for Hermes-managed OAuth/setup tokens")
-                        print(f"{self.log_prefix}     • Check ANTHROPIC_API_KEY in ~/.hermes/.env for API keys or legacy token values")
+                        print(f"{self.log_prefix}     • Check ANTHROPIC_TOKEN in ~/.morpheus/.env for Morpheus-managed OAuth/setup tokens")
+                        print(f"{self.log_prefix}     • Check ANTHROPIC_API_KEY in ~/.morpheus/.env for API keys or legacy token values")
                         print(f"{self.log_prefix}     • For API keys: verify at https://console.anthropic.com/settings/keys")
                         print(f"{self.log_prefix}     • For Claude Code: run 'claude /login' to refresh, then retry")
                         print(f"{self.log_prefix}     • Clear stale keys: hermes config set ANTHROPIC_TOKEN \"\"")

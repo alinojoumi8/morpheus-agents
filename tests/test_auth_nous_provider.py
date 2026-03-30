@@ -7,7 +7,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from hermes_cli.auth import AuthError, get_provider_auth_state, resolve_nous_runtime_credentials
+from morpheus_cli.auth import AuthError, get_provider_auth_state, resolve_nous_runtime_credentials
 
 
 def _setup_nous_auth(
@@ -55,9 +55,9 @@ def _mint_payload(api_key: str = "agent-key") -> dict:
 
 
 def test_refresh_token_persisted_when_mint_returns_insufficient_credits(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    hermes_home = tmp_path / "morpheus"
     _setup_nous_auth(hermes_home, refresh_token="refresh-old")
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_home))
 
     refresh_calls = []
     mint_calls = {"count": 0}
@@ -78,8 +78,8 @@ def test_refresh_token_persisted_when_mint_returns_insufficient_credits(tmp_path
             raise AuthError("credits exhausted", provider="nous", code="insufficient_credits")
         return _mint_payload(api_key="agent-key-2")
 
-    monkeypatch.setattr("hermes_cli.auth._refresh_access_token", _fake_refresh_access_token)
-    monkeypatch.setattr("hermes_cli.auth._mint_agent_key", _fake_mint_agent_key)
+    monkeypatch.setattr("morpheus_cli.auth._refresh_access_token", _fake_refresh_access_token)
+    monkeypatch.setattr("morpheus_cli.auth._mint_agent_key", _fake_mint_agent_key)
 
     with pytest.raises(AuthError) as exc:
         resolve_nous_runtime_credentials(min_key_ttl_seconds=300)
@@ -96,9 +96,9 @@ def test_refresh_token_persisted_when_mint_returns_insufficient_credits(tmp_path
 
 
 def test_refresh_token_persisted_when_mint_times_out(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    hermes_home = tmp_path / "morpheus"
     _setup_nous_auth(hermes_home, refresh_token="refresh-old")
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_home))
 
     def _fake_refresh_access_token(*, client, portal_base_url, client_id, refresh_token):
         return {
@@ -111,8 +111,8 @@ def test_refresh_token_persisted_when_mint_times_out(tmp_path, monkeypatch):
     def _fake_mint_agent_key(*, client, portal_base_url, access_token, min_ttl_seconds):
         raise httpx.ReadTimeout("mint timeout")
 
-    monkeypatch.setattr("hermes_cli.auth._refresh_access_token", _fake_refresh_access_token)
-    monkeypatch.setattr("hermes_cli.auth._mint_agent_key", _fake_mint_agent_key)
+    monkeypatch.setattr("morpheus_cli.auth._refresh_access_token", _fake_refresh_access_token)
+    monkeypatch.setattr("morpheus_cli.auth._mint_agent_key", _fake_mint_agent_key)
 
     with pytest.raises(httpx.ReadTimeout):
         resolve_nous_runtime_credentials(min_key_ttl_seconds=300)
@@ -124,9 +124,9 @@ def test_refresh_token_persisted_when_mint_times_out(tmp_path, monkeypatch):
 
 
 def test_mint_retry_uses_latest_rotated_refresh_token(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    hermes_home = tmp_path / "morpheus"
     _setup_nous_auth(hermes_home, refresh_token="refresh-old")
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("MORPHEUS_HOME", str(hermes_home))
 
     refresh_calls = []
     mint_calls = {"count": 0}
@@ -147,8 +147,8 @@ def test_mint_retry_uses_latest_rotated_refresh_token(tmp_path, monkeypatch):
             raise AuthError("stale access token", provider="nous", code="invalid_token")
         return _mint_payload(api_key="agent-key")
 
-    monkeypatch.setattr("hermes_cli.auth._refresh_access_token", _fake_refresh_access_token)
-    monkeypatch.setattr("hermes_cli.auth._mint_agent_key", _fake_mint_agent_key)
+    monkeypatch.setattr("morpheus_cli.auth._refresh_access_token", _fake_refresh_access_token)
+    monkeypatch.setattr("morpheus_cli.auth._mint_agent_key", _fake_mint_agent_key)
 
     creds = resolve_nous_runtime_credentials(min_key_ttl_seconds=300)
     assert creds["api_key"] == "agent-key"

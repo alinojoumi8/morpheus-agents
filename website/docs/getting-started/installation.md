@@ -1,23 +1,23 @@
 ---
 sidebar_position: 2
 title: "Installation"
-description: "Install Hermes Agent on Linux, macOS, or WSL2"
+description: "Install Morpheus Agent on Linux, macOS, or WSL2"
 ---
 
 # Installation
 
-Get Hermes Agent up and running in under two minutes with the one-line installer, or follow the manual steps for full control.
+Get Morpheus Agent up and running in under two minutes with the one-line installer, or follow the manual steps for full control.
 
 ## Quick Install
 
 ### Linux / macOS / WSL2
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/morpheus-agent/main/scripts/install.sh | bash
 ```
 
 :::warning Windows
-Native Windows is **not supported**. Please install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run Hermes Agent from there. The install command above works inside WSL2.
+Native Windows is **not supported**. Please install [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install) and run Morpheus Agent from there. The install command above works inside WSL2.
 :::
 
 ### What the Installer Does
@@ -74,8 +74,8 @@ If you prefer full control over the installation process, follow these steps.
 Clone with `--recurse-submodules` to pull the required submodules:
 
 ```bash
-git clone --recurse-submodules https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone --recurse-submodules https://github.com/NousResearch/morpheus-agent.git
+cd morpheus-agent
 ```
 
 If you already cloned without `--recurse-submodules`:
@@ -157,18 +157,18 @@ npm install
 
 ```bash
 # Create the directory structure
-mkdir -p ~/.hermes/{cron,sessions,logs,memories,skills,pairing,hooks,image_cache,audio_cache,whatsapp/session}
+mkdir -p ~/.morpheus/{cron,sessions,logs,memories,skills,pairing,hooks,image_cache,audio_cache,whatsapp/session}
 
 # Copy the example config file
-cp cli-config.yaml.example ~/.hermes/config.yaml
+cp cli-config.yaml.example ~/.morpheus/config.yaml
 
 # Create an empty .env file for API keys
-touch ~/.hermes/.env
+touch ~/.morpheus/.env
 ```
 
 ### Step 7: Add Your API Keys
 
-Open `~/.hermes/.env` and add at minimum an LLM provider key:
+Open `~/.morpheus/.env` and add at minimum an LLM provider key:
 
 ```bash
 # Required — at least one LLM provider:
@@ -230,8 +230,8 @@ For those who just want the commands:
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Clone & enter
-git clone --recurse-submodules https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone --recurse-submodules https://github.com/NousResearch/morpheus-agent.git
+cd morpheus-agent
 
 # Create venv with Python 3.11
 uv venv venv --python 3.11
@@ -243,10 +243,10 @@ uv pip install -e "./tinker-atropos"
 npm install  # optional, for browser tools and WhatsApp
 
 # Configure
-mkdir -p ~/.hermes/{cron,sessions,logs,memories,skills,pairing,hooks,image_cache,audio_cache,whatsapp/session}
-cp cli-config.yaml.example ~/.hermes/config.yaml
-touch ~/.hermes/.env
-echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.hermes/.env
+mkdir -p ~/.morpheus/{cron,sessions,logs,memories,skills,pairing,hooks,image_cache,audio_cache,whatsapp/session}
+cp cli-config.yaml.example ~/.morpheus/config.yaml
+touch ~/.morpheus/.env
+echo 'OPENROUTER_API_KEY=sk-or-v1-your-key' >> ~/.morpheus/.env
 
 # Make hermes available globally
 mkdir -p ~/.local/bin

@@ -138,7 +138,7 @@ def _handle_send(args):
 
     pconfig = config.platforms.get(platform)
     if not pconfig or not pconfig.enabled:
-        return json.dumps({"error": f"Platform '{platform_name}' is not configured. Set up credentials in ~/.hermes/config.yaml or environment variables."})
+        return json.dumps({"error": f"Platform '{platform_name}' is not configured. Set up credentials in ~/.morpheus/config.yaml or environment variables."})
 
     from gateway.platforms.base import BasePlatformAdapter
 
@@ -601,7 +601,7 @@ async def _send_email(extra, chat_id, message):
         msg = MIMEText(message, "plain", "utf-8")
         msg["From"] = address
         msg["To"] = chat_id
-        msg["Subject"] = "Hermes Agent"
+        msg["Subject"] = "Morpheus Agent"
 
         server = smtplib.SMTP(smtp_host, smtp_port)
         server.starttls(context=ssl.create_default_context())

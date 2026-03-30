@@ -220,7 +220,7 @@ def test_persist_dm_topic_thread_id_writes_config(tmp_path):
         }
     }
 
-    config_file = tmp_path / ".hermes" / "config.yaml"
+    config_file = tmp_path / ".morpheus" / "config.yaml"
     config_file.parent.mkdir(parents=True)
     with open(config_file, "w") as f:
         yaml.dump(config_data, f)
@@ -259,7 +259,7 @@ def test_persist_dm_topic_thread_id_skips_if_already_set(tmp_path):
         }
     }
 
-    config_file = tmp_path / ".hermes" / "config.yaml"
+    config_file = tmp_path / ".morpheus" / "config.yaml"
     config_file.parent.mkdir(parents=True)
     with open(config_file, "w") as f:
         yaml.dump(config_data, f)
@@ -361,7 +361,7 @@ def test_get_dm_topic_info_hot_reloads_from_config(tmp_path):
             }
         }
     }
-    config_file = tmp_path / ".hermes" / "config.yaml"
+    config_file = tmp_path / ".morpheus" / "config.yaml"
     config_file.parent.mkdir(parents=True)
     with open(config_file, "w") as f:
         yaml.dump(config_data, f)

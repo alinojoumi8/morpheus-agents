@@ -1,7 +1,7 @@
 """Thin OAuth adapter for MCP HTTP servers.
 
 Wraps the MCP SDK's built-in ``OAuthClientProvider`` (which implements
-``httpx.Auth``) with Hermes-specific token storage and browser-based
+``httpx.Auth``) with Morpheus-specific token storage and browser-based
 authorization.  The SDK handles all of the heavy lifting: PKCE generation,
 metadata discovery, dynamic client registration, token exchange, and refresh.
 
@@ -32,7 +32,7 @@ _TOKEN_DIR_NAME = "mcp-tokens"
 
 
 # ---------------------------------------------------------------------------
-# Token storage — persists tokens + client info to ~/.hermes/mcp-tokens/
+# Token storage — persists tokens + client info to ~/.morpheus/mcp-tokens/
 # ---------------------------------------------------------------------------
 
 def _sanitize_server_name(name: str) -> str:
@@ -43,14 +43,14 @@ def _sanitize_server_name(name: str) -> str:
     return clean[:60] or "unnamed"
 
 
-class HermesTokenStorage:
+class MorpheusTokenStorage:
     """File-backed token storage implementing the MCP SDK's TokenStorage protocol."""
 
     def __init__(self, server_name: str):
         self._server_name = _sanitize_server_name(server_name)
 
     def _base_dir(self) -> Path:
-        home = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
+        home = Path(os.environ.get("MORPHEUS_HOME", Path.home() / ".morpheus"))
         d = home / _TOKEN_DIR_NAME
         d.mkdir(parents=True, exist_ok=True)
         return d
@@ -224,7 +224,7 @@ def build_oauth_auth(server_name: str, server_url: str):
     redirect_uri = f"http://127.0.0.1:{_oauth_port}/callback"
 
     client_metadata = OAuthClientMetadata(
-        client_name="Hermes Agent",
+        client_name="Morpheus Agent",
         redirect_uris=[redirect_uri],
         grant_types=["authorization_code", "refresh_token"],
         response_types=["code"],
@@ -232,7 +232,7 @@ def build_oauth_auth(server_name: str, server_url: str):
         token_endpoint_auth_method="none",
     )
 
-    storage = HermesTokenStorage(server_name)
+    storage = MorpheusTokenStorage(server_name)
 
     return OAuthClientProvider(
         server_url=server_url,
@@ -246,4 +246,4 @@ def build_oauth_auth(server_name: str, server_url: str):
 
 def remove_oauth_tokens(server_name: str) -> None:
     """Delete stored OAuth tokens and client info for a server."""
-    HermesTokenStorage(server_name).remove()
+    MorpheusTokenStorage(server_name).remove()

@@ -12,7 +12,7 @@ import threading
 from collections import OrderedDict
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Optional
 
 from agent.skill_utils import (
@@ -131,7 +131,7 @@ def _strip_yaml_frontmatter(content: str) -> str:
 # =========================================================================
 
 DEFAULT_AGENT_IDENTITY = (
-    "You are Hermes Agent, an intelligent AI assistant created by Nous Research. "
+    "You are Morpheus Agent, an intelligent AI assistant created by Nous Research. "
     "You are helpful, knowledgeable, and direct. You assist users with a wide "
     "range of tasks including answering questions, writing and editing code, "
     "analyzing information, creative work, and executing actions via your tools. "
@@ -254,7 +254,7 @@ _SKILLS_SNAPSHOT_VERSION = 1
 
 
 def _skills_prompt_snapshot_path() -> Path:
-    return get_hermes_home() / ".skills_prompt_snapshot.json"
+    return get_morpheus_home() / ".skills_prompt_snapshot.json"
 
 
 def clear_skills_system_prompt_cache(*, clear_snapshot: bool = False) -> None:
@@ -426,7 +426,7 @@ def build_skills_system_prompt(
 
     Falls back to a full filesystem scan when both layers miss.
     """
-    hermes_home = get_hermes_home()
+    hermes_home = get_morpheus_home()
     skills_dir = hermes_home / "skills"
 
     if not skills_dir.exists():
@@ -585,19 +585,19 @@ def _truncate_content(content: str, filename: str, max_chars: int = CONTEXT_FILE
 
 
 def load_soul_md() -> Optional[str]:
-    """Load SOUL.md from HERMES_HOME and return its content, or None.
+    """Load SOUL.md from MORPHEUS_HOME and return its content, or None.
 
     Used as the agent identity (slot #1 in the system prompt).  When this
     returns content, ``build_context_files_prompt`` should be called with
     ``skip_soul=True`` so SOUL.md isn't injected twice.
     """
     try:
-        from hermes_cli.config import ensure_hermes_home
-        ensure_hermes_home()
+        from morpheus_cli.config import ensure_morpheus_home
+        ensure_morpheus_home()
     except Exception as e:
-        logger.debug("Could not ensure HERMES_HOME before loading SOUL.md: %s", e)
+        logger.debug("Could not ensure MORPHEUS_HOME before loading SOUL.md: %s", e)
 
-    soul_path = get_hermes_home() / "SOUL.md"
+    soul_path = get_morpheus_home() / "SOUL.md"
     if not soul_path.exists():
         return None
     try:
@@ -706,7 +706,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
       3. CLAUDE.md / claude.md   (cwd only)
       4. .cursorrules / .cursor/rules/*.mdc  (cwd only)
 
-    SOUL.md from HERMES_HOME is independent and always included when present.
+    SOUL.md from MORPHEUS_HOME is independent and always included when present.
     Each context source is capped at 20,000 chars.
 
     When *skip_soul* is True, SOUL.md is not included here (it was already
@@ -728,7 +728,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
     if project_context:
         sections.append(project_context)
 
-    # SOUL.md from HERMES_HOME only — skip when already loaded as identity
+    # SOUL.md from MORPHEUS_HOME only — skip when already loaded as identity
     if not skip_soul:
         soul_content = load_soul_md()
         if soul_content:

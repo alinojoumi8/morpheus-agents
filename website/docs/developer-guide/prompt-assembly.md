@@ -1,12 +1,12 @@
 ---
 sidebar_position: 5
 title: "Prompt Assembly"
-description: "How Hermes builds the system prompt, preserves cache stability, and injects ephemeral layers"
+description: "How Morpheus builds the system prompt, preserves cache stability, and injects ephemeral layers"
 ---
 
 # Prompt Assembly
 
-Hermes deliberately separates:
+Morpheus deliberately separates:
 
 - **cached system prompt state**
 - **ephemeral API-call-time additions**

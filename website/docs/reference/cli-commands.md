@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 title: "CLI Commands Reference"
-description: "Authoritative reference for Hermes terminal commands and command families"
+description: "Authoritative reference for Morpheus terminal commands and command families"
 ---
 
 # CLI Commands Reference
@@ -44,14 +44,14 @@ hermes [global-options] <command> [subcommand/options]
 | `hermes pairing` | Approve or revoke messaging pairing codes. |
 | `hermes skills` | Browse, install, publish, audit, and configure skills. |
 | `hermes honcho` | Manage Honcho cross-session memory integration. |
-| `hermes acp` | Run Hermes as an ACP server for editor integration. |
+| `hermes acp` | Run Morpheus as an ACP server for editor integration. |
 | `hermes tools` | Configure enabled tools per platform. |
 | `hermes sessions` | Browse, export, prune, rename, and delete sessions. |
 | `hermes insights` | Show token/cost/activity analytics. |
 | `hermes claw` | OpenClaw migration helpers. |
 | `hermes version` | Show version information. |
 | `hermes update` | Pull latest code and reinstall dependencies. |
-| `hermes uninstall` | Remove Hermes from the system. |
+| `hermes uninstall` | Remove Morpheus from the system. |
 
 ## `hermes chat`
 
@@ -299,7 +299,7 @@ Notes:
 - `--force` can override non-dangerous policy blocks for third-party/community skills.
 - `--force` does not override a `dangerous` scan verdict.
 - `--source skills-sh` searches the public `skills.sh` directory.
-- `--source well-known` lets you point Hermes at a site exposing `/.well-known/skills/index.json`.
+- `--source well-known` lets you point Morpheus at a site exposing `/.well-known/skills/index.json`.
 
 ## `hermes honcho`
 
@@ -319,7 +319,7 @@ Subcommands:
 | `mode` | Show or set memory mode: `hybrid`, `honcho`, or `local`. |
 | `tokens` | Show or set token budgets for context and dialectic. |
 | `identity` | Seed or show the AI peer identity representation. |
-| `migrate` | Migration guide from openclaw-honcho to Hermes Honcho. |
+| `migrate` | Migration guide from openclaw-honcho to Morpheus Honcho. |
 
 ## `hermes acp`
 
@@ -327,7 +327,7 @@ Subcommands:
 hermes acp
 ```
 
-Starts Hermes as an ACP (Agent Client Protocol) stdio server for editor integration.
+Starts Morpheus as an ACP (Agent Client Protocol) stdio server for editor integration.
 
 Related entrypoints:
 
@@ -360,7 +360,7 @@ Manage MCP (Model Context Protocol) server configurations.
 | `test <name>` | Test connection to an MCP server. |
 | `configure <name>` (alias: `config`) | Toggle tool selection for a server. |
 
-See [MCP Config Reference](./mcp-config-reference.md) and [Use MCP with Hermes](../guides/use-mcp-with-hermes.md).
+See [MCP Config Reference](./mcp-config-reference.md) and [Use MCP with Morpheus](../guides/use-mcp-with-hermes.md).
 
 ## `hermes plugins`
 
@@ -368,7 +368,7 @@ See [MCP Config Reference](./mcp-config-reference.md) and [Use MCP with Hermes](
 hermes plugins <subcommand>
 ```
 
-Manage Hermes Agent plugins.
+Manage Morpheus Agent plugins.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -377,7 +377,7 @@ Manage Hermes Agent plugins.
 | `remove <name>` (aliases: `rm`, `uninstall`) | Remove an installed plugin. |
 | `list` (alias: `ls`) | List installed plugins. |
 
-See [Plugins](../user-guide/features/plugins.md) and [Build a Hermes Plugin](../guides/build-a-hermes-plugin.md).
+See [Plugins](../user-guide/features/plugins.md) and [Build a Morpheus Plugin](../guides/build-a-hermes-plugin.md).
 
 ## `hermes tools`
 
@@ -426,7 +426,7 @@ hermes insights [--days N] [--source platform]
 hermes claw migrate
 ```
 
-Used to migrate settings, memories, skills, and keys from OpenClaw to Hermes.
+Used to migrate settings, memories, skills, and keys from OpenClaw to Morpheus.
 
 ## Maintenance commands
 
@@ -434,7 +434,7 @@ Used to migrate settings, memories, skills, and keys from OpenClaw to Hermes.
 |---------|-------------|
 | `hermes version` | Print version information. |
 | `hermes update` | Pull latest changes and reinstall dependencies. |
-| `hermes uninstall [--full] [--yes]` | Remove Hermes, optionally deleting all config/data. |
+| `hermes uninstall [--full] [--yes]` | Remove Morpheus, optionally deleting all config/data. |
 
 ## See also
 

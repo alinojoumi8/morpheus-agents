@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Hermes Agent Setup Script
+# Morpheus Agent Setup Script
 # ============================================================================
 # Quick setup for developers who cloned the repo manually.
 # Uses uv for fast Python provisioning and package management.
@@ -32,7 +32,7 @@ cd "$SCRIPT_DIR"
 PYTHON_VERSION="3.11"
 
 echo ""
-echo -e "${CYAN}⚕ Hermes Agent Setup${NC}"
+echo -e "${CYAN}⚕ Morpheus Agent Setup${NC}"
 echo ""
 
 # ============================================================================
@@ -242,7 +242,7 @@ if [ -n "$SHELL_CONFIG" ]; then
     if ! echo "$PATH" | tr ':' '\n' | grep -q "^$HOME/.local/bin$"; then
         if ! grep -q '\.local/bin' "$SHELL_CONFIG" 2>/dev/null; then
             echo "" >> "$SHELL_CONFIG"
-            echo "# Hermes Agent — ensure ~/.local/bin is on PATH" >> "$SHELL_CONFIG"
+            echo "# Morpheus Agent — ensure ~/.local/bin is on PATH" >> "$SHELL_CONFIG"
             echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_CONFIG"
             echo -e "${GREEN}✓${NC} Added ~/.local/bin to PATH in $SHELL_CONFIG"
         else
@@ -254,14 +254,14 @@ if [ -n "$SHELL_CONFIG" ]; then
 fi
 
 # ============================================================================
-# Seed bundled skills into ~/.hermes/skills/
+# Seed bundled skills into ~/.morpheus/skills/
 # ============================================================================
 
 HERMES_SKILLS_DIR="${HERMES_HOME:-$HOME/.hermes}/skills"
 mkdir -p "$HERMES_SKILLS_DIR"
 
 echo ""
-echo "Syncing bundled skills to ~/.hermes/skills/ ..."
+echo "Syncing bundled skills to ~/.morpheus/skills/ ..."
 if "$SCRIPT_DIR/venv/bin/python" "$SCRIPT_DIR/tools/skills_sync.py" 2>/dev/null; then
     echo -e "${GREEN}✓${NC} Skills synced"
 else
@@ -303,5 +303,5 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]] || [[ -z $REPLY ]]; then
     echo ""
     # Run directly with venv Python (no activation needed)
-    "$SCRIPT_DIR/venv/bin/python" -m hermes_cli.main setup
+    "$SCRIPT_DIR/venv/bin/python" -m morpheus_cli.main setup
 fi

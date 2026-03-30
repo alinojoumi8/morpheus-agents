@@ -1,7 +1,7 @@
 """Honcho client initialization and configuration.
 
 Resolution order for config file:
-  1. $HERMES_HOME/honcho.json  (instance-local, enables isolated Hermes instances)
+  1. $MORPHEUS_HOME/honcho.json  (instance-local, enables isolated Morpheus instances)
   2. ~/.honcho/config.json     (global, shared across all Honcho-enabled apps)
   3. Environment variables     (HONCHO_API_KEY, HONCHO_ENVIRONMENT)
 
@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -28,17 +28,17 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 GLOBAL_CONFIG_PATH = Path.home() / ".honcho" / "config.json"
-HOST = "hermes"
+HOST = "morpheus"
 
 
 def resolve_config_path() -> Path:
     """Return the active Honcho config path.
 
-    Checks $HERMES_HOME/honcho.json first (instance-local), then falls back
+    Checks $MORPHEUS_HOME/honcho.json first (instance-local), then falls back
     to ~/.honcho/config.json (global).  Returns the global path if neither
     exists (for first-time setup writes).
     """
-    local_path = get_hermes_home() / "honcho.json"
+    local_path = get_morpheus_home() / "honcho.json"
     if local_path.exists():
         return local_path
     return GLOBAL_CONFIG_PATH
@@ -62,7 +62,7 @@ def _resolve_memory_mode(
 
     Resolution order: host-level wins over global.
     String form:  applies as the default for all peers.
-    Object form:  { "default": "hybrid", "hermes": "honcho", ... }
+    Object form:  { "default": "hybrid", "morpheus": "honcho", ... }
                   "default" key sets the fallback; other keys are per-peer overrides.
     """
     # Pick the winning value (host beats global)
@@ -83,14 +83,14 @@ class HonchoClientConfig:
     """Configuration for Honcho client, resolved for a specific host."""
 
     host: str = HOST
-    workspace_id: str = "hermes"
+    workspace_id: str = "morpheus"
     api_key: str | None = None
     environment: str = "production"
     # Optional base URL for self-hosted Honcho (overrides environment mapping)
     base_url: str | None = None
     # Identity
     peer_name: str | None = None
-    ai_peer: str = "hermes"
+    ai_peer: str = "morpheus"
     linked_hosts: list[str] = field(default_factory=list)
     # Toggles
     enabled: bool = False
@@ -98,7 +98,7 @@ class HonchoClientConfig:
     # memoryMode: default for all peers. "hybrid" / "honcho"
     memory_mode: str = "hybrid"
     # Per-peer overrides — any named Honcho peer. Override memory_mode when set.
-    # Config object form: "memoryMode": { "default": "hybrid", "hermes": "honcho" }
+    # Config object form: "memoryMode": { "default": "hybrid", "morpheus": "honcho" }
     peer_memory_modes: dict[str, str] = field(default_factory=dict)
 
     def peer_memory_mode(self, peer_name: str) -> str:
@@ -116,7 +116,7 @@ class HonchoClientConfig:
     # reasoning_level: "minimal" | "low" | "medium" | "high" | "max"
     # Used as the default; prefetch_dialectic may bump it dynamically.
     dialectic_reasoning_level: str = "low"
-    # Max chars of dialectic result to inject into Hermes system prompt
+    # Max chars of dialectic result to inject into Morpheus system prompt
     dialectic_max_chars: int = 600
     # Recall mode: how memory retrieval works when Honcho is active.
     # "hybrid"  — auto-injected context + Honcho tools available (model decides)
@@ -135,7 +135,7 @@ class HonchoClientConfig:
     explicitly_configured: bool = False
 
     @classmethod
-    def from_env(cls, workspace_id: str = "hermes") -> HonchoClientConfig:
+    def from_env(cls, workspace_id: str = "morpheus") -> HonchoClientConfig:
         """Create config from environment variables (fallback)."""
         api_key = os.environ.get("HONCHO_API_KEY")
         base_url = os.environ.get("HONCHO_BASE_URL", "").strip() or None
@@ -155,7 +155,7 @@ class HonchoClientConfig:
     ) -> HonchoClientConfig:
         """Create config from the resolved Honcho config path.
 
-        Resolution: $HERMES_HOME/honcho.json -> ~/.honcho/config.json -> env vars.
+        Resolution: $MORPHEUS_HOME/honcho.json -> ~/.honcho/config.json -> env vars.
         """
         path = config_path or resolve_config_path()
         if not path.exists():
@@ -306,8 +306,8 @@ class HonchoClientConfig:
 
         Resolution order:
           1. Manual directory override from sessions map
-          2. Hermes session title (from /title command)
-          3. per-session strategy — Hermes session_id ({timestamp}_{hex})
+          2. Morpheus session title (from /title command)
+          3. per-session strategy — Morpheus session_id ({timestamp}_{hex})
           4. per-repo strategy — git repo root directory name
           5. per-directory strategy — directory basename
           6. global strategy — workspace name
@@ -330,7 +330,7 @@ class HonchoClientConfig:
                     return f"{self.peer_name}-{sanitized}"
                 return sanitized
 
-        # per-session: inherit Hermes session_id (new Honcho session each run)
+        # per-session: inherit Morpheus session_id (new Honcho session each run)
         if self.session_strategy == "per-session" and session_id:
             if self.session_peer_prefix and self.peer_name:
                 return f"{self.peer_name}-{session_id}"
@@ -404,7 +404,7 @@ def get_honcho_client(config: HonchoClientConfig | None = None) -> Honcho:
     resolved_base_url = config.base_url
     if not resolved_base_url:
         try:
-            from hermes_cli.config import load_config
+            from morpheus_cli.config import load_config
             hermes_cfg = load_config()
             honcho_cfg = hermes_cfg.get("honcho", {})
             if isinstance(honcho_cfg, dict):

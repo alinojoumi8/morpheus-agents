@@ -228,9 +228,9 @@ class TestRunJobSessionPersistence:
         with patch("cron.scheduler._hermes_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
              patch(
-                 "hermes_cli.runtime_provider.resolve_runtime_provider",
+                 "morpheus_cli.runtime_provider.resolve_runtime_provider",
                  return_value={
                      "api_key": "test-key",
                      "base_url": "https://example.invalid/v1",
@@ -276,9 +276,9 @@ class TestRunJobSessionPersistence:
         with patch("cron.scheduler._hermes_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
              patch(
-                 "hermes_cli.runtime_provider.resolve_runtime_provider",
+                 "morpheus_cli.runtime_provider.resolve_runtime_provider",
                  return_value={
                      "api_key": "test-key",
                      "base_url": "https://example.invalid/v1",
@@ -328,9 +328,9 @@ class TestRunJobSessionPersistence:
                 return {"final_response": "ok"}
 
         with patch("cron.scheduler._hermes_home", tmp_path), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
              patch(
-                 "hermes_cli.runtime_provider.resolve_runtime_provider",
+                 "morpheus_cli.runtime_provider.resolve_runtime_provider",
                  return_value={
                      "api_key": "***",
                      "base_url": "https://example.invalid/v1",
@@ -444,8 +444,8 @@ class TestRunJobPerJobOverrides:
         with patch("cron.scheduler._hermes_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
-             patch("hermes_cli.runtime_provider.resolve_runtime_provider", return_value=fake_runtime) as runtime_mock, \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_cli.runtime_provider.resolve_runtime_provider", return_value=fake_runtime) as runtime_mock, \
              patch("run_agent.AIAgent") as mock_agent_cls:
             mock_agent = MagicMock()
             mock_agent.run_conversation.return_value = {"final_response": "ok"}
@@ -479,9 +479,9 @@ class TestRunJobSkillBacked:
         with patch("cron.scheduler._hermes_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
              patch(
-                 "hermes_cli.runtime_provider.resolve_runtime_provider",
+                 "morpheus_cli.runtime_provider.resolve_runtime_provider",
                  return_value={
                      "api_key": "***",
                      "base_url": "https://example.invalid/v1",
@@ -525,9 +525,9 @@ class TestRunJobSkillBacked:
         with patch("cron.scheduler._hermes_home", tmp_path), \
              patch("cron.scheduler._resolve_origin", return_value=None), \
              patch("dotenv.load_dotenv"), \
-             patch("hermes_state.SessionDB", return_value=fake_db), \
+             patch("morpheus_state.SessionDB", return_value=fake_db), \
              patch(
-                 "hermes_cli.runtime_provider.resolve_runtime_provider",
+                 "morpheus_cli.runtime_provider.resolve_runtime_provider",
                  return_value={
                      "api_key": "***",
                      "base_url": "https://example.invalid/v1",

@@ -1,8 +1,8 @@
-"""Tests for provider-aware `/model` validation in hermes_cli.models."""
+"""Tests for provider-aware `/model` validation in morpheus_cli.models."""
 
 from unittest.mock import patch
 
-from hermes_cli.models import (
+from morpheus_cli.models import (
     copilot_model_api_mode,
     fetch_github_model_catalog,
     curated_models_for_provider,
@@ -38,8 +38,8 @@ def _validate(model, provider="openrouter", api_models=FAKE_API_MODELS, **kw):
         "suggested_base_url": None,
         "used_fallback": False,
     }
-    with patch("hermes_cli.models.fetch_api_models", return_value=api_models), \
-         patch("hermes_cli.models.probe_api_models", return_value=probe_payload):
+    with patch("morpheus_cli.models.fetch_api_models", return_value=api_models), \
+         patch("morpheus_cli.models.probe_api_models", return_value=probe_payload):
         return validate_requested_model(model, provider, **kw)
 
 
@@ -178,18 +178,18 @@ class TestProviderModelIds:
         assert "glm-5" in provider_model_ids("zai")
 
     def test_copilot_prefers_live_catalog(self):
-        with patch("hermes_cli.auth.resolve_api_key_provider_credentials", return_value={"api_key": "gh-token"}), \
-             patch("hermes_cli.models._fetch_github_models", return_value=["gpt-5.4", "claude-sonnet-4.6"]):
+        with patch("morpheus_cli.auth.resolve_api_key_provider_credentials", return_value={"api_key": "gh-token"}), \
+             patch("morpheus_cli.models._fetch_github_models", return_value=["gpt-5.4", "claude-sonnet-4.6"]):
             assert provider_model_ids("copilot") == ["gpt-5.4", "claude-sonnet-4.6"]
 
     def test_copilot_acp_reuses_copilot_catalog(self):
-        with patch("hermes_cli.auth.resolve_api_key_provider_credentials", return_value={"api_key": "gh-token"}), \
-             patch("hermes_cli.models._fetch_github_models", return_value=["gpt-5.4", "claude-sonnet-4.6"]):
+        with patch("morpheus_cli.auth.resolve_api_key_provider_credentials", return_value={"api_key": "gh-token"}), \
+             patch("morpheus_cli.models._fetch_github_models", return_value=["gpt-5.4", "claude-sonnet-4.6"]):
             assert provider_model_ids("copilot-acp") == ["gpt-5.4", "claude-sonnet-4.6"]
 
     def test_copilot_acp_falls_back_to_copilot_defaults(self):
-        with patch("hermes_cli.auth.resolve_api_key_provider_credentials", side_effect=Exception("no token")), \
-             patch("hermes_cli.models._fetch_github_models", return_value=None):
+        with patch("morpheus_cli.auth.resolve_api_key_provider_credentials", side_effect=Exception("no token")), \
+             patch("morpheus_cli.models._fetch_github_models", return_value=None):
             ids = provider_model_ids("copilot-acp")
 
         assert "gpt-5.4" in ids
@@ -203,7 +203,7 @@ class TestFetchApiModels:
         assert fetch_api_models("key", None) is None
 
     def test_returns_none_on_network_error(self):
-        with patch("hermes_cli.models.urllib.request.urlopen", side_effect=Exception("timeout")):
+        with patch("morpheus_cli.models.urllib.request.urlopen", side_effect=Exception("timeout")):
             assert fetch_api_models("key", "https://example.com/v1") is None
 
     def test_probe_api_models_tries_v1_fallback(self):
@@ -225,7 +225,7 @@ class TestFetchApiModels:
                 return _Resp()
             raise Exception("404")
 
-        with patch("hermes_cli.models.urllib.request.urlopen", side_effect=_fake_urlopen):
+        with patch("morpheus_cli.models.urllib.request.urlopen", side_effect=_fake_urlopen):
             probe = probe_api_models("key", "http://localhost:8000")
 
         assert calls == ["http://localhost:8000/models", "http://localhost:8000/v1/models"]
@@ -244,7 +244,7 @@ class TestFetchApiModels:
             def read(self):
                 return b'{"data": [{"id": "gpt-5.4", "model_picker_enabled": true, "supported_endpoints": ["/responses"], "capabilities": {"type": "chat", "supports": {"reasoning_effort": ["low", "medium", "high"]}}}, {"id": "claude-sonnet-4.6", "model_picker_enabled": true, "supported_endpoints": ["/chat/completions"], "capabilities": {"type": "chat", "supports": {"reasoning_effort": ["low", "medium", "high"]}}}, {"id": "text-embedding-3-small", "model_picker_enabled": true, "capabilities": {"type": "embedding"}}]}'
 
-        with patch("hermes_cli.models.urllib.request.urlopen", return_value=_Resp()) as mock_urlopen:
+        with patch("morpheus_cli.models.urllib.request.urlopen", return_value=_Resp()) as mock_urlopen:
             probe = probe_api_models("gh-token", "https://api.githubcopilot.com")
 
         assert mock_urlopen.call_args[0][0].full_url == "https://api.githubcopilot.com/models"
@@ -263,7 +263,7 @@ class TestFetchApiModels:
             def read(self):
                 return b'{"data": [{"id": "gpt-5.4", "model_picker_enabled": true, "supported_endpoints": ["/responses"], "capabilities": {"type": "chat", "supports": {"reasoning_effort": ["low", "medium", "high"]}}}, {"id": "text-embedding-3-small", "model_picker_enabled": true, "capabilities": {"type": "embedding"}}]}'
 
-        with patch("hermes_cli.models.urllib.request.urlopen", return_value=_Resp()):
+        with patch("morpheus_cli.models.urllib.request.urlopen", return_value=_Resp()):
             catalog = fetch_github_model_catalog("gh-token")
 
         assert catalog is not None
@@ -428,7 +428,7 @@ class TestValidateApiFallback:
 
     def test_custom_endpoint_warns_with_probed_url_and_v1_hint(self):
         with patch(
-            "hermes_cli.models.probe_api_models",
+            "morpheus_cli.models.probe_api_models",
             return_value={
                 "models": None,
                 "probed_url": "http://localhost:8000/v1/models",

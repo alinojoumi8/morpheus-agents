@@ -6,11 +6,11 @@ Exposes an HTTP server with endpoints:
 - POST /v1/responses               — OpenAI Responses API format (stateful via previous_response_id)
 - GET  /v1/responses/{response_id} — Retrieve a stored response
 - DELETE /v1/responses/{response_id} — Delete a stored response
-- GET  /v1/models                  — lists hermes-agent as an available model
+- GET  /v1/models                  — lists morpheus-agent as an available model
 - GET  /health                     — health check
 
 Any OpenAI-compatible frontend (Open WebUI, LobeChat, LibreChat,
-AnythingLLM, NextChat, ChatBox, etc.) can connect to hermes-agent
+AnythingLLM, NextChat, ChatBox, etc.) can connect to morpheus-agent
 through this adapter by pointing at http://localhost:8642/v1.
 
 Requires:
@@ -69,8 +69,8 @@ class ResponseStore:
         self._max_size = max_size
         if db_path is None:
             try:
-                from hermes_cli.config import get_hermes_home
-                db_path = str(get_hermes_home() / "response_store.db")
+                from morpheus_cli.config import get_morpheus_home
+                db_path = str(get_morpheus_home() / "response_store.db")
             except Exception:
                 db_path = ":memory:"
         try:
@@ -267,7 +267,7 @@ class APIServerAdapter(BasePlatformAdapter):
     OpenAI-compatible HTTP API server adapter.
 
     Runs an aiohttp web server that accepts OpenAI-format requests
-    and routes them through hermes-agent's AIAgent.
+    and routes them through morpheus-agent's AIAgent.
     """
 
     def __init__(self, config: PlatformConfig):
@@ -372,7 +372,7 @@ class APIServerAdapter(BasePlatformAdapter):
         """
         from run_agent import AIAgent
         from gateway.run import _resolve_runtime_agent_kwargs, _resolve_gateway_model, _load_gateway_config
-        from hermes_cli.tools_config import _get_platform_tools
+        from morpheus_cli.tools_config import _get_platform_tools
 
         runtime_kwargs = _resolve_runtime_agent_kwargs()
         model = _resolve_gateway_model()
@@ -402,10 +402,10 @@ class APIServerAdapter(BasePlatformAdapter):
 
     async def _handle_health(self, request: "web.Request") -> "web.Response":
         """GET /health — simple health check."""
-        return web.json_response({"status": "ok", "platform": "hermes-agent"})
+        return web.json_response({"status": "ok", "platform": "morpheus-agent"})
 
     async def _handle_models(self, request: "web.Request") -> "web.Response":
-        """GET /v1/models — return hermes-agent as an available model."""
+        """GET /v1/models — return morpheus-agent as an available model."""
         auth_err = self._check_auth(request)
         if auth_err:
             return auth_err
@@ -414,12 +414,12 @@ class APIServerAdapter(BasePlatformAdapter):
             "object": "list",
             "data": [
                 {
-                    "id": "hermes-agent",
+                    "id": "morpheus-agent",
                     "object": "model",
                     "created": int(time.time()),
-                    "owned_by": "hermes",
+                    "owned_by": "morpheus",
                     "permission": [],
-                    "root": "hermes-agent",
+                    "root": "morpheus-agent",
                     "parent": None,
                 }
             ],
@@ -477,7 +477,7 @@ class APIServerAdapter(BasePlatformAdapter):
 
         session_id = str(uuid.uuid4())
         completion_id = f"chatcmpl-{uuid.uuid4().hex[:29]}"
-        model_name = body.get("model", "hermes-agent")
+        model_name = body.get("model", "morpheus-agent")
         created = int(time.time())
 
         if stream:
@@ -816,7 +816,7 @@ class APIServerAdapter(BasePlatformAdapter):
             "object": "response",
             "status": "completed",
             "created_at": created_at,
-            "model": body.get("model", "hermes-agent"),
+            "model": body.get("model", "morpheus-agent"),
             "output": output_items,
             "usage": {
                 "input_tokens": usage.get("input_tokens", 0),

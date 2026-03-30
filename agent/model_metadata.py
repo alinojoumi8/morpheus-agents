@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 import requests
 import yaml
 
-from hermes_constants import OPENROUTER_MODELS_URL
+from morpheus_constants import OPENROUTER_MODELS_URL
 
 logger = logging.getLogger(__name__)
 
@@ -498,7 +498,7 @@ def fetch_endpoint_model_metadata(
 
 def _get_context_cache_path() -> Path:
     """Return path to the persistent context length cache file."""
-    hermes_home = Path(os.environ.get("HERMES_HOME", Path.home() / ".hermes"))
+    hermes_home = Path(os.environ.get("MORPHEUS_HOME", Path.home() / ".morpheus"))
     return hermes_home / "context_length_cache.yaml"
 
 
@@ -914,7 +914,7 @@ def estimate_request_tokens_rough(
 ) -> int:
     """Rough token estimate for a full chat-completions request.
 
-    Includes the major payload buckets Hermes sends to providers:
+    Includes the major payload buckets Morpheus sends to providers:
     system prompt, conversation messages, and tool schemas.  With 50+
     tools enabled, schemas alone can add 20-30K tokens — a significant
     blind spot when only counting messages.

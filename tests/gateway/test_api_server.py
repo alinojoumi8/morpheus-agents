@@ -249,7 +249,7 @@ class TestHealthEndpoint:
             assert resp.status == 200
             data = await resp.json()
             assert data["status"] == "ok"
-            assert data["platform"] == "hermes-agent"
+            assert data["platform"] == "morpheus-agent"
 
 
 # ---------------------------------------------------------------------------
@@ -267,8 +267,8 @@ class TestModelsEndpoint:
             data = await resp.json()
             assert data["object"] == "list"
             assert len(data["data"]) == 1
-            assert data["data"][0]["id"] == "hermes-agent"
-            assert data["data"][0]["owned_by"] == "hermes"
+            assert data["data"][0]["id"] == "morpheus-agent"
+            assert data["data"][0]["owned_by"] == "morpheus"
 
     @pytest.mark.asyncio
     async def test_models_requires_auth(self, auth_adapter):
@@ -432,7 +432,7 @@ class TestChatCompletionsEndpoint:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [{"role": "user", "content": "Hello"}],
                     },
                 )
@@ -441,7 +441,7 @@ class TestChatCompletionsEndpoint:
             data = await resp.json()
             assert data["object"] == "chat.completion"
             assert data["id"].startswith("chatcmpl-")
-            assert data["model"] == "hermes-agent"
+            assert data["model"] == "morpheus-agent"
             assert len(data["choices"]) == 1
             assert data["choices"][0]["message"]["role"] == "assistant"
             assert data["choices"][0]["message"]["content"] == "Hello! How can I help you today?"
@@ -464,7 +464,7 @@ class TestChatCompletionsEndpoint:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [
                             {"role": "system", "content": "You are a pirate."},
                             {"role": "user", "content": "Hello"},
@@ -490,7 +490,7 @@ class TestChatCompletionsEndpoint:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [
                             {"role": "user", "content": "1+1=?"},
                             {"role": "assistant", "content": "2"},
@@ -516,7 +516,7 @@ class TestChatCompletionsEndpoint:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [{"role": "user", "content": "Hello"}],
                     },
                 )
@@ -568,7 +568,7 @@ class TestResponsesEndpoint:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "What is the capital of France?",
                     },
                 )
@@ -595,7 +595,7 @@ class TestResponsesEndpoint:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": [
                             {"role": "user", "content": "Hello"},
                             {"role": "user", "content": "What is 2+2?"},
@@ -621,7 +621,7 @@ class TestResponsesEndpoint:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "Hello",
                         "instructions": "Talk like a pirate.",
                     },
@@ -647,7 +647,7 @@ class TestResponsesEndpoint:
                 mock_run.return_value = (mock_result_1, {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0})
                 resp1 = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "What is 1+1?"},
+                    json={"model": "morpheus-agent", "input": "What is 1+1?"},
                 )
 
             assert resp1.status == 200
@@ -666,7 +666,7 @@ class TestResponsesEndpoint:
                 resp2 = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "Now add 1 more",
                         "previous_response_id": response_id,
                     },
@@ -685,7 +685,7 @@ class TestResponsesEndpoint:
             resp = await cli.post(
                 "/v1/responses",
                 json={
-                    "model": "hermes-agent",
+                    "model": "morpheus-agent",
                     "input": "follow up",
                     "previous_response_id": "resp_nonexistent",
                 },
@@ -704,7 +704,7 @@ class TestResponsesEndpoint:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "Hello",
                         "store": False,
                     },
@@ -728,7 +728,7 @@ class TestResponsesEndpoint:
                 resp1 = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "Hello",
                         "instructions": "Be a pirate",
                     },
@@ -743,7 +743,7 @@ class TestResponsesEndpoint:
                 resp2 = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "Tell me more",
                         "previous_response_id": resp_id,
                     },
@@ -761,7 +761,7 @@ class TestResponsesEndpoint:
                 mock_run.side_effect = RuntimeError("Boom")
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "Hello"},
+                    json={"model": "morpheus-agent", "input": "Hello"},
                 )
 
             assert resp.status == 500
@@ -772,7 +772,7 @@ class TestResponsesEndpoint:
         async with TestClient(TestServer(app)) as cli:
             resp = await cli.post(
                 "/v1/responses",
-                json={"model": "hermes-agent", "input": 42},
+                json={"model": "morpheus-agent", "input": 42},
             )
             assert resp.status == 400
 
@@ -893,7 +893,7 @@ class TestMultipleSystemMessages:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [
                             {"role": "system", "content": "You are helpful."},
                             {"role": "system", "content": "Be concise."},
@@ -942,7 +942,7 @@ class TestGetResponse:
                 mock_run.return_value = (mock_result, {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15})
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "Hi"},
+                    json={"model": "morpheus-agent", "input": "Hi"},
                 )
 
             assert resp.status == 200
@@ -989,7 +989,7 @@ class TestDeleteResponse:
                 mock_run.return_value = (mock_result, {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0})
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "Hi"},
+                    json={"model": "morpheus-agent", "input": "Hi"},
                 )
 
             data = await resp.json()
@@ -1066,7 +1066,7 @@ class TestToolCallsInOutput:
                 mock_run.return_value = (mock_result, {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0})
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "What is 6*7?"},
+                    json={"model": "morpheus-agent", "input": "What is 6*7?"},
                 )
 
             assert resp.status == 200
@@ -1096,7 +1096,7 @@ class TestToolCallsInOutput:
                 mock_run.return_value = (mock_result, {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0})
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "Hello"},
+                    json={"model": "morpheus-agent", "input": "Hello"},
                 )
 
             assert resp.status == 200
@@ -1123,7 +1123,7 @@ class TestUsageCounting:
                 mock_run.return_value = (mock_result, usage)
                 resp = await cli.post(
                     "/v1/responses",
-                    json={"model": "hermes-agent", "input": "Hi"},
+                    json={"model": "morpheus-agent", "input": "Hi"},
                 )
 
             assert resp.status == 200
@@ -1145,7 +1145,7 @@ class TestUsageCounting:
                 resp = await cli.post(
                     "/v1/chat/completions",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "messages": [{"role": "user", "content": "Hi"}],
                     },
                 )
@@ -1183,7 +1183,7 @@ class TestTruncation:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "follow up",
                         "previous_response_id": "resp_prev",
                         "truncation": "auto",
@@ -1214,7 +1214,7 @@ class TestTruncation:
                 resp = await cli.post(
                     "/v1/responses",
                     json={
-                        "model": "hermes-agent",
+                        "model": "morpheus-agent",
                         "input": "follow up",
                         "previous_response_id": "resp_prev2",
                     },

@@ -1,6 +1,6 @@
-# Hermes-Agent Atropos Environments
+# Morpheus-Agent Atropos Environments
 
-This directory contains the integration layer between **hermes-agent's** tool-calling capabilities and the **Atropos** RL training framework. It provides everything needed to run agentic LLMs through multi-turn tool-calling loops, score their output with arbitrary reward functions, and feed results into Atropos for training or evaluation.
+This directory contains the integration layer between **morpheus-agent's** tool-calling capabilities and the **Atropos** RL training framework. It provides everything needed to run agentic LLMs through multi-turn tool-calling loops, score their output with arbitrary reward functions, and feed results into Atropos for training or evaluation.
 
 ## Architecture Overview
 
@@ -16,7 +16,7 @@ This directory contains the integration layer between **hermes-agent's** tool-ca
                     └───────────┬───────────┘
                                 │ inherits
                     ┌───────────┴───────────┐
-                    │  HermesAgentBaseEnv    │  hermes_base_env.py
+                    │  MorpheusAgentBaseEnv    │  hermes_base_env.py
                     │  - Terminal backend    │
                     │  - Tool resolution     │
                     │  - Agent loop          │
@@ -26,7 +26,7 @@ This directory contains the integration layer between **hermes-agent's** tool-ca
                                 │ inherits
               ┌─────────────────┼─────────────────┐
               │                 │                  │
-     TerminalTestEnv     HermesSweEnv    TerminalBench2EvalEnv
+     TerminalTestEnv     MorpheusSweEnv    TerminalBench2EvalEnv
      (stack testing)     (SWE training)   (TB2 benchmark eval)
 ```
 
@@ -39,14 +39,14 @@ This directory contains the integration layer between **hermes-agent's** tool-ca
 - CLI interface with three subcommands: `serve`, `process`, `evaluate`
 - `evaluate_log()` for saving eval results to JSON + samples.jsonl
 
-**HermesAgentBaseEnv** (`hermes_base_env.py`) extends BaseEnv with hermes-agent specifics:
+**MorpheusAgentBaseEnv** (`hermes_base_env.py`) extends BaseEnv with morpheus-agent specifics:
 - Sets `os.environ["TERMINAL_ENV"]` to configure the terminal backend (local, docker, modal, daytona, ssh, singularity)
-- Resolves hermes-agent toolsets via `_resolve_tools_for_group()` (calls `get_tool_definitions()` which queries `tools/registry.py`)
+- Resolves morpheus-agent toolsets via `_resolve_tools_for_group()` (calls `get_tool_definitions()` which queries `tools/registry.py`)
 - Implements `collect_trajectory()` which runs the full agent loop and computes rewards
 - Supports two-phase operation (Phase 1: OpenAI server, Phase 2: VLLM ManagedServer)
 - Applies monkey patches for async-safe tool operation at import time
 
-Concrete environments inherit from `HermesAgentBaseEnv` and implement:
+Concrete environments inherit from `MorpheusAgentBaseEnv` and implement:
 - `setup()` -- Load dataset, initialize state
 - `get_next_item()` -- Return the next item for rollout
 - `format_prompt()` -- Convert a dataset item into the user message
@@ -57,7 +57,7 @@ Concrete environments inherit from `HermesAgentBaseEnv` and implement:
 
 ### Agent Loop (`agent_loop.py`)
 
-`HermesAgentLoop` is the reusable multi-turn agent engine. It runs the same pattern as hermes-agent's `run_agent.py`:
+`MorpheusAgentLoop` is the reusable multi-turn agent engine. It runs the same pattern as morpheus-agent's `run_agent.py`:
 
 1. Send messages + tools to the API via `server.chat_completion()`
 2. If the response contains `tool_calls`, execute each one via `handle_function_call()` (which delegates to `tools/registry.py`'s `dispatch()`)
@@ -70,7 +70,7 @@ Returns an `AgentResult` containing the full conversation history, turn count, r
 
 ### Tool Context (`tool_context.py`)
 
-`ToolContext` is a per-rollout handle that gives reward/verification functions direct access to **all** hermes-agent tools, scoped to the rollout's `task_id`. The same `task_id` means the terminal/browser session is the SAME one the model used during its rollout -- all state (files, processes, browser tabs) is preserved.
+`ToolContext` is a per-rollout handle that gives reward/verification functions direct access to **all** morpheus-agent tools, scoped to the rollout's `task_id`. The same `task_id` means the terminal/browser session is the SAME one the model used during its rollout -- all state (files, processes, browser tabs) is preserved.
 
 ```python
 async def compute_reward(self, item, result, ctx: ToolContext):
@@ -96,12 +96,12 @@ Available methods:
 - **Transfers**: `upload_file()`, `upload_dir()`, `download_file()`, `download_dir()` -- binary-safe file transfers between host and sandbox
 - **Web**: `web_search(query)`, `web_extract(urls)`
 - **Browser**: `browser_navigate(url)`, `browser_snapshot()`
-- **Generic**: `call_tool(name, args)` -- call any hermes-agent tool by name
+- **Generic**: `call_tool(name, args)` -- call any morpheus-agent tool by name
 - **Cleanup**: `cleanup()` -- release all resources (called automatically after `compute_reward`)
 
 ### Patches (`patches.py`)
 
-**Problem**: Some hermes-agent tools use `asyncio.run()` internally (e.g., the Modal backend via SWE-ReX). This crashes when called from inside Atropos's event loop because `asyncio.run()` cannot be nested.
+**Problem**: Some morpheus-agent tools use `asyncio.run()` internally (e.g., the Modal backend via SWE-ReX). This crashes when called from inside Atropos's event loop because `asyncio.run()` cannot be nested.
 
 **Solution**: `patches.py` monkey-patches `SwerexModalEnvironment` to use a dedicated background thread (`_AsyncWorker`) with its own event loop. The calling code sees the same sync interface, but internally the async work happens on a separate thread that doesn't conflict with Atropos's loop.
 
@@ -124,7 +124,7 @@ Client-side parsers that extract structured `tool_calls` from raw model output t
 Each parser is a standalone reimplementation of the corresponding VLLM parser's `extract_tool_calls()` logic. No VLLM dependency -- only standard library (`re`, `json`, `uuid`) and `openai` types.
 
 Available parsers:
-- `hermes` -- Hermes/ChatML `<tool_call>` XML format
+- `hermes` -- Morpheus/ChatML `<tool_call>` XML format
 - `mistral` -- Mistral `[TOOL_CALLS]` format
 - `llama3_json` -- Llama 3 JSON tool calling
 - `qwen` -- Qwen tool calling format
@@ -169,8 +169,8 @@ Uses ManagedServer for exact token IDs + logprobs via `/generate`. Client-side t
 environments/
 ├── README.md                     # This file
 ├── __init__.py                   # Package exports
-├── hermes_base_env.py            # Abstract base (HermesAgentBaseEnv)
-├── agent_loop.py                 # Multi-turn agent engine (HermesAgentLoop)
+├── hermes_base_env.py            # Abstract base (MorpheusAgentBaseEnv)
+├── agent_loop.py                 # Multi-turn agent engine (MorpheusAgentLoop)
 ├── tool_context.py               # Per-rollout tool access for reward functions
 ├── patches.py                    # Async-safety patches for Modal backend
 │
@@ -219,7 +219,7 @@ python environments/terminal_test_env/terminal_test_env.py process \
     --env.data_path_to_save_groups terminal_test_output.jsonl
 ```
 
-### HermesSweEnv (`hermes_swe_env/`)
+### MorpheusSweEnv (`hermes_swe_env/`)
 
 SWE-bench style training environment. The model gets a coding task, uses terminal + file + web tools to solve it, and the reward function runs tests in the same Modal sandbox.
 
@@ -261,16 +261,16 @@ python environments/benchmarks/terminalbench_2/terminalbench2_env.py evaluate \
 ### Training Environment
 
 1. Create a new directory under `environments/`
-2. Create your env file inheriting from `HermesAgentBaseEnv`
+2. Create your env file inheriting from `MorpheusAgentBaseEnv`
 3. Implement the four abstract methods + `evaluate()`
 
 ```python
-from environments.hermes_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
+from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 
-class MyEnvConfig(HermesAgentEnvConfig):
+class MyEnvConfig(MorpheusAgentEnvConfig):
     pass  # Add custom fields as needed
 
-class MyEnv(HermesAgentBaseEnv):
+class MyEnv(MorpheusAgentBaseEnv):
     name = "my-env"
     env_config_cls = MyEnvConfig
 
@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
 For eval benchmarks, follow the pattern in `terminalbench2_env.py`:
 1. Create under `environments/benchmarks/your-benchmark/`
-2. Inherit from `HermesAgentBaseEnv`
+2. Inherit from `MorpheusAgentBaseEnv`
 3. Set eval-only config: `eval_handling=STOP_TRAIN`, `steps_per_eval=1`, `total_steps=1`
 4. Stub the training methods (`collect_trajectories`, `score`)
 5. Implement `rollout_and_score_eval()` and `evaluate()`

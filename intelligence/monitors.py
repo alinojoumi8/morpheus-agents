@@ -174,7 +174,7 @@ def generate_daily_digest(
         pass
 
     if len(parts) <= 3:
-        return "No activity to report yet. Start using Hermes to build up your intelligence profile!"
+        return "No activity to report yet. Start using Morpheus to build up your intelligence profile!"
 
     return "\n".join(parts)
 

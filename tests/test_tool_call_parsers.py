@@ -34,10 +34,10 @@ class TestParserRegistry:
 
     def test_hermes_parser_registered(self):
         parsers = list_parsers()
-        assert "hermes" in parsers
+        assert "morpheus" in parsers
 
     def test_get_parser_returns_instance(self):
-        parser = get_parser("hermes")
+        parser = get_parser("morpheus")
         assert isinstance(parser, ToolCallParser)
 
     def test_get_parser_unknown_raises(self):
@@ -52,12 +52,12 @@ class TestParserRegistry:
             assert hasattr(parser, "parse")
 
 
-# ─── Hermes parser tests ────────────────────────────────────────────────
+# ─── Morpheus parser tests ────────────────────────────────────────────────
 
-class TestHermesParser:
+class TestMorpheusParser:
     @pytest.fixture
     def parser(self):
-        return get_parser("hermes")
+        return get_parser("morpheus")
 
     def test_no_tool_call(self, parser):
         text = "Hello, I can help you with that."
@@ -129,7 +129,7 @@ class TestHermesParser:
 class TestParseResultContract:
     """Ensure all parsers conform to the ParseResult contract."""
 
-    @pytest.fixture(params=["hermes"])  # Add more as needed
+    @pytest.fixture(params=["morpheus"])  # Add more as needed
     def parser(self, request):
         return get_parser(request.param)
 

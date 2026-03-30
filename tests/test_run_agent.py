@@ -1627,7 +1627,7 @@ class TestNousCredentialRefresh:
             return _RebuiltClient()
 
         monkeypatch.setattr(
-            "hermes_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
+            "morpheus_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
         )
 
         agent.client = _ExistingClient()
@@ -1739,7 +1739,7 @@ class TestSystemPromptStability:
         # Should have built fresh, not queried the DB
         mock_db.get_session.assert_not_called()
         assert agent._cached_system_prompt is not None
-        assert "Hermes Agent" in agent._cached_system_prompt
+        assert "Morpheus Agent" in agent._cached_system_prompt
 
     def test_fresh_build_when_db_has_no_prompt(self, agent):
         """If the session DB has no stored prompt, build fresh even with history."""
@@ -1766,7 +1766,7 @@ class TestSystemPromptStability:
                 agent._cached_system_prompt = agent._build_system_prompt()
 
         # Empty string is falsy, so should fall through to fresh build
-        assert "Hermes Agent" in agent._cached_system_prompt
+        assert "Morpheus Agent" in agent._cached_system_prompt
 
     def test_honcho_context_baked_into_prompt_on_first_turn(self, agent):
         """Honcho context should be baked into _cached_system_prompt on
@@ -1809,7 +1809,7 @@ class TestSystemPromptStability:
         agent._honcho = object()
         agent._honcho_session_key = "session-1"
         agent._honcho_config = SimpleNamespace(
-            ai_peer="hermes",
+            ai_peer="morpheus",
             memory_mode="hybrid",
             write_frequency="async",
             recall_mode="hybrid",
@@ -1856,7 +1856,7 @@ class TestSystemPromptStability:
         agent._honcho = MagicMock()
         agent._honcho_session_key = "session-1"
         agent._honcho_config = SimpleNamespace(
-            ai_peer="hermes",
+            ai_peer="morpheus",
             memory_mode="hybrid",
             write_frequency="async",
             recall_mode="hybrid",
@@ -1885,7 +1885,7 @@ class TestHonchoActivation:
             enabled=False,
             api_key="honcho-key",
             peer_name="user",
-            ai_peer="hermes",
+            ai_peer="morpheus",
         )
 
         with (
@@ -1912,7 +1912,7 @@ class TestHonchoActivation:
             api_key="honcho-key",
             memory_mode="hybrid",
             peer_name="user",
-            ai_peer="hermes",
+            ai_peer="morpheus",
             recall_mode="hybrid",
         )
         manager = MagicMock()
@@ -1952,7 +1952,7 @@ class TestHonchoActivation:
             api_key="honcho-key",
             memory_mode="hybrid",
             peer_name="user",
-            ai_peer="hermes",
+            ai_peer="morpheus",
             recall_mode="context",
         )
         manager = MagicMock()
@@ -1999,7 +1999,7 @@ class TestHonchoActivation:
             enabled=False,
             api_key="honcho-key",
             peer_name="user",
-            ai_peer="hermes",
+            ai_peer="morpheus",
         )
 
         with (
@@ -2221,7 +2221,7 @@ class TestSafeWriter:
                 patch("run_agent.get_tool_definitions", return_value=_make_tool_defs("web_search")),
                 patch("run_agent.check_toolset_requirements", return_value={}),
                 patch("run_agent.OpenAI"),
-                patch("hermes_cli.config.load_config", return_value={"memory": {}}),
+                patch("morpheus_cli.config.load_config", return_value={"memory": {}}),
                 patch("honcho_integration.client.HonchoClientConfig.from_global_config", return_value=hcfg),
                 patch("honcho_integration.client.get_honcho_client", side_effect=RuntimeError("boom")),
             ):

@@ -1,6 +1,6 @@
-"""Tests for the hermes_cli models module."""
+"""Tests for the morpheus_cli models module."""
 
-from hermes_cli.models import OPENROUTER_MODELS, menu_labels, model_ids, detect_provider_for_model
+from morpheus_cli.models import OPENROUTER_MODELS, menu_labels, model_ids, detect_provider_for_model
 
 
 class TestModelIds:
@@ -58,21 +58,21 @@ class TestOpenRouterModels:
 
 class TestFindOpenrouterSlug:
     def test_exact_match(self):
-        from hermes_cli.models import _find_openrouter_slug
+        from morpheus_cli.models import _find_openrouter_slug
         assert _find_openrouter_slug("anthropic/claude-opus-4.6") == "anthropic/claude-opus-4.6"
 
     def test_bare_name_match(self):
-        from hermes_cli.models import _find_openrouter_slug
+        from morpheus_cli.models import _find_openrouter_slug
         result = _find_openrouter_slug("claude-opus-4.6")
         assert result == "anthropic/claude-opus-4.6"
 
     def test_case_insensitive(self):
-        from hermes_cli.models import _find_openrouter_slug
+        from morpheus_cli.models import _find_openrouter_slug
         result = _find_openrouter_slug("Anthropic/Claude-Opus-4.6")
         assert result is not None
 
     def test_unknown_returns_none(self):
-        from hermes_cli.models import _find_openrouter_slug
+        from morpheus_cli.models import _find_openrouter_slug
         assert _find_openrouter_slug("totally-fake-model-xyz") is None
 
 

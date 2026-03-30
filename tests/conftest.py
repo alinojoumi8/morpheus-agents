@@ -1,4 +1,4 @@
-"""Shared fixtures for the hermes-agent test suite."""
+"""Shared fixtures for the morpheus-agent test suite."""
 
 import asyncio
 import os
@@ -18,17 +18,17 @@ if str(PROJECT_ROOT) not in sys.path:
 
 @pytest.fixture(autouse=True)
 def _isolate_hermes_home(tmp_path, monkeypatch):
-    """Redirect HERMES_HOME to a temp dir so tests never write to ~/.hermes/."""
+    """Redirect MORPHEUS_HOME to a temp dir so tests never write to ~/.morpheus/."""
     fake_home = tmp_path / "hermes_test"
     fake_home.mkdir()
     (fake_home / "sessions").mkdir()
     (fake_home / "cron").mkdir()
     (fake_home / "memories").mkdir()
     (fake_home / "skills").mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(fake_home))
-    # Reset plugin singleton so tests don't leak plugins from ~/.hermes/plugins/
+    monkeypatch.setenv("MORPHEUS_HOME", str(fake_home))
+    # Reset plugin singleton so tests don't leak plugins from ~/.morpheus/plugins/
     try:
-        import hermes_cli.plugins as _plugins_mod
+        import morpheus_cli.plugins as _plugins_mod
         monkeypatch.setattr(_plugins_mod, "_plugin_manager", None)
     except Exception:
         pass

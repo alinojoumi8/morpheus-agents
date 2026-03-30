@@ -1,7 +1,7 @@
 """
 IntelligenceDB — SQLite-backed storage for the intelligence module.
 
-Separate database (~/.hermes/intelligence.db) to avoid touching state.db.
+Separate database (~/.morpheus/intelligence.db) to avoid touching state.db.
 Mirrors SessionDB patterns: WAL mode, write-retry with jitter, thread safety.
 Optionally loads sqlite-vec for vector similarity search.
 """
@@ -16,13 +16,13 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
-DEFAULT_DB_PATH = get_hermes_home() / "intelligence.db"
+DEFAULT_DB_PATH = get_morpheus_home() / "intelligence.db"
 
 SCHEMA_VERSION = 1
 
@@ -284,7 +284,7 @@ class IntelligenceDB:
     """
     SQLite-backed intelligence storage with optional vector search.
 
-    Thread-safe. Mirrors hermes_state.SessionDB patterns.
+    Thread-safe. Mirrors morpheus_state.SessionDB patterns.
     """
 
     _WRITE_MAX_RETRIES = 15

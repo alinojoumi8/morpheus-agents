@@ -1,5 +1,5 @@
 """
-HermesSweEnv -- SWE-Bench Style Environment with Modal Sandboxes
+MorpheusSweEnv -- SWE-Bench Style Environment with Modal Sandboxes
 
 A concrete environment for software engineering tasks where the model writes code
 and the reward function runs tests to verify correctness. Uses Modal terminal
@@ -47,19 +47,19 @@ from atroposlib.envs.server_handling.server_manager import APIServerConfig
 from atroposlib.type_definitions import Item
 
 from environments.agent_loop import AgentResult
-from environments.hermes_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
+from environments.hermes_base_env import MorpheusAgentBaseEnv, MorpheusAgentEnvConfig
 from environments.tool_context import ToolContext
 
 logger = logging.getLogger(__name__)
 
 
-class HermesSweEnvConfig(HermesAgentEnvConfig):
+class MorpheusSweEnvConfig(MorpheusAgentEnvConfig):
     """Config with defaults for SWE-bench style tasks."""
 
     pass  # Inherits all fields, overrides defaults in config_init
 
 
-class HermesSweEnv(HermesAgentBaseEnv):
+class MorpheusSweEnv(MorpheusAgentBaseEnv):
     """
     SWE-bench style environment using Modal terminal backend.
 
@@ -71,16 +71,16 @@ class HermesSweEnv(HermesAgentBaseEnv):
     """
 
     name = "hermes-swe"
-    env_config_cls = HermesSweEnvConfig
+    env_config_cls = MorpheusSweEnvConfig
 
     @classmethod
-    def config_init(cls) -> Tuple[HermesSweEnvConfig, List[APIServerConfig]]:
+    def config_init(cls) -> Tuple[MorpheusSweEnvConfig, List[APIServerConfig]]:
         """
         Default configuration for the SWE environment.
 
         Uses Modal terminal backend for cloud isolation and terminal + file + web toolsets.
         """
-        env_config = HermesSweEnvConfig(
+        env_config = MorpheusSweEnvConfig(
             # Toolsets: terminal for running code, file for reading/writing, web for docs
             enabled_toolsets=["terminal", "file", "web"],
             disabled_toolsets=None,
@@ -102,8 +102,8 @@ class HermesSweEnv(HermesAgentBaseEnv):
             prompt_field="prompt",
             # Atropos settings
             group_size=4,
-            tokenizer_name="NousResearch/DeepHermes-3-Llama-3-3B-Preview",
-            tool_call_parser="hermes",
+            tokenizer_name="NousResearch/DeepMorpheus-3-Llama-3-3B-Preview",
+            tool_call_parser="morpheus",
             steps_per_eval=50,
             total_steps=500,
             use_wandb=True,
@@ -113,7 +113,7 @@ class HermesSweEnv(HermesAgentBaseEnv):
         server_configs = [
             APIServerConfig(
                 base_url="http://localhost:8000/v1",
-                model_name="NousResearch/DeepHermes-3-Llama-3-3B-Preview",
+                model_name="NousResearch/DeepMorpheus-3-Llama-3-3B-Preview",
                 server_type="openai",  # Phase 1; switch to "vllm" for Phase 2
                 api_key="",
             )
@@ -226,4 +226,4 @@ class HermesSweEnv(HermesAgentBaseEnv):
 
 
 if __name__ == "__main__":
-    HermesSweEnv.cli()
+    MorpheusSweEnv.cli()

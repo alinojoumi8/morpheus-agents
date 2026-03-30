@@ -1,26 +1,26 @@
 ---
-name: hermes-agent-setup
-description: Help users configure Hermes Agent — CLI usage, setup wizard, model/provider selection, tools, skills, voice/STT/TTS, gateway, and troubleshooting. Use when someone asks to enable features, configure settings, or needs help with Hermes itself.
+name: morpheus-agent-setup
+description: Help users configure Morpheus Agent — CLI usage, setup wizard, model/provider selection, tools, skills, voice/STT/TTS, gateway, and troubleshooting. Use when someone asks to enable features, configure settings, or needs help with Morpheus itself.
 version: 1.1.0
-author: Hermes Agent
+author: Morpheus Agent
 tags: [setup, configuration, tools, stt, tts, voice, hermes, cli, skills]
 ---
 
-# Hermes Agent Setup & Configuration
+# Morpheus Agent Setup & Configuration
 
-Use this skill when a user asks about configuring Hermes, enabling features, setting up voice, managing tools/skills, or troubleshooting.
+Use this skill when a user asks about configuring Morpheus, enabling features, setting up voice, managing tools/skills, or troubleshooting.
 
 ## Key Paths
 
-- Config: `~/.hermes/config.yaml`
-- API keys: `~/.hermes/.env`
-- Skills: `~/.hermes/skills/`
-- Hermes install: `~/.hermes/hermes-agent/`
-- Venv: `~/.hermes/hermes-agent/venv/`
+- Config: `~/.morpheus/config.yaml`
+- API keys: `~/.morpheus/.env`
+- Skills: `~/.morpheus/skills/`
+- Morpheus install: `~/.morpheus/morpheus-agent/`
+- Venv: `~/.morpheus/morpheus-agent/venv/`
 
 ## CLI Overview
 
-Hermes is used via the `hermes` command (or `python -m hermes_cli.main` from the repo).
+Morpheus is used via the `hermes` command (or `python -m morpheus_cli.main` from the repo).
 
 ### Core commands:
 
@@ -97,16 +97,16 @@ The interactive setup wizard walks through:
 
 Run it from terminal:
 ```bash
-cd ~/.hermes/hermes-agent
+cd ~/.morpheus/morpheus-agent
 source venv/bin/activate
-python -m hermes_cli.main setup
+python -m morpheus_cli.main setup
 ```
 
 To change just the model/provider later: `hermes model`
 
 ## Skills Configuration (`hermes skills`)
 
-Skills are reusable instruction sets that extend what Hermes can do.
+Skills are reusable instruction sets that extend what Morpheus can do.
 
 ### Managing skills:
 
@@ -139,7 +139,7 @@ Voice messages from Telegram/Discord/WhatsApp/Slack/Signal are auto-transcribed 
 ### Setup local STT (recommended):
 
 ```bash
-cd ~/.hermes/hermes-agent
+cd ~/.morpheus/morpheus-agent
 source venv/bin/activate
 pip install faster-whisper
 ```
@@ -167,7 +167,7 @@ After config changes, restart the gateway (send /restart in chat, or restart `he
 
 ## Voice Replies (TTS)
 
-Hermes can reply with voice when users send voice messages.
+Morpheus can reply with voice when users send voice messages.
 
 ### TTS providers (set API key in env file):
 
@@ -188,9 +188,9 @@ Hermes can reply with voice when users send voice messages.
 ### Interactive tool config:
 
 ```bash
-cd ~/.hermes/hermes-agent
+cd ~/.morpheus/morpheus-agent
 source venv/bin/activate
-python -m hermes_cli.main tools
+python -m morpheus_cli.main tools
 ```
 
 This opens a curses UI to enable/disable toolsets per platform (cli, telegram, discord, slack, etc.).
@@ -217,7 +217,7 @@ Use `/reset` in the chat to start a fresh session with the new toolset. Tool cha
 Some tools need extra packages:
 
 ```bash
-cd ~/.hermes/hermes-agent && source venv/bin/activate
+cd ~/.morpheus/morpheus-agent && source venv/bin/activate
 
 pip install faster-whisper    # Local STT (voice transcription)
 pip install browserbase       # Browser automation
@@ -226,7 +226,7 @@ pip install mcp               # MCP server connections
 
 ## Config File Reference
 
-The main config file is `~/.hermes/config.yaml`. Key sections:
+The main config file is `~/.morpheus/config.yaml`. Key sections:
 
 ```yaml
 # Model and provider

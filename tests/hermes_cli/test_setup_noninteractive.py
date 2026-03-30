@@ -36,15 +36,15 @@ class TestNonInteractiveSetup:
 
     def test_non_interactive_flag_skips_wizard(self, capsys):
         """--non-interactive should print guidance and not enter the wizard."""
-        from hermes_cli.setup import run_setup_wizard
+        from morpheus_cli.setup import run_setup_wizard
 
         args = _make_setup_args(non_interactive=True)
 
         with (
-            patch("hermes_cli.setup.ensure_hermes_home"),
-            patch("hermes_cli.setup.load_config", return_value={}),
-            patch("hermes_cli.setup.get_hermes_home", return_value="/tmp/.hermes"),
-            patch("hermes_cli.auth.get_active_provider", side_effect=AssertionError("wizard continued")),
+            patch("morpheus_cli.setup.ensure_morpheus_home"),
+            patch("morpheus_cli.setup.load_config", return_value={}),
+            patch("morpheus_cli.setup.get_morpheus_home", return_value="/tmp/.morpheus"),
+            patch("morpheus_cli.auth.get_active_provider", side_effect=AssertionError("wizard continued")),
             patch("builtins.input", side_effect=AssertionError("input should not be called")),
         ):
             run_setup_wizard(args)
@@ -54,15 +54,15 @@ class TestNonInteractiveSetup:
 
     def test_no_tty_skips_wizard(self, capsys):
         """When stdin has no TTY, the setup wizard should print guidance and return."""
-        from hermes_cli.setup import run_setup_wizard
+        from morpheus_cli.setup import run_setup_wizard
 
         args = _make_setup_args(non_interactive=False)
 
         with (
-            patch("hermes_cli.setup.ensure_hermes_home"),
-            patch("hermes_cli.setup.load_config", return_value={}),
-            patch("hermes_cli.setup.get_hermes_home", return_value="/tmp/.hermes"),
-            patch("hermes_cli.auth.get_active_provider", side_effect=AssertionError("wizard continued")),
+            patch("morpheus_cli.setup.ensure_morpheus_home"),
+            patch("morpheus_cli.setup.load_config", return_value={}),
+            patch("morpheus_cli.setup.get_morpheus_home", return_value="/tmp/.morpheus"),
+            patch("morpheus_cli.auth.get_active_provider", side_effect=AssertionError("wizard continued")),
             patch("sys.stdin") as mock_stdin,
             patch("builtins.input", side_effect=AssertionError("input should not be called")),
         ):
@@ -74,13 +74,13 @@ class TestNonInteractiveSetup:
 
     def test_chat_first_run_headless_skips_setup_prompt(self, capsys):
         """Bare `hermes` should not prompt for input when no provider exists and stdin is headless."""
-        from hermes_cli.main import cmd_chat
+        from morpheus_cli.main import cmd_chat
 
         args = _make_chat_args()
 
         with (
-            patch("hermes_cli.main._has_any_provider_configured", return_value=False),
-            patch("hermes_cli.main.cmd_setup") as mock_setup,
+            patch("morpheus_cli.main._has_any_provider_configured", return_value=False),
+            patch("morpheus_cli.main.cmd_setup") as mock_setup,
             patch("sys.stdin") as mock_stdin,
             patch("builtins.input", side_effect=AssertionError("input should not be called")),
         ):

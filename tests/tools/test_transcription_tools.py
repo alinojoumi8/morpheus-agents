@@ -628,7 +628,7 @@ class TestLoadSttConfig:
 
     def test_real_load_returns_dict(self):
         """_load_stt_config should always return a dict, even on import error."""
-        with patch.dict("sys.modules", {"hermes_cli": None, "hermes_cli.config": None}):
+        with patch.dict("sys.modules", {"morpheus_cli": None, "morpheus_cli.config": None}):
             from tools.transcription_tools import _load_stt_config
             result = _load_stt_config()
         assert isinstance(result, dict)
@@ -815,7 +815,7 @@ class TestGetSttModelFromConfig:
     def test_returns_model_from_config(self, tmp_path, monkeypatch):
         cfg = tmp_path / "config.yaml"
         cfg.write_text("stt:\n  model: whisper-large-v3\n")
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
 
         from tools.transcription_tools import get_stt_model_from_config
         assert get_stt_model_from_config() == "whisper-large-v3"
@@ -823,13 +823,13 @@ class TestGetSttModelFromConfig:
     def test_returns_none_when_no_stt_section(self, tmp_path, monkeypatch):
         cfg = tmp_path / "config.yaml"
         cfg.write_text("tts:\n  provider: edge\n")
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
 
         from tools.transcription_tools import get_stt_model_from_config
         assert get_stt_model_from_config() is None
 
     def test_returns_none_when_no_config_file(self, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
 
         from tools.transcription_tools import get_stt_model_from_config
         assert get_stt_model_from_config() is None
@@ -837,7 +837,7 @@ class TestGetSttModelFromConfig:
     def test_returns_none_on_invalid_yaml(self, tmp_path, monkeypatch):
         cfg = tmp_path / "config.yaml"
         cfg.write_text(": : :\n  bad yaml [[[")
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
 
         from tools.transcription_tools import get_stt_model_from_config
         assert get_stt_model_from_config() is None
@@ -845,7 +845,7 @@ class TestGetSttModelFromConfig:
     def test_returns_none_when_model_key_missing(self, tmp_path, monkeypatch):
         cfg = tmp_path / "config.yaml"
         cfg.write_text("stt:\n  enabled: true\n")
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
 
         from tools.transcription_tools import get_stt_model_from_config
         assert get_stt_model_from_config() is None

@@ -1,8 +1,8 @@
-"""Tests for hermes_cli.tools_config platform tool persistence."""
+"""Tests for morpheus_cli.tools_config platform tool persistence."""
 
 from unittest.mock import patch
 
-from hermes_cli.tools_config import (
+from morpheus_cli.tools_config import (
     _get_platform_tools,
     _platform_toolset_summary,
     _save_platform_tools,
@@ -69,7 +69,7 @@ def test_get_platform_tools_keeps_enabled_mcp_servers_with_explicit_builtin_sele
 
 
 def test_toolset_has_keys_for_vision_accepts_codex_auth(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     (tmp_path / "auth.json").write_text(
         '{"active_provider":"openai-codex","providers":{"openai-codex":{"tokens":{"access_token": "codex-...oken","refresh_token": "codex-...oken"}}}}'
     )
@@ -85,7 +85,7 @@ def test_toolset_has_keys_for_vision_accepts_codex_auth(tmp_path, monkeypatch):
 def test_save_platform_tools_preserves_mcp_server_names():
     """Ensure MCP server names are preserved when saving platform tools.
 
-    Regression test for https://github.com/NousResearch/hermes-agent/issues/1247
+    Regression test for https://github.com/NousResearch/morpheus-agent/issues/1247
     """
     config = {
         "platform_toolsets": {
@@ -95,7 +95,7 @@ def test_save_platform_tools_preserves_mcp_server_names():
 
     new_selection = {"web", "browser"}
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "cli", new_selection)
 
     saved_toolsets = config["platform_toolsets"]["cli"]
@@ -112,7 +112,7 @@ def test_save_platform_tools_handles_empty_existing_config():
     """Saving platform tools works when no existing config exists."""
     config = {}
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "telegram", {"web", "terminal"})
 
     saved_toolsets = config["platform_toolsets"]["telegram"]
@@ -128,7 +128,7 @@ def test_save_platform_tools_handles_invalid_existing_config():
         }
     }
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "cli", {"web"})
 
     saved_toolsets = config["platform_toolsets"]["cli"]
@@ -167,7 +167,7 @@ def test_save_platform_tools_does_not_preserve_platform_default_toolsets():
         "skills", "terminal", "todo", "tts", "vision", "web",
     }
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "cli", new_selection)
 
     saved = config["platform_toolsets"]["cli"]
@@ -198,7 +198,7 @@ def test_save_platform_tools_does_not_preserve_hermes_telegram():
 
     new_selection = {"browser", "file", "terminal", "web"}
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "telegram", new_selection)
 
     saved = config["platform_toolsets"]["telegram"]
@@ -219,7 +219,7 @@ def test_save_platform_tools_still_preserves_mcp_with_platform_default_present()
 
     new_selection = {"web", "browser"}
 
-    with patch("hermes_cli.tools_config.save_config"):
+    with patch("morpheus_cli.tools_config.save_config"):
         _save_platform_tools(config, "cli", new_selection)
 
     saved = config["platform_toolsets"]["cli"]

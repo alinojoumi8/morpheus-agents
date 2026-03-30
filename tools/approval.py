@@ -46,7 +46,7 @@ DANGEROUS_PATTERNS = [
     (r'\b(python[23]?|perl|ruby|node)\s+-[ec]\s+', "script execution via -e/-c flag"),
     (r'\b(curl|wget)\b.*\|\s*(ba)?sh\b', "pipe remote content to shell"),
     (r'\b(bash|sh|zsh|ksh)\s+<\s*<?\s*\(\s*(curl|wget)\b', "execute remote script via process substitution"),
-    (r'\btee\b.*(/etc/|/dev/sd|\.ssh/|\.hermes/\.env)', "overwrite system file via tee"),
+    (r'\btee\b.*(/etc/|/dev/sd|\.ssh/|\.morpheus/\.env)', "overwrite system file via tee"),
     (r'\bxargs\s+.*\brm\b', "xargs with rm"),
     (r'\bfind\b.*-exec\s+(/\S*/)?rm\b', "find -exec rm"),
     (r'\bfind\b.*-delete\b', "find -delete"),
@@ -193,7 +193,7 @@ def load_permanent_allowlist() -> set:
     patterns added via 'always' in a previous session.
     """
     try:
-        from hermes_cli.config import load_config
+        from morpheus_cli.config import load_config
         config = load_config()
         patterns = set(config.get("command_allowlist", []) or [])
         if patterns:
@@ -206,7 +206,7 @@ def load_permanent_allowlist() -> set:
 def save_permanent_allowlist(patterns: set):
     """Save permanently allowed command patterns to config."""
     try:
-        from hermes_cli.config import load_config, save_config
+        from morpheus_cli.config import load_config, save_config
         config = load_config()
         config["command_allowlist"] = list(patterns)
         save_config(config)
@@ -317,7 +317,7 @@ def _normalize_approval_mode(mode) -> str:
 def _get_approval_mode() -> str:
     """Read the approval mode from config. Returns 'manual', 'smart', or 'off'."""
     try:
-        from hermes_cli.config import load_config
+        from morpheus_cli.config import load_config
         config = load_config()
         mode = config.get("approvals", {}).get("mode", "manual")
         return _normalize_approval_mode(mode)

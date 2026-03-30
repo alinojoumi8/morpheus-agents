@@ -23,6 +23,6 @@ let
         overlay
       ]);
 in
-pythonSet.mkVirtualEnv "hermes-agent-env" {
-  hermes-agent = [ "all" ];
+pythonSet.mkVirtualEnv "morpheus-agent-env" {
+  morpheus-agent = [ "all" ];
 }

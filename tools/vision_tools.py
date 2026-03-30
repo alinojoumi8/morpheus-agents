@@ -328,7 +328,7 @@ async def vision_analyze_tool(
         # Local vision models (llama.cpp, ollama) can take well over 30s.
         vision_timeout = 120.0
         try:
-            from hermes_cli.config import load_config
+            from morpheus_cli.config import load_config
             _cfg = load_config()
             _vt = _cfg.get("auxiliary", {}).get("vision", {}).get("timeout")
             if _vt is not None:

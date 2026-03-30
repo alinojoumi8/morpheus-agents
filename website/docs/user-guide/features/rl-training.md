@@ -6,7 +6,7 @@ description: "Reinforcement learning on agent behaviors with Tinker-Atropos — 
 
 # RL Training
 
-Hermes Agent includes an integrated RL (Reinforcement Learning) training pipeline built on **Tinker-Atropos**. This enables training language models on environment-specific tasks using GRPO (Group Relative Policy Optimization) with LoRA adapters, orchestrated entirely through the agent's tool interface.
+Morpheus Agent includes an integrated RL (Reinforcement Learning) training pipeline built on **Tinker-Atropos**. This enables training language models on environment-specific tasks using GRPO (Group Relative Policy Optimization) with LoRA adapters, orchestrated entirely through the agent's tool interface.
 
 ## Overview
 
@@ -25,7 +25,7 @@ RL training requires:
 - **Python >= 3.11** (Tinker package requirement)
 - **TINKER_API_KEY** — API key for the Tinker training service
 - **WANDB_API_KEY** — API key for Weights & Biases metrics tracking
-- The `tinker-atropos` submodule (at `tinker-atropos/` relative to the Hermes root)
+- The `tinker-atropos` submodule (at `tinker-atropos/` relative to the Morpheus root)
 
 ```bash
 # Set up API keys
@@ -219,7 +219,7 @@ Training runs log to Weights & Biases with these key metrics:
 
 ## Log Files
 
-Each training run generates log files in `~/.hermes/logs/rl_training/`:
+Each training run generates log files in `~/.morpheus/logs/rl_training/`:
 
 ```
 logs/

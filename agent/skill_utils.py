@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from hermes_constants import get_hermes_home
+from morpheus_constants import get_morpheus_home
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +125,7 @@ def get_disabled_skill_names() -> Set[str]:
     the global disabled list.  Reads the config file directly (no CLI
     config imports) to stay lightweight.
     """
-    config_path = get_hermes_home() / "config.yaml"
+    config_path = get_morpheus_home() / "config.yaml"
     if not config_path.exists():
         return set()
     try:
@@ -163,7 +163,7 @@ def _normalize_string_set(values) -> Set[str]:
 
 def extract_skill_conditions(frontmatter: Dict[str, Any]) -> Dict[str, List]:
     """Extract conditional activation fields from parsed frontmatter."""
-    hermes = (frontmatter.get("metadata") or {}).get("hermes") or {}
+    hermes = (frontmatter.get("metadata") or {}).get("morpheus") or {}
     return {
         "fallback_for_toolsets": hermes.get("fallback_for_toolsets", []),
         "requires_toolsets": hermes.get("requires_toolsets", []),

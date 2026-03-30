@@ -1,6 +1,6 @@
-# Hermes Agent - Development Guide
+# Morpheus Agent - Development Guide
 
-Instructions for AI coding assistants and developers working on the hermes-agent codebase.
+Instructions for AI coding assistants and developers working on the morpheus-agent codebase.
 
 ## Development Environment
 
@@ -11,11 +11,11 @@ source venv/bin/activate  # ALWAYS activate before running Python
 ## Project Structure
 
 ```
-hermes-agent/
+morpheus-agent/
 ├── run_agent.py          # AIAgent class — core conversation loop
 ├── model_tools.py        # Tool orchestration, _discover_tools(), handle_function_call()
 ├── toolsets.py           # Toolset definitions, _HERMES_CORE_TOOLS list
-├── cli.py                # HermesCLI class — interactive CLI orchestrator
+├── cli.py                # MorpheusCLI class — interactive CLI orchestrator
 ├── hermes_state.py       # SessionDB — SQLite session store (FTS5 search)
 ├── agent/                # Agent internals
 │   ├── prompt_builder.py     # System prompt assembly
@@ -27,7 +27,7 @@ hermes-agent/
 │   ├── display.py            # KawaiiSpinner, tool preview formatting
 │   ├── skill_commands.py     # Skill slash commands (shared CLI/gateway)
 │   └── trajectory.py         # Trajectory saving helpers
-├── hermes_cli/           # CLI subcommands and setup
+├── morpheus_cli/           # CLI subcommands and setup
 │   ├── main.py           # Entry point — all `hermes` subcommands
 │   ├── config.py         # DEFAULT_CONFIG, OPTIONAL_ENV_VARS, migration
 │   ├── commands.py       # Slash command definitions + SlashCommandCompleter
@@ -63,7 +63,7 @@ hermes-agent/
 └── batch_runner.py       # Parallel batch processing
 ```
 
-**User config:** `~/.hermes/config.yaml` (settings), `~/.hermes/.env` (API keys)
+**User config:** `~/.morpheus/config.yaml` (settings), `~/.morpheus/.env` (API keys)
 
 ## File Dependency Chain
 
@@ -130,11 +130,11 @@ Messages follow OpenAI format: `{"role": "system/user/assistant/tool", ...}`. Re
 - **Rich** for banner/panels, **prompt_toolkit** for input with autocomplete
 - **KawaiiSpinner** (`agent/display.py`) — animated faces during API calls, `┊` activity feed for tool results
 - `load_cli_config()` in cli.py merges hardcoded defaults + user config YAML
-- **Skin engine** (`hermes_cli/skin_engine.py`) — data-driven CLI theming; initialized from `display.skin` config key at startup; skins customize banner colors, spinner faces/verbs/wings, tool prefix, response box, branding text
-- `process_command()` is a method on `HermesCLI` — dispatches on canonical command name resolved via `resolve_command()` from the central registry
-- Skill slash commands: `agent/skill_commands.py` scans `~/.hermes/skills/`, injects as **user message** (not system prompt) to preserve prompt caching
+- **Skin engine** (`morpheus_cli/skin_engine.py`) — data-driven CLI theming; initialized from `display.skin` config key at startup; skins customize banner colors, spinner faces/verbs/wings, tool prefix, response box, branding text
+- `process_command()` is a method on `MorpheusCLI` — dispatches on canonical command name resolved via `resolve_command()` from the central registry
+- Skill slash commands: `agent/skill_commands.py` scans `~/.morpheus/skills/`, injects as **user message** (not system prompt) to preserve prompt caching
 
-### Slash Command Registry (`hermes_cli/commands.py`)
+### Slash Command Registry (`morpheus_cli/commands.py`)
 
 All slash commands are defined in a central `COMMAND_REGISTRY` list of `CommandDef` objects. Every downstream consumer derives from this registry automatically:
 
@@ -148,12 +148,12 @@ All slash commands are defined in a central `COMMAND_REGISTRY` list of `CommandD
 
 ### Adding a Slash Command
 
-1. Add a `CommandDef` entry to `COMMAND_REGISTRY` in `hermes_cli/commands.py`:
+1. Add a `CommandDef` entry to `COMMAND_REGISTRY` in `morpheus_cli/commands.py`:
 ```python
 CommandDef("mycommand", "Description of what it does", "Session",
            aliases=("mc",), args_hint="[arg]"),
 ```
-2. Add handler in `HermesCLI.process_command()` in `cli.py`:
+2. Add handler in `MorpheusCLI.process_command()` in `cli.py`:
 ```python
 elif canonical == "mycommand":
     self._handle_mycommand(cmd_original)
@@ -217,11 +217,11 @@ The registry handles schema collection, dispatch, availability checking, and err
 ## Adding Configuration
 
 ### config.yaml options:
-1. Add to `DEFAULT_CONFIG` in `hermes_cli/config.py`
+1. Add to `DEFAULT_CONFIG` in `morpheus_cli/config.py`
 2. Bump `_config_version` (currently 5) to trigger migration for existing users
 
 ### .env variables:
-1. Add to `OPTIONAL_ENV_VARS` in `hermes_cli/config.py` with metadata:
+1. Add to `OPTIONAL_ENV_VARS` in `morpheus_cli/config.py` with metadata:
 ```python
 "NEW_API_KEY": {
     "description": "What it's for",
@@ -237,20 +237,20 @@ The registry handles schema collection, dispatch, availability checking, and err
 | Loader | Used by | Location |
 |--------|---------|----------|
 | `load_cli_config()` | CLI mode | `cli.py` |
-| `load_config()` | `hermes tools`, `hermes setup` | `hermes_cli/config.py` |
+| `load_config()` | `hermes tools`, `hermes setup` | `morpheus_cli/config.py` |
 | Direct YAML load | Gateway | `gateway/run.py` |
 
 ---
 
 ## Skin/Theme System
 
-The skin engine (`hermes_cli/skin_engine.py`) provides data-driven CLI visual customization. Skins are **pure data** — no code changes needed to add a new skin.
+The skin engine (`morpheus_cli/skin_engine.py`) provides data-driven CLI visual customization. Skins are **pure data** — no code changes needed to add a new skin.
 
 ### Architecture
 
 ```
-hermes_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loader
-~/.hermes/skins/*.yaml       # User-installed custom skins (drop-in)
+morpheus_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loader
+~/.morpheus/skins/*.yaml       # User-installed custom skins (drop-in)
 ```
 
 - `init_skin_from_config()` — called at CLI startup, reads `display.skin` from config
@@ -282,14 +282,14 @@ hermes_cli/skin_engine.py    # SkinConfig dataclass, built-in skins, YAML loader
 
 ### Built-in skins
 
-- `default` — Classic Hermes gold/kawaii (the current look)
+- `default` — Classic Morpheus gold/kawaii (the current look)
 - `ares` — Crimson/bronze war-god theme with custom spinner wings
 - `mono` — Clean grayscale monochrome
 - `slate` — Cool blue developer-focused theme
 
 ### Adding a built-in skin
 
-Add to `_BUILTIN_SKINS` dict in `hermes_cli/skin_engine.py`:
+Add to `_BUILTIN_SKINS` dict in `morpheus_cli/skin_engine.py`:
 
 ```python
 "mytheme": {
@@ -304,7 +304,7 @@ Add to `_BUILTIN_SKINS` dict in `hermes_cli/skin_engine.py`:
 
 ### User skins (YAML)
 
-Users create `~/.hermes/skins/<name>.yaml`:
+Users create `~/.morpheus/skins/<name>.yaml`:
 
 ```yaml
 name: cyberpunk
@@ -334,7 +334,7 @@ Activate with `/skin cyberpunk` or `display.skin: cyberpunk` in config.yaml.
 ## Important Policies
 ### Prompt Caching Must Not Break
 
-Hermes-Agent ensures caching remains valid throughout a conversation. **Do NOT implement changes that would:**
+Morpheus-Agent ensures caching remains valid throughout a conversation. **Do NOT implement changes that would:**
 - Alter past context mid-conversation
 - Change toolsets mid-conversation
 - Reload memories or rebuild system prompts mid-conversation
@@ -361,7 +361,7 @@ in config.yaml (or `HERMES_BACKGROUND_NOTIFICATIONS` env var):
 ## Known Pitfalls
 
 ### DO NOT use `simple_term_menu` for interactive menus
-Rendering bugs in tmux/iTerm2 — ghosting on scroll. Use `curses` (stdlib) instead. See `hermes_cli/tools_config.py` for the pattern.
+Rendering bugs in tmux/iTerm2 — ghosting on scroll. Use `curses` (stdlib) instead. See `morpheus_cli/tools_config.py` for the pattern.
 
 ### DO NOT use `\033[K` (ANSI erase-to-EOL) in spinner/display code
 Leaks as literal `?[K` text under `prompt_toolkit`'s `patch_stdout`. Use space-padding: `f"\r{line}{' ' * pad}"`.
@@ -372,8 +372,8 @@ Leaks as literal `?[K` text under `prompt_toolkit`'s `patch_stdout`. Use space-p
 ### DO NOT hardcode cross-tool references in schema descriptions
 Tool schema descriptions must not mention tools from other toolsets by name (e.g., `browser_navigate` saying "prefer web_search"). Those tools may be unavailable (missing API keys, disabled toolset), causing the model to hallucinate calls to non-existent tools. If a cross-reference is needed, add it dynamically in `get_tool_definitions()` in `model_tools.py` — see the `browser_navigate` / `execute_code` post-processing blocks for the pattern.
 
-### Tests must not write to `~/.hermes/`
-The `_isolate_hermes_home` autouse fixture in `tests/conftest.py` redirects `HERMES_HOME` to a temp dir. Never hardcode `~/.hermes/` paths in tests.
+### Tests must not write to `~/.morpheus/`
+The `_isolate_hermes_home` autouse fixture in `tests/conftest.py` redirects `HERMES_HOME` to a temp dir. Never hardcode `~/.morpheus/` paths in tests.
 
 ---
 

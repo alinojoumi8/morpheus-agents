@@ -2,7 +2,7 @@
 """
 Tools Package
 
-This package contains all the specific tool implementations for the Hermes Agent.
+This package contains all the specific tool implementations for the Morpheus Agent.
 Each module provides specialized functionality for different capabilities:
 
 - web_tools: Web search, content extraction, and crawling

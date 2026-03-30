@@ -1,12 +1,12 @@
 ---
 sidebar_position: 3
 title: "Nix & NixOS Setup"
-description: "Install and deploy Hermes Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
+description: "Install and deploy Morpheus Agent with Nix — from quick `nix run` to fully declarative NixOS module with container mode"
 ---
 
 # Nix & NixOS Setup
 
-Hermes Agent ships a Nix flake with three levels of integration:
+Morpheus Agent ships a Nix flake with three levels of integration:
 
 | Level | Who it's for | What you get |
 |-------|-------------|--------------|
@@ -35,23 +35,23 @@ No clone needed. Nix fetches, builds, and runs everything:
 
 ```bash
 # Run directly (builds on first use, cached after)
-nix run github:NousResearch/hermes-agent -- setup
-nix run github:NousResearch/hermes-agent -- chat
+nix run github:NousResearch/morpheus-agent -- setup
+nix run github:NousResearch/morpheus-agent -- chat
 
 # Or install persistently
-nix profile install github:NousResearch/hermes-agent
+nix profile install github:NousResearch/morpheus-agent
 hermes setup
 hermes chat
 ```
 
-After `nix profile install`, `hermes`, `hermes-agent`, and `hermes-acp` are on your PATH. From here, the workflow is identical to the [standard installation](./installation.md) — `hermes setup` walks you through provider selection, `hermes gateway install` sets up a launchd (macOS) or systemd user service, and config lives in `~/.hermes/`.
+After `nix profile install`, `hermes`, `morpheus-agent`, and `hermes-acp` are on your PATH. From here, the workflow is identical to the [standard installation](./installation.md) — `hermes setup` walks you through provider selection, `hermes gateway install` sets up a launchd (macOS) or systemd user service, and config lives in `~/.morpheus/`.
 
 <details>
 <summary><strong>Building from a local clone</strong></summary>
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
-cd hermes-agent
+git clone https://github.com/NousResearch/morpheus-agent.git
+cd morpheus-agent
 nix build
 ./result/bin/hermes setup
 ```
@@ -75,14 +75,14 @@ This module requires NixOS. For non-NixOS systems (macOS, other Linux distros), 
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
+    morpheus-agent.url = "github:NousResearch/morpheus-agent";
   };
 
-  outputs = { nixpkgs, hermes-agent, ... }: {
+  outputs = { nixpkgs, morpheus-agent, ... }: {
     nixosConfigurations.your-host = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
-        hermes-agent.nixosModules.default
+        morpheus-agent.nixosModules.default
         ./configuration.nix
       ];
     };
@@ -95,7 +95,7 @@ This module requires NixOS. For non-NixOS systems (macOS, other Linux distros), 
 ```nix
 # configuration.nix
 { config, ... }: {
-  services.hermes-agent = {
+  services.morpheus-agent = {
     enable = true;
     settings.model.default = "anthropic/claude-sonnet-4";
     environmentFiles = [ config.sops.secrets."hermes-env".path ];
@@ -114,12 +114,12 @@ echo "OPENROUTER_API_KEY=sk-or-your-key" | sudo install -m 0600 -o hermes /dev/s
 ```
 
 ```nix
-services.hermes-agent.environmentFiles = [ "/var/lib/hermes/env" ];
+services.morpheus-agent.environmentFiles = [ "/var/lib/hermes/env" ];
 ```
 :::
 
 :::tip addToSystemPackages
-Setting `addToSystemPackages = true` does two things: puts the `hermes` CLI on your system PATH **and** sets `HERMES_HOME` system-wide so the interactive CLI shares state (sessions, skills, cron) with the gateway service. Without it, running `hermes` in your shell creates a separate `~/.hermes/` directory.
+Setting `addToSystemPackages = true` does two things: puts the `hermes` CLI on your system PATH **and** sets `HERMES_HOME` system-wide so the interactive CLI shares state (sessions, skills, cron) with the gateway service. Without it, running `hermes` in your shell creates a separate `~/.morpheus/` directory.
 :::
 
 ### Verify It Works
@@ -128,10 +128,10 @@ After `nixos-rebuild switch`, check that the service is running:
 
 ```bash
 # Check service status
-systemctl status hermes-agent
+systemctl status morpheus-agent
 
 # Watch logs (Ctrl+C to stop)
-journalctl -u hermes-agent -f
+journalctl -u morpheus-agent -f
 
 # If addToSystemPackages is true, test the CLI
 hermes version
@@ -154,7 +154,7 @@ To enable container mode, add one line:
 
 ```nix
 {
-  services.hermes-agent = {
+  services.morpheus-agent = {
     enable = true;
     container.enable = true;
     # ... rest of config is identical
@@ -176,14 +176,14 @@ The `settings` option accepts an arbitrary attrset that is rendered as `config.y
 
 ```nix
 # base.nix
-services.hermes-agent.settings = {
+services.morpheus-agent.settings = {
   model.default = "anthropic/claude-sonnet-4";
   toolsets = [ "all" ];
   terminal = { backend = "local"; timeout = 180; };
 };
 
 # personality.nix
-services.hermes-agent.settings = {
+services.morpheus-agent.settings = {
   display = { compact = false; personality = "kawaii"; };
   memory = { memory_enabled = true; user_profile_enabled = true; };
 };
@@ -192,7 +192,7 @@ services.hermes-agent.settings = {
 Both are deep-merged at evaluation time. Nix-declared keys always win over keys in an existing `config.yaml` on disk, but **user-added keys that Nix doesn't touch are preserved**. This means if the agent or a manual edit adds keys like `skills.disabled` or `streaming.enabled`, they survive `nixos-rebuild switch`.
 
 :::note Model naming
-`settings.model.default` uses the model identifier your provider expects. With [OpenRouter](https://openrouter.ai) (the default), these look like `"anthropic/claude-sonnet-4"` or `"google/gemini-3-flash"`. If you're using a provider directly (Anthropic, OpenAI), set `settings.model.base_url` to point at their API and use their native model IDs (e.g., `"claude-sonnet-4-20250514"`). When no `base_url` is set, Hermes defaults to OpenRouter.
+`settings.model.default` uses the model identifier your provider expects. With [OpenRouter](https://openrouter.ai) (the default), these look like `"anthropic/claude-sonnet-4"` or `"google/gemini-3-flash"`. If you're using a provider directly (Anthropic, OpenAI), set `settings.model.base_url` to point at their API and use their native model IDs (e.g., `"claude-sonnet-4-20250514"`). When no `base_url` is set, Morpheus defaults to OpenRouter.
 :::
 
 :::tip Discovering available config keys
@@ -204,7 +204,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
 
 ```nix
 { config, ... }: {
-  services.hermes-agent = {
+  services.morpheus-agent = {
     enable = true;
     container.enable = true;
 
@@ -232,7 +232,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
 
     # ── Documents ──────────────────────────────────────────────────────
     documents = {
-      "SOUL.md" = builtins.readFile /home/user/.hermes/SOUL.md;
+      "SOUL.md" = builtins.readFile /home/user/.morpheus/SOUL.md;
       "USER.md" = ./documents/USER.md;
     };
 
@@ -266,7 +266,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
 If you'd rather manage `config.yaml` entirely outside Nix, use `configFile`:
 
 ```nix
-services.hermes-agent.configFile = /etc/hermes/config.yaml;
+services.morpheus-agent.configFile = /etc/hermes/config.yaml;
 ```
 
 This bypasses `settings` entirely — no merge, no generation. The file is copied as-is to `$HERMES_HOME/config.yaml` on each activation.
@@ -287,7 +287,7 @@ Quick reference for the most common things Nix users want to customize:
 | Use Podman instead of Docker | `container.backend` | `"podman"` |
 | Add tools to the service PATH (native only) | `extraPackages` | `[ pkgs.pandoc pkgs.imagemagick ]` |
 | Use a custom base image | `container.image` | `"ubuntu:24.04"` |
-| Override the hermes package | `package` | `inputs.hermes-agent.packages.${system}.default.override { ... }` |
+| Override the hermes package | `package` | `inputs.morpheus-agent.packages.${system}.default.override { ... }` |
 | Change state directory | `stateDir` | `"/opt/hermes"` |
 | Set the agent's working directory | `workingDirectory` | `"/home/user/projects"` |
 
@@ -299,7 +299,7 @@ Quick reference for the most common things Nix users want to customize:
 Values in Nix expressions end up in `/nix/store`, which is world-readable. Always use `environmentFiles` with a secrets manager.
 :::
 
-Both `environment` (non-secret vars) and `environmentFiles` (secret files) are merged into `$HERMES_HOME/.env` at activation time (`nixos-rebuild switch`). Hermes reads this file on every startup, so changes take effect with a `systemctl restart hermes-agent` — no container recreation needed.
+Both `environment` (non-secret vars) and `environmentFiles` (secret files) are merged into `$HERMES_HOME/.env` at activation time (`nixos-rebuild switch`). Morpheus reads this file on every startup, so changes take effect with a `systemctl restart morpheus-agent` — no container recreation needed.
 
 ### sops-nix
 
@@ -311,7 +311,7 @@ Both `environment` (non-secret vars) and `environmentFiles` (secret files) are m
     secrets."hermes-env" = { format = "yaml"; };
   };
 
-  services.hermes-agent.environmentFiles = [
+  services.morpheus-agent.environmentFiles = [
     config.sops.secrets."hermes-env".path
   ];
 }
@@ -333,7 +333,7 @@ hermes-env: |
 {
   age.secrets.hermes-env.file = ./secrets/hermes-env.age;
 
-  services.hermes-agent.environmentFiles = [
+  services.morpheus-agent.environmentFiles = [
     config.age.secrets.hermes-env.path
   ];
 }
@@ -345,7 +345,7 @@ For platforms requiring OAuth (e.g., Discord), use `authFile` to seed credential
 
 ```nix
 {
-  services.hermes-agent = {
+  services.morpheus-agent = {
     authFile = config.sops.secrets."hermes/auth.json".path;
     # authFileForceOverwrite = true;  # overwrite on every activation
   };
@@ -358,15 +358,15 @@ The file is only copied if `auth.json` doesn't already exist (unless `authFileFo
 
 ## Documents
 
-The `documents` option installs files into the agent's working directory (the `workingDirectory`, which the agent reads as its workspace). Hermes looks for specific filenames by convention:
+The `documents` option installs files into the agent's working directory (the `workingDirectory`, which the agent reads as its workspace). Morpheus looks for specific filenames by convention:
 
-- **`SOUL.md`** — the agent's system prompt / personality. Hermes reads this on startup and uses it as persistent instructions that shape its behavior across all conversations.
+- **`SOUL.md`** — the agent's system prompt / personality. Morpheus reads this on startup and uses it as persistent instructions that shape its behavior across all conversations.
 - **`USER.md`** — context about the user the agent is interacting with.
 - Any other files you place here are visible to the agent as workspace files.
 
 ```nix
 {
-  services.hermes-agent.documents = {
+  services.morpheus-agent.documents = {
     "SOUL.md" = ''
       You are a helpful research assistant specializing in NixOS packaging.
       Always cite sources and prefer reproducible solutions.
@@ -388,7 +388,7 @@ The `mcpServers` option declaratively configures [MCP (Model Context Protocol)](
 
 ```nix
 {
-  services.hermes-agent.mcpServers = {
+  services.morpheus-agent.mcpServers = {
     filesystem = {
       command = "npx";
       args = [ "-y" "@modelcontextprotocol/server-filesystem" "/data/workspace" ];
@@ -410,7 +410,7 @@ Environment variables in `env` values are resolved from `$HERMES_HOME/.env` at r
 
 ```nix
 {
-  services.hermes-agent.mcpServers.remote-api = {
+  services.morpheus-agent.mcpServers.remote-api = {
     url = "https://mcp.example.com/v1/mcp";
     headers.Authorization = "Bearer \${MCP_REMOTE_API_KEY}";
     timeout = 180;
@@ -420,11 +420,11 @@ Environment variables in `env` values are resolved from `$HERMES_HOME/.env` at r
 
 ### HTTP Transport with OAuth
 
-Set `auth = "oauth"` for servers using OAuth 2.1. Hermes implements the full PKCE flow — metadata discovery, dynamic client registration, token exchange, and automatic refresh.
+Set `auth = "oauth"` for servers using OAuth 2.1. Morpheus implements the full PKCE flow — metadata discovery, dynamic client registration, token exchange, and automatic refresh.
 
 ```nix
 {
-  services.hermes-agent.mcpServers.my-oauth-server = {
+  services.morpheus-agent.mcpServers.my-oauth-server = {
     url = "https://mcp.example.com/mcp";
     auth = "oauth";
   };
@@ -436,13 +436,13 @@ Tokens are stored in `$HERMES_HOME/mcp-tokens/<server-name>.json` and persist ac
 <details>
 <summary><strong>Initial OAuth authorization on headless servers</strong></summary>
 
-The first OAuth authorization requires a browser-based consent flow. In a headless deployment, Hermes prints the authorization URL to stdout/logs instead of opening a browser.
+The first OAuth authorization requires a browser-based consent flow. In a headless deployment, Morpheus prints the authorization URL to stdout/logs instead of opening a browser.
 
 **Option A: Interactive bootstrap** — run the flow once via `docker exec` (container) or `sudo -u hermes` (native):
 
 ```bash
 # Container mode
-docker exec -it hermes-agent \
+docker exec -it morpheus-agent \
   hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
 
 # Native mode
@@ -456,8 +456,8 @@ The container uses `--network=host`, so the OAuth callback listener on `127.0.0.
 
 ```bash
 hermes mcp add my-oauth-server --url https://mcp.example.com/mcp --auth oauth
-scp ~/.hermes/mcp-tokens/my-oauth-server{,.client}.json \
-    server:/var/lib/hermes/.hermes/mcp-tokens/
+scp ~/.morpheus/mcp-tokens/my-oauth-server{,.client}.json \
+    server:/var/lib/hermes/.morpheus/mcp-tokens/
 # Ensure: chown hermes:hermes, chmod 0600
 ```
 
@@ -469,7 +469,7 @@ Some MCP servers can request LLM completions from the agent:
 
 ```nix
 {
-  services.hermes-agent.mcpServers.analysis = {
+  services.morpheus-agent.mcpServers.analysis = {
     command = "npx";
     args = [ "-y" "analysis-server" ];
     sampling = {
@@ -500,7 +500,7 @@ When hermes runs via the NixOS module, the following CLI commands are **blocked*
 This prevents drift between what Nix declares and what's on disk. Detection uses two signals:
 
 1. **`HERMES_MANAGED=true`** environment variable — set by the systemd service, visible to the gateway process
-2. **`.managed` marker file** in `HERMES_HOME` — set by the activation script, visible to interactive shells (e.g., `docker exec -it hermes-agent hermes config set ...` is also blocked)
+2. **`.managed` marker file** in `HERMES_HOME` — set by the activation script, visible to interactive shells (e.g., `docker exec -it morpheus-agent hermes config set ...` is also blocked)
 
 To change configuration, edit your Nix config and run `sudo nixos-rebuild switch`.
 
@@ -517,12 +517,12 @@ When container mode is enabled, hermes runs inside a persistent Ubuntu container
 ```
 Host                                    Container
 ────                                    ─────────
-/nix/store/...-hermes-agent-0.1.0  ──►  /nix/store/... (ro)
+/nix/store/...-morpheus-agent-0.1.0  ──►  /nix/store/... (ro)
 /var/lib/hermes/                    ──►  /data/          (rw)
   ├── current-package -> /nix/store/...    (symlink, updated each rebuild)
   ├── .gc-root -> /nix/store/...           (prevents nix-collect-garbage)
   ├── .container-identity                  (sha256 hash, triggers recreation)
-  ├── .hermes/                             (HERMES_HOME)
+  ├── .morpheus/                             (HERMES_HOME)
   │   ├── .env                             (merged from environment + environmentFiles)
   │   ├── config.yaml                      (Nix-generated, deep-merged by activation)
   │   ├── .managed                         (marker file)
@@ -542,7 +542,7 @@ The Nix-built binary works inside the Ubuntu container because `/nix/store` is b
 
 | Event | Container recreated? | `/data` (state) | `/home/hermes` | Writable layer (`apt`/`pip`/`npm`) |
 |---|---|---|---|---|
-| `systemctl restart hermes-agent` | No | Persists | Persists | Persists |
+| `systemctl restart morpheus-agent` | No | Persists | Persists | Persists |
 | `nixos-rebuild switch` (code change) | No (symlink updated) | Persists | Persists | Persists |
 | Host reboot | No | Persists | Persists | Persists |
 | `nix-collect-garbage` | No (GC root) | Persists | Persists | Persists |
@@ -571,7 +571,7 @@ The `preStart` script creates a GC root at `${stateDir}/.gc-root` pointing to th
 The flake provides a development shell with Python 3.11, uv, Node.js, and all runtime tools:
 
 ```bash
-cd hermes-agent
+cd morpheus-agent
 nix develop
 
 # Shell provides:
@@ -588,7 +588,7 @@ hermes chat
 The included `.envrc` activates the dev shell automatically:
 
 ```bash
-cd hermes-agent
+cd morpheus-agent
 direnv allow    # one-time
 # Subsequent entries are near-instant (stamp file skips dep install)
 ```
@@ -615,7 +615,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Check | What it tests |
 |---|---|
-| `package-contents` | `hermes` and `hermes-agent` binaries exist and `hermes version` runs |
+| `package-contents` | `hermes` and `morpheus-agent` binaries exist and `hermes version` runs |
 | `entry-points-sync` | Every `[project.scripts]` entry in `pyproject.toml` has a wrapped binary in the Nix package |
 | `cli-commands` | `hermes --help` exposes `gateway` and `config` subcommands |
 | `managed-guard` | `HERMES_MANAGED=true hermes config set ...` prints the NixOS error |
@@ -632,8 +632,8 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `enable` | `bool` | `false` | Enable the hermes-agent service |
-| `package` | `package` | `hermes-agent` | The hermes-agent package to use |
+| `enable` | `bool` | `false` | Enable the morpheus-agent service |
+| `package` | `package` | `morpheus-agent` | The morpheus-agent package to use |
 | `user` | `str` | `"hermes"` | System user |
 | `group` | `str` | `"hermes"` | System group |
 | `createUser` | `bool` | `true` | Auto-create user/group |
@@ -707,7 +707,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 
 ```
 /var/lib/hermes/                     # stateDir (owned by hermes:hermes, 0750)
-├── .hermes/                         # HERMES_HOME
+├── .morpheus/                         # HERMES_HOME
 │   ├── config.yaml                  # Nix-generated (deep-merged each rebuild)
 │   ├── .managed                     # Marker: CLI config mutation blocked
 │   ├── .env                         # Merged from environment + environmentFiles
@@ -732,7 +732,7 @@ Same layout, mounted into the container:
 
 | Container path | Host path | Mode | Notes |
 |---|---|---|---|
-| `/nix/store` | `/nix/store` | `ro` | Hermes binary + all Nix deps |
+| `/nix/store` | `/nix/store` | `ro` | Morpheus binary + all Nix deps |
 | `/data` | `/var/lib/hermes` | `rw` | All state, config, workspace |
 | `/home/hermes` | `${stateDir}/home` | `rw` | Persistent agent home — `pip install --user`, tool caches |
 | `/usr`, `/usr/local`, `/tmp` | (writable layer) | `rw` | `apt`/`pip`/`npm` installs — persists across restarts, lost on recreation |
@@ -743,7 +743,7 @@ Same layout, mounted into the container:
 
 ```bash
 # Update the flake input
-nix flake update hermes-agent --flake /etc/nixos
+nix flake update morpheus-agent --flake /etc/nixos
 
 # Rebuild
 sudo nixos-rebuild switch
@@ -763,21 +763,21 @@ All `docker` commands below work the same with `podman`. Substitute accordingly 
 
 ```bash
 # Both modes use the same systemd unit
-journalctl -u hermes-agent -f
+journalctl -u morpheus-agent -f
 
 # Container mode: also available directly
-docker logs -f hermes-agent
+docker logs -f morpheus-agent
 ```
 
 ### Container Inspection
 
 ```bash
-systemctl status hermes-agent
-docker ps -a --filter name=hermes-agent
-docker inspect hermes-agent --format='{{.State.Status}}'
-docker exec -it hermes-agent bash
-docker exec hermes-agent readlink /data/current-package
-docker exec hermes-agent cat /data/.container-identity
+systemctl status morpheus-agent
+docker ps -a --filter name=morpheus-agent
+docker inspect morpheus-agent --format='{{.State.Status}}'
+docker exec -it morpheus-agent bash
+docker exec morpheus-agent readlink /data/current-package
+docker exec morpheus-agent cat /data/.container-identity
 ```
 
 ### Force Container Recreation
@@ -785,10 +785,10 @@ docker exec hermes-agent cat /data/.container-identity
 If you need to reset the writable layer (fresh Ubuntu):
 
 ```bash
-sudo systemctl stop hermes-agent
-docker rm -f hermes-agent
+sudo systemctl stop morpheus-agent
+docker rm -f morpheus-agent
 sudo rm /var/lib/hermes/.container-identity
-sudo systemctl start hermes-agent
+sudo systemctl start morpheus-agent
 ```
 
 ### Verify Secrets Are Loaded
@@ -797,16 +797,16 @@ If the agent starts but can't authenticate with the LLM provider, check that the
 
 ```bash
 # Native mode
-sudo -u hermes cat /var/lib/hermes/.hermes/.env
+sudo -u hermes cat /var/lib/hermes/.morpheus/.env
 
 # Container mode
-docker exec hermes-agent cat /data/.hermes/.env
+docker exec morpheus-agent cat /data/.morpheus/.env
 ```
 
 ### GC Root Verification
 
 ```bash
-nix-store --query --roots $(docker exec hermes-agent readlink /data/current-package)
+nix-store --query --roots $(docker exec morpheus-agent readlink /data/current-package)
 ```
 
 ### Common Issues
@@ -815,6 +815,6 @@ nix-store --query --roots $(docker exec hermes-agent readlink /data/current-pack
 |---|---|---|
 | `Cannot save configuration: managed by NixOS` | CLI guards active | Edit `configuration.nix` and `nixos-rebuild switch` |
 | Container recreated unexpectedly | `extraVolumes`, `extraOptions`, or `image` changed | Expected — writable layer resets. Reinstall packages or use a custom image |
-| `hermes version` shows old version | Container not restarted | `systemctl restart hermes-agent` |
+| `hermes version` shows old version | Container not restarted | `systemctl restart morpheus-agent` |
 | Permission denied on `/var/lib/hermes` | State dir is `0750 hermes:hermes` | Use `docker exec` or `sudo -u hermes` |
 | `nix-collect-garbage` removed hermes | GC root missing | Restart the service (preStart recreates the GC root) |

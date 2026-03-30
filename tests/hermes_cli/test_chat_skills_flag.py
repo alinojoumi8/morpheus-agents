@@ -2,7 +2,7 @@ import sys
 
 
 def test_top_level_skills_flag_defaults_to_chat(monkeypatch):
-    import hermes_cli.main as main_mod
+    import morpheus_cli.main as main_mod
 
     captured = {}
 
@@ -14,19 +14,19 @@ def test_top_level_skills_flag_defaults_to_chat(monkeypatch):
     monkeypatch.setattr(
         sys,
         "argv",
-        ["hermes", "-s", "hermes-agent-dev,github-auth"],
+        ["morpheus", "-s", "morpheus-agent-dev,github-auth"],
     )
 
     main_mod.main()
 
     assert captured == {
-        "skills": ["hermes-agent-dev,github-auth"],
+        "skills": ["morpheus-agent-dev,github-auth"],
         "command": None,
     }
 
 
 def test_chat_subcommand_accepts_skills_flag(monkeypatch):
-    import hermes_cli.main as main_mod
+    import morpheus_cli.main as main_mod
 
     captured = {}
 
@@ -38,7 +38,7 @@ def test_chat_subcommand_accepts_skills_flag(monkeypatch):
     monkeypatch.setattr(
         sys,
         "argv",
-        ["hermes", "chat", "-s", "github-auth", "-q", "hello"],
+        ["morpheus", "chat", "-s", "github-auth", "-q", "hello"],
     )
 
     main_mod.main()
@@ -50,7 +50,7 @@ def test_chat_subcommand_accepts_skills_flag(monkeypatch):
 
 
 def test_continue_worktree_and_skills_flags_work_together(monkeypatch):
-    import hermes_cli.main as main_mod
+    import morpheus_cli.main as main_mod
 
     captured = {}
 
@@ -64,7 +64,7 @@ def test_continue_worktree_and_skills_flags_work_together(monkeypatch):
     monkeypatch.setattr(
         sys,
         "argv",
-        ["hermes", "-c", "-w", "-s", "hermes-agent-dev"],
+        ["morpheus", "-c", "-w", "-s", "morpheus-agent-dev"],
     )
 
     main_mod.main()
@@ -72,6 +72,6 @@ def test_continue_worktree_and_skills_flags_work_together(monkeypatch):
     assert captured == {
         "continue_last": True,
         "worktree": True,
-        "skills": ["hermes-agent-dev"],
+        "skills": ["morpheus-agent-dev"],
         "command": "chat",
     }

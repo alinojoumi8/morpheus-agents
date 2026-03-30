@@ -1,10 +1,10 @@
-"""Tests for hermes_cli.gateway."""
+"""Tests for morpheus_cli.gateway."""
 
 import signal
 from types import SimpleNamespace
 from unittest.mock import patch, call
 
-import hermes_cli.gateway as gateway
+import morpheus_cli.gateway as gateway
 
 
 class TestSystemdLingerStatus:

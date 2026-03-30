@@ -72,7 +72,7 @@ def handle_intelligence_command(command: str, print_fn=None) -> None:
 
     except ImportError:
         _print("  Intelligence module is not installed.")
-        _print("  Install with: pip install hermes-agent[intelligence]")
+        _print("  Install with: pip install morpheus-agent[intelligence]")
     except Exception as exc:
         _print(f"  Error: {exc}")
 
@@ -243,7 +243,7 @@ def _show_suggestions(db, _print):
     suggestions = get_pending_suggestions(db)
     if not suggestions:
         _print("  No optimization suggestions available.")
-        _print("  Run /intel optimize after using Hermes for a while.")
+        _print("  Run /intel optimize after using Morpheus for a while.")
         return
 
     _print("  Optimization Suggestions:")

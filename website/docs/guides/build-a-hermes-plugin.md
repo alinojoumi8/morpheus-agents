@@ -2,9 +2,9 @@
 sidebar_position: 10
 ---
 
-# Build a Hermes Plugin
+# Build a Morpheus Plugin
 
-This guide walks through building a complete Hermes plugin from scratch. By the end you'll have a working plugin with multiple tools, lifecycle hooks, shipped data files, and a bundled skill — everything the plugin system supports.
+This guide walks through building a complete Morpheus plugin from scratch. By the end you'll have a working plugin with multiple tools, lifecycle hooks, shipped data files, and a bundled skill — everything the plugin system supports.
 
 ## What you're building
 
@@ -17,8 +17,8 @@ Plus a hook that logs every tool call, and a bundled skill file.
 ## Step 1: Create the plugin directory
 
 ```bash
-mkdir -p ~/.hermes/plugins/calculator
-cd ~/.hermes/plugins/calculator
+mkdir -p ~/.morpheus/plugins/calculator
+cd ~/.morpheus/plugins/calculator
 ```
 
 ## Step 2: Write the manifest
@@ -36,7 +36,7 @@ provides_hooks:
   - post_tool_call
 ```
 
-This tells Hermes: "I'm a plugin called calculator, I provide tools and hooks." The `provides_tools` and `provides_hooks` fields are lists of what the plugin registers.
+This tells Morpheus: "I'm a plugin called calculator, I provide tools and hooks." The `provides_tools` and `provides_hooks` fields are lists of what the plugin registers.
 
 Optional fields you could add:
 ```yaml
@@ -193,7 +193,7 @@ def unit_convert(args: dict, **kwargs) -> str:
 1. **Signature:** `def my_handler(args: dict, **kwargs) -> str`
 2. **Return:** Always a JSON string. Success and errors alike.
 3. **Never raise:** Catch all exceptions, return error JSON instead.
-4. **Accept `**kwargs`:** Hermes may pass additional context in the future.
+4. **Accept `**kwargs`:** Morpheus may pass additional context in the future.
 
 ## Step 5: Write the registration
 
@@ -235,11 +235,11 @@ def register(ctx):
 - `ctx.register_tool()` puts your tool in the registry — the model sees it immediately
 - `ctx.register_hook()` subscribes to lifecycle events
 - `ctx.register_command()` — _planned but not yet implemented_
-- If this function crashes, the plugin is disabled but Hermes continues fine
+- If this function crashes, the plugin is disabled but Morpheus continues fine
 
 ## Step 6: Test it
 
-Start Hermes:
+Start Morpheus:
 
 ```bash
 hermes
@@ -269,7 +269,7 @@ Plugins (1):
 ## Your plugin's final structure
 
 ```
-~/.hermes/plugins/calculator/
+~/.morpheus/plugins/calculator/
 ├── plugin.yaml      # "I'm calculator, I provide tools and hooks"
 ├── __init__.py      # Wiring: schemas → handlers, register hooks
 ├── schemas.py       # What the LLM reads (descriptions + parameter specs)
@@ -308,9 +308,9 @@ import shutil
 from pathlib import Path
 
 def _install_skill():
-    """Copy our skill to ~/.hermes/skills/ on first load."""
+    """Copy our skill to ~/.morpheus/skills/ on first load."""
     try:
-        from hermes_cli.config import get_hermes_home
+        from morpheus_cli.config import get_hermes_home
         dest = get_hermes_home() / "skills" / "my-plugin" / "SKILL.md"
     except Exception:
         dest = Path.home() / ".hermes" / "skills" / "my-plugin" / "SKILL.md"
@@ -406,7 +406,7 @@ def handler(args, **kwargs):
 
 **Missing `**kwargs` in handler signature:**
 ```python
-# Wrong — will break if Hermes passes extra context
+# Wrong — will break if Morpheus passes extra context
 def handler(args):
     ...
 

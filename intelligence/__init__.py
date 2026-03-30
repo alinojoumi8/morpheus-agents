@@ -1,5 +1,5 @@
 """
-Hermes Intelligence Module — Advanced memory, self-evolution, and personalization.
+Morpheus Intelligence Module — Advanced memory, self-evolution, and personalization.
 
 This module provides:
 - Vector memory store with semantic search (sqlite-vec)

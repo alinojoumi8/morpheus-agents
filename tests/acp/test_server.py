@@ -1,4 +1,4 @@
-"""Tests for acp_adapter.server — HermesACPAgent ACP server."""
+"""Tests for acp_adapter.server — MorpheusACPAgent ACP server."""
 
 import asyncio
 import os
@@ -22,9 +22,9 @@ from acp.schema import (
     TextContentBlock,
     Usage,
 )
-from acp_adapter.server import HermesACPAgent, HERMES_VERSION
+from acp_adapter.server import MorpheusACPAgent, HERMES_VERSION
 from acp_adapter.session import SessionManager
-from hermes_state import SessionDB
+from morpheus_state import SessionDB
 
 
 @pytest.fixture()
@@ -35,8 +35,8 @@ def mock_manager():
 
 @pytest.fixture()
 def agent(mock_manager):
-    """HermesACPAgent backed by a mock session manager."""
-    return HermesACPAgent(session_manager=mock_manager)
+    """MorpheusACPAgent backed by a mock session manager."""
+    return MorpheusACPAgent(session_manager=mock_manager)
 
 
 # ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class TestInitialize:
         resp = await agent.initialize(protocol_version=1)
         assert resp.agent_info is not None
         assert isinstance(resp.agent_info, Implementation)
-        assert resp.agent_info.name == "hermes-agent"
+        assert resp.agent_info.name == "morpheus-agent"
         assert resp.agent_info.version == HERMES_VERSION
 
     @pytest.mark.asyncio
@@ -416,17 +416,17 @@ class TestSlashCommands:
                 api_mode=kwargs.get("api_mode"),
             )
 
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {
+        monkeypatch.setattr("morpheus_cli.config.load_config", lambda: {
             "model": {"provider": "openrouter", "default": "openrouter/gpt-5"}
         })
         monkeypatch.setattr(
-            "hermes_cli.runtime_provider.resolve_runtime_provider",
+            "morpheus_cli.runtime_provider.resolve_runtime_provider",
             fake_resolve_runtime_provider,
         )
         manager = SessionManager(db=SessionDB(tmp_path / "state.db"))
 
         with patch("run_agent.AIAgent", side_effect=fake_agent):
-            acp_agent = HermesACPAgent(session_manager=manager)
+            acp_agent = MorpheusACPAgent(session_manager=manager)
             state = manager.create_session(cwd="/tmp")
             result = acp_agent._cmd_model("anthropic:claude-sonnet-4-6", state)
 

@@ -8,7 +8,7 @@ description: "On-demand knowledge documents — progressive disclosure, agent-ma
 
 Skills are on-demand knowledge documents the agent can load when needed. They follow a **progressive disclosure** pattern to minimize token usage and are compatible with the [agentskills.io](https://agentskills.io/specification) open standard.
 
-All skills live in **`~/.hermes/skills/`** — a single directory that serves as the source of truth. On fresh install, bundled skills are copied from the repo. Hub-installed and agent-created skills also go here. The agent can modify or delete any skill.
+All skills live in **`~/.morpheus/skills/`** — a single directory that serves as the source of truth. On fresh install, bundled skills are copied from the repo. Hub-installed and agent-created skills also go here. The agent can modify or delete any skill.
 
 See also:
 
@@ -30,7 +30,7 @@ Every installed skill is automatically available as a slash command:
 /excalidraw
 ```
 
-The bundled `plan` skill is a good example of a skill-backed slash command with custom behavior. Running `/plan [request]` tells Hermes to inspect context if needed, write a markdown implementation plan instead of executing the task, and save the result under `.hermes/plans/` relative to the active workspace/backend working directory.
+The bundled `plan` skill is a good example of a skill-backed slash command with custom behavior. Running `/plan [request]` tells Morpheus to inspect context if needed, write a markdown implementation plan instead of executing the task, and save the result under `.morpheus/plans/` relative to the active workspace/backend working directory.
 
 You can also interact with skills through natural conversation:
 
@@ -136,14 +136,14 @@ required_environment_variables:
     required_for: full functionality
 ```
 
-When a missing value is encountered, Hermes asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `hermes setup` or `~/.hermes/.env` locally instead.
+When a missing value is encountered, Morpheus asks for it securely only when the skill is actually loaded in the local CLI. You can skip setup and keep using the skill. Messaging surfaces never ask for secrets in chat — they tell you to use `hermes setup` or `~/.morpheus/.env` locally instead.
 
 Once set, declared env vars are **automatically passed through** to `execute_code` and `terminal` sandboxes — the skill's scripts can use `$TENOR_API_KEY` directly. For non-skill env vars, use the `terminal.env_passthrough` config option. See [Environment Variable Passthrough](/docs/user-guide/security#environment-variable-passthrough) for details.
 
 ## Skill Directory Structure
 
 ```text
-~/.hermes/skills/                  # Single source of truth
+~/.morpheus/skills/                  # Single source of truth
 ├── mlops/                         # Category directory
 │   ├── axolotl/
 │   │   ├── SKILL.md               # Main instructions (required)
@@ -221,19 +221,19 @@ hermes skills tap add myorg/skills-repo           # Add a custom GitHub source
 
 | Source | Example | Notes |
 |--------|---------|-------|
-| `official` | `official/security/1password` | Optional skills shipped with Hermes. |
-| `skills-sh` | `skills-sh/vercel-labs/agent-skills/vercel-react-best-practices` | Searchable via `hermes skills search <query> --source skills-sh`. Hermes resolves alias-style skills when the skills.sh slug differs from the repo folder. |
+| `official` | `official/security/1password` | Optional skills shipped with Morpheus. |
+| `skills-sh` | `skills-sh/vercel-labs/agent-skills/vercel-react-best-practices` | Searchable via `hermes skills search <query> --source skills-sh`. Morpheus resolves alias-style skills when the skills.sh slug differs from the repo folder. |
 | `well-known` | `well-known:https://mintlify.com/docs/.well-known/skills/mintlify` | Skills served directly from `/.well-known/skills/index.json` on a website. Search using the site or docs URL. |
 | `github` | `openai/skills/k8s` | Direct GitHub repo/path installs and custom taps. |
 | `clawhub`, `lobehub`, `claude-marketplace` | Source-specific identifiers | Community or marketplace integrations. |
 
 ### Integrated hubs and registries
 
-Hermes currently integrates with these skills ecosystems and discovery sources:
+Morpheus currently integrates with these skills ecosystems and discovery sources:
 
 #### 1. Official optional skills (`official`)
 
-These are maintained in the Hermes repository itself and install with builtin trust.
+These are maintained in the Morpheus repository itself and install with builtin trust.
 
 - Catalog: [Official Optional Skills Catalog](../../reference/optional-skills-catalog)
 - Source in repo: `optional-skills/`
@@ -246,7 +246,7 @@ hermes skills install official/security/1password
 
 #### 2. skills.sh (`skills-sh`)
 
-This is Vercel's public skills directory. Hermes can search it directly, inspect skill detail pages, resolve alias-style slugs, and install from the underlying source repo.
+This is Vercel's public skills directory. Morpheus can search it directly, inspect skill detail pages, resolve alias-style slugs, and install from the underlying source repo.
 
 - Directory: [skills.sh](https://skills.sh/)
 - CLI/tooling repo: [vercel-labs/skills](https://github.com/vercel-labs/skills)
@@ -275,7 +275,7 @@ hermes skills install well-known:https://mintlify.com/docs/.well-known/skills/mi
 
 #### 4. Direct GitHub skills (`github`)
 
-Hermes can install directly from GitHub repositories and GitHub-based taps. This is useful when you already know the repo/path or want to add your own custom source repo.
+Morpheus can install directly from GitHub repositories and GitHub-based taps. This is useful when you already know the repo/path or want to add your own custom source repo.
 
 - OpenAI skills: [openai/skills](https://github.com/openai/skills)
 - Anthropic skills: [anthropics/skills](https://github.com/anthropics/skills)
@@ -292,26 +292,26 @@ hermes skills tap add myorg/skills-repo
 A third-party skills marketplace integrated as a community source.
 
 - Site: [clawhub.ai](https://clawhub.ai/)
-- Hermes source id: `clawhub`
+- Morpheus source id: `clawhub`
 
 #### 6. Claude marketplace-style repos (`claude-marketplace`)
 
-Hermes supports marketplace repos that publish Claude-compatible plugin/marketplace manifests.
+Morpheus supports marketplace repos that publish Claude-compatible plugin/marketplace manifests.
 
 Known integrated sources include:
 - [anthropics/skills](https://github.com/anthropics/skills)
 - [aiskillstore/marketplace](https://github.com/aiskillstore/marketplace)
 
-Hermes source id: `claude-marketplace`
+Morpheus source id: `claude-marketplace`
 
 #### 7. LobeHub (`lobehub`)
 
-Hermes can search and convert agent entries from LobeHub's public catalog into installable Hermes skills.
+Morpheus can search and convert agent entries from LobeHub's public catalog into installable Morpheus skills.
 
 - Site: [LobeHub](https://lobehub.com/)
 - Public agents index: [chat-agents.lobehub.com](https://chat-agents.lobehub.com/)
 - Backing repo: [lobehub/lobe-chat-agents](https://github.com/lobehub/lobe-chat-agents)
-- Hermes source id: `lobehub`
+- Morpheus source id: `lobehub`
 
 ### Security scanning and `--force`
 
@@ -340,7 +340,7 @@ Important behavior:
 
 | Level | Source | Policy |
 |-------|--------|--------|
-| `builtin` | Ships with Hermes | Always trusted |
+| `builtin` | Ships with Morpheus | Always trusted |
 | `official` | `optional-skills/` in the repo | Builtin trust, no third-party warning |
 | `trusted` | Trusted registries/repos such as `openai/skills`, `anthropics/skills` | More permissive policy than community sources |
 | `community` | Everything else (`skills.sh`, well-known endpoints, custom GitHub repos, most marketplaces) | Non-dangerous findings can be overridden with `--force`; `dangerous` verdicts stay blocked |

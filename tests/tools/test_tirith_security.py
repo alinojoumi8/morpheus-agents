@@ -827,7 +827,7 @@ class TestDiskFailureMarker:
         _tirith_mod._resolved_path = None
 
     def test_install_failed_recovers_from_hermes_bin(self):
-        """After _INSTALL_FAILED, manual install in HERMES_HOME/bin is picked up."""
+        """After _INSTALL_FAILED, manual install in MORPHEUS_HOME/bin is picked up."""
         from tools.tirith_security import _resolve_tirith_path, _INSTALL_FAILED
         import tempfile
         tmpdir = tempfile.mkdtemp()
@@ -969,38 +969,38 @@ class TestDiskFailureMarker:
 
 
 # ---------------------------------------------------------------------------
-# HERMES_HOME isolation
+# MORPHEUS_HOME isolation
 # ---------------------------------------------------------------------------
 
-class TestHermesHomeIsolation:
+class TestMorpheusHomeIsolation:
     def test_hermes_bin_dir_respects_hermes_home(self):
-        """_hermes_bin_dir must use HERMES_HOME, not hardcoded ~/.hermes."""
+        """_hermes_bin_dir must use MORPHEUS_HOME, not hardcoded ~/.morpheus."""
         from tools.tirith_security import _hermes_bin_dir
         import tempfile
         tmpdir = tempfile.mkdtemp()
-        with patch.dict(os.environ, {"HERMES_HOME": tmpdir}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": tmpdir}):
             result = _hermes_bin_dir()
         assert result == os.path.join(tmpdir, "bin")
         assert os.path.isdir(result)
 
     def test_failure_marker_respects_hermes_home(self):
-        """_failure_marker_path must use HERMES_HOME, not hardcoded ~/.hermes."""
+        """_failure_marker_path must use MORPHEUS_HOME, not hardcoded ~/.morpheus."""
         from tools.tirith_security import _failure_marker_path
-        with patch.dict(os.environ, {"HERMES_HOME": "/custom/hermes"}):
+        with patch.dict(os.environ, {"MORPHEUS_HOME": "/custom/hermes"}):
             result = _failure_marker_path()
         assert result == "/custom/hermes/.tirith-install-failed"
 
     def test_conftest_isolation_prevents_real_home_writes(self):
-        """The conftest autouse fixture sets HERMES_HOME; verify it's active."""
-        hermes_home = os.getenv("HERMES_HOME")
-        assert hermes_home is not None, "HERMES_HOME should be set by conftest"
+        """The conftest autouse fixture sets MORPHEUS_HOME; verify it's active."""
+        hermes_home = os.getenv("MORPHEUS_HOME")
+        assert hermes_home is not None, "MORPHEUS_HOME should be set by conftest"
         assert "hermes_test" in hermes_home, "Should point to test temp dir"
 
-    def test_get_hermes_home_fallback(self):
-        """Without HERMES_HOME set, falls back to ~/.hermes."""
-        from tools.tirith_security import _get_hermes_home
+    def test_get_morpheus_home_fallback(self):
+        """Without MORPHEUS_HOME set, falls back to ~/.morpheus."""
+        from tools.tirith_security import _get_morpheus_home
         with patch.dict(os.environ, {}, clear=True):
-            # Remove HERMES_HOME entirely
-            os.environ.pop("HERMES_HOME", None)
-            result = _get_hermes_home()
-        assert result == os.path.join(os.path.expanduser("~"), ".hermes")
+            # Remove MORPHEUS_HOME entirely
+            os.environ.pop("MORPHEUS_HOME", None)
+            result = _get_morpheus_home()
+        assert result == os.path.join(os.path.expanduser("~"), ".morpheus")

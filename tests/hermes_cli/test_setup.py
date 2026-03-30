@@ -1,8 +1,8 @@
 import json
 
-from hermes_cli.auth import _update_config_for_provider, get_active_provider
-from hermes_cli.config import load_config, save_config
-from hermes_cli.setup import setup_model_provider
+from morpheus_cli.auth import _update_config_for_provider, get_active_provider
+from morpheus_cli.config import load_config, save_config
+from morpheus_cli.setup import setup_model_provider
 
 
 def _maybe_keep_current_tts(question, choices):
@@ -27,7 +27,7 @@ def _clear_provider_env(monkeypatch):
 def test_nous_oauth_setup_keeps_current_model_when_syncing_disk_provider(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     config = load_config()
@@ -45,25 +45,25 @@ def test_nous_oauth_setup_keeps_current_model_when_syncing_disk_provider(
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", lambda *args, **kwargs: "")
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
 
     def _fake_login_nous(*args, **kwargs):
         auth_path = tmp_path / "auth.json"
         auth_path.write_text(json.dumps({"active_provider": "nous", "providers": {}}))
         _update_config_for_provider("nous", "https://inference.example.com/v1")
 
-    monkeypatch.setattr("hermes_cli.auth._login_nous", _fake_login_nous)
+    monkeypatch.setattr("morpheus_cli.auth._login_nous", _fake_login_nous)
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_nous_runtime_credentials",
+        "morpheus_cli.auth.resolve_nous_runtime_credentials",
         lambda *args, **kwargs: {
             "base_url": "https://inference.example.com/v1",
             "api_key": "nous-key",
         },
     )
     monkeypatch.setattr(
-        "hermes_cli.auth.fetch_nous_models",
+        "morpheus_cli.auth.fetch_nous_models",
         lambda *args, **kwargs: ["gemini-3-flash"],
     )
 
@@ -79,7 +79,7 @@ def test_nous_oauth_setup_keeps_current_model_when_syncing_disk_provider(
 
 
 def test_custom_setup_clears_active_oauth_provider(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     _clear_provider_env(monkeypatch)
 
     auth_path = tmp_path / "auth.json"
@@ -95,7 +95,7 @@ def test_custom_setup_clears_active_oauth_provider(tmp_path, monkeypatch):
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
 
     # _model_flow_custom uses builtins.input (URL, key, model, context_length)
     input_values = iter([
@@ -105,11 +105,11 @@ def test_custom_setup_clears_active_oauth_provider(tmp_path, monkeypatch):
         "",  # context_length (blank = auto-detect)
     ])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(input_values))
-    monkeypatch.setattr("hermes_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.main._save_custom_provider", lambda *args, **kwargs: None)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_yes_no", lambda *args, **kwargs: False)
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.main._save_custom_provider", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        "hermes_cli.models.probe_api_models",
+        "morpheus_cli.models.probe_api_models",
         lambda api_key, base_url: {"models": ["m"], "probed_url": base_url + "/models"},
     )
 
@@ -126,7 +126,7 @@ def test_custom_setup_clears_active_oauth_provider(tmp_path, monkeypatch):
 
 
 def test_codex_setup_uses_runtime_access_token_for_live_model_list(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("MORPHEUS_HOME", str(tmp_path))
     monkeypatch.setenv("OPENROUTER_API_KEY", "or-test-key")
     _clear_provider_env(monkeypatch)
     monkeypatch.setenv("OPENROUTER_API_KEY", "or-test-key")
@@ -143,12 +143,12 @@ def test_codex_setup_uses_runtime_access_token_for_live_model_list(tmp_path, mon
             return tts_idx
         raise AssertionError(f"Unexpected prompt_choice call: {question}")
 
-    monkeypatch.setattr("hermes_cli.setup.prompt_choice", fake_prompt_choice)
-    monkeypatch.setattr("hermes_cli.setup.prompt", lambda *args, **kwargs: "")
-    monkeypatch.setattr("hermes_cli.auth.detect_external_credentials", lambda: [])
-    monkeypatch.setattr("hermes_cli.auth._login_openai_codex", lambda *args, **kwargs: None)
+    monkeypatch.setattr("morpheus_cli.setup.prompt_choice", fake_prompt_choice)
+    monkeypatch.setattr("morpheus_cli.setup.prompt", lambda *args, **kwargs: "")
+    monkeypatch.setattr("morpheus_cli.auth.detect_external_credentials", lambda: [])
+    monkeypatch.setattr("morpheus_cli.auth._login_openai_codex", lambda *args, **kwargs: None)
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_codex_runtime_credentials",
+        "morpheus_cli.auth.resolve_codex_runtime_credentials",
         lambda *args, **kwargs: {
             "base_url": "https://chatgpt.com/backend-api/codex",
             "api_key": "codex-access-token",
@@ -162,7 +162,7 @@ def test_codex_setup_uses_runtime_access_token_for_live_model_list(tmp_path, mon
         return ["gpt-5.2-codex", "gpt-5.2"]
 
     monkeypatch.setattr(
-        "hermes_cli.codex_models.get_codex_model_ids",
+        "morpheus_cli.codex_models.get_codex_model_ids",
         _fake_get_codex_model_ids,
     )
 

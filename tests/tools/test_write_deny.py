@@ -33,7 +33,7 @@ class TestWriteDenyExactPaths:
         assert _is_write_denied(path) is True
 
     def test_hermes_env(self):
-        path = os.path.join(str(Path.home()), ".hermes", ".env")
+        path = os.path.join(str(Path.home()), ".morpheus", ".env")
         assert _is_write_denied(path) is True
 
     def test_shell_profiles(self):
@@ -79,5 +79,5 @@ class TestWriteAllowed:
         assert _is_write_denied("/home/user/project/main.py") is False
 
     def test_hermes_config_not_env(self):
-        path = os.path.join(str(Path.home()), ".hermes", "config.yaml")
+        path = os.path.join(str(Path.home()), ".morpheus", "config.yaml")
         assert _is_write_denied(path) is False
